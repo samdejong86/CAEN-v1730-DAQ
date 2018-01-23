@@ -1,10 +1,73 @@
 #include "Digitizer.h"
 #include "util.h"
-
+#include <sstream>
+#include <bitset>
 
 static CAEN_DGTZ_IRQMode_t INTERRUPT_MODE = CAEN_DGTZ_IRQ_MODE_ROAK;
 
-Digitizer::Digitizer(){
+Digitizer::Digitizer(XmlParser settings){
+  DefaultSettings(); 
+
+  if(settings.fieldExists("RecordLength")){
+    RecordLength = (uint32_t)settings.getValue("RecordLength");
+  }
+
+  if(settings.fieldExists("BaseAddress")){
+    BaseAddress = (int)settings.getValue("BaseAddress");
+  }
+  
+  
+  if(settings.fieldExists("PostTrigger")){
+    PostTrigger = (int)settings.getValue("PostTrigger");
+  }
+
+  uint16_t tempEnableMask=0;
+  stringstream ss;
+  for(int i=0; i<MAX_SET; i++){
+    ss<<i;
+    string num = ss.str();
+    ss.str("");
+
+    if(settings.fieldExists("ch"+num)){
+      if(settings.getValue("ch"+num)==1){
+	tempEnableMask += (1<<i);      
+	ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_ACQ_ONLY;
+	Version_used[i]=1;
+      }else{
+	ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_DISABLED;
+	PulsePolarity[i]=CAEN_DGTZ_PulsePolarityPositive;
+	DCoffset[i]=0;
+	Threshold[i]=0;
+	Version_used[i]=0;
+	continue;
+      }
+    }
+    
+    if(settings.fieldExists("PulsePolarity"+num)){
+      if(settings.getStringValue("PulsePolarity"+num).compare("POSITIVE")==0)
+	PulsePolarity[i]=CAEN_DGTZ_PulsePolarityPositive;
+      else
+	PulsePolarity[i]=CAEN_DGTZ_PulsePolarityNegative;    
+    }
+    
+    if(settings.fieldExists("DCoffset"+num))
+      DCoffset[i] = (uint32_t)settings.getValue("DCoffset"+num);
+
+    if(settings.fieldExists("TriggerThreshold"+num))
+      Threshold[i] = (uint32_t)settings.getValue("TriggerThreshold"+num);
+  }
+
+  if(tempEnableMask!=0)
+    EnableMask=tempEnableMask;
+
+  
+
+}
+
+
+
+
+void Digitizer::DefaultSettings(){
 
   //default settings
   LinkType = CAEN_DGTZ_USB;
@@ -37,8 +100,6 @@ Digitizer::Digitizer(){
     Version_used[i]=0;
   }
 
-
-
   GWn   = 0;  
   for(int i=0; i<MAX_GW; i++){
     GWaddr[i]=0;
@@ -59,8 +120,6 @@ Digitizer::Digitizer(){
     dc_file[i]=50;
     thr_file[i]=100;
   }
-
-  
   
     
 }
@@ -793,4 +852,68 @@ CAEN_DGTZ_ErrorCode Digitizer::WriteOutputFiles(CAEN_DGTZ_EventInfo_t *EventInfo
     }
   }
   return CAEN_DGTZ_Success;
+}
+
+
+void Digitizer::printOn(ostream & out) const{
+  out<<"Digitizer Settings:"<<endl;
+  if(LinkType==CAEN_DGTZ_USB)
+    out<<"LinkType:\tUSB"<<endl;
+
+  out<<"LinkNum \t"<< LinkNum <<endl;
+  out<<"ConetNode \t"<<ConetNode  <<endl;
+  out<<"BaseAddress \t"<<std::hex<< BaseAddress<<std::dec <<endl;
+  out<<"Nch \t"<< Nch <<endl;
+  out<<"Nbit \t"<< Nbit <<endl;
+  out<<"Ts \t"<<Ts  <<endl;
+  out<<"NumEvents \t"<< NumEvents <<endl;
+  out<<"RecordLength \t"<< RecordLength <<endl;
+  out<<"PostTrigger \t"<< PostTrigger <<endl;
+  out<<"InterruptNumEvents \t"<<InterruptNumEvents  <<endl;
+  out<<"TestPattern \t"<<TestPattern  <<endl;
+  out<<"FPIOtype \t"<<FPIOtype  <<endl;
+  out<<"ExtTriggerMode \t"<< ExtTriggerMode <<endl;
+
+  bitset<8> mask(EnableMask);
+  
+  out<<"EnableMask \t"<<mask <<endl;
+
+ 
+  for(int i=0; i<Nch; i++){
+    out<<"Channel\t"<<i;
+    if(mask[i]==0){
+      out<<" Disabled\n";
+      continue;
+    }
+    out<<endl;
+    out<<"\tTriggerMode:\t";
+    if(ChannelTriggerMode[i]==CAEN_DGTZ_TRGMODE_DISABLED)
+      out<<"Disabled\n";
+    else if(ChannelTriggerMode[i]==CAEN_DGTZ_TRGMODE_EXTOUT_ONLY)
+      out<<"Ext Out Only\n";
+    else if(ChannelTriggerMode[i]==CAEN_DGTZ_TRGMODE_ACQ_ONLY)
+      out<<"Acq only\n";
+    else if(ChannelTriggerMode[i]==CAEN_DGTZ_TRGMODE_ACQ_AND_EXTOUT)
+      out<<"Acq and Extout\n";
+
+    out<<"\tPulsePolarity\t";
+    if(PulsePolarity[i]==CAEN_DGTZ_PulsePolarityPositive)
+      out<<"Positive\n";
+    else if(PulsePolarity[i]==CAEN_DGTZ_PulsePolarityNegative)
+      out<<"Negative\n";
+
+    out<<"\tDCoffset \t"<<DCoffset[i]<<endl;
+    out<<"\tThreshold \t"<<Threshold[i]<<endl;
+
+  }
+
+  
+
+  
+}
+
+//overload of << operator
+ostream& operator<<(ostream& os, const Digitizer& r) {
+  r.printOn(os);
+  return os;
 }

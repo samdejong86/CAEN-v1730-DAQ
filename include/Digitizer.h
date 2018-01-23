@@ -2,6 +2,7 @@
 #include <CAENDigitizerType.h>
 
 #include "CAENdaq.h"
+#include "xmlParser.h"
 
 using namespace std;
 
@@ -14,13 +15,20 @@ class Digitizer{
 
  public:
 
-  Digitizer();
+  Digitizer(){
+    DefaultSettings();
+  };
+  
+  Digitizer(XmlParser settings);
 
+
+  void DefaultSettings();
   void OpenDigitizer();
   void Readout();
   void CloseDigitizer();
 
   void CheckKeyboardCommands();
+  
   
   CAEN_DGTZ_ErrorCode ProgramDigitizer();
   CAEN_DGTZ_ErrorCode WriteOutputFiles(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EVENT_t *event);
@@ -28,9 +36,11 @@ class Digitizer{
   CAEN_DGTZ_ErrorCode Calibrate_DC_Offset();
   CAEN_DGTZ_ErrorCode WriteRegisterBitmask(uint32_t address, uint32_t data, uint32_t mask);
   CAEN_DGTZ_ErrorCode SetCorrectThreshold();
-  
 
-  
+  void printOn(ostream & out) const;
+
+  friend ostream& operator<<(ostream& os, const Digitizer& r);
+    
  private:
     
   int  handle = -1;
@@ -106,4 +116,6 @@ class Digitizer{
   
 };
 
+
 #endif
+

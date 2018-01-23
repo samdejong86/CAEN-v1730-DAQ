@@ -1,0 +1,28 @@
+<xml>
+  <Active>
+    <RecordLength>
+      1024
+    </RecordLength>
+    <BaseAddress>
+      0x32200000
+    </BaseAddress>
+    <PostTrigger>
+      50
+    </PostTrigger>
+    <ch0>
+      1
+    </ch0>
+    <ch1>
+      0
+    </ch1>
+    <PulsePolarity0>
+      POSITIVE
+    </PulsePolarity0>
+    <DCoffset0>
+      32767
+    </DCoffset0>
+    <TriggerThreshold0>
+      100
+    </TriggerThreshold0>   
+  </Active>
+</xml>

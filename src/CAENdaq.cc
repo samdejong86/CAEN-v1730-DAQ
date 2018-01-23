@@ -10,16 +10,22 @@
 
 int main(int argc, char *argv[]){
 
-  Digitizer digi;
+  XmlParser settings("xml/Settings.xml", false);
+  
+  Digitizer digi(settings);
+  //Digitizer digi;
 
+  cout<<digi;
+  
   digi.OpenDigitizer();
 
   digi.Readout();
    
   digi.CloseDigitizer();
-  
 
   
+
+   
   cout<<"Hello World"<<endl;
 
 
