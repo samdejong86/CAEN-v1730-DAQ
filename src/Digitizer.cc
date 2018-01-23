@@ -1,0 +1,796 @@
+#include "Digitizer.h"
+#include "util.h"
+
+
+static CAEN_DGTZ_IRQMode_t INTERRUPT_MODE = CAEN_DGTZ_IRQ_MODE_ROAK;
+
+Digitizer::Digitizer(){
+
+  //default settings
+  LinkType = CAEN_DGTZ_USB;
+  LinkNum=0;
+  ConetNode=0;
+  BaseAddress=0x32200000;
+  Nch = 8;
+  Nbit = 14;
+  Ts = 2.0;
+  NumEvents=1;
+  RecordLength=1024;
+  PostTrigger=50;
+  InterruptNumEvents=0;
+  TestPattern=0;
+  FPIOtype=CAEN_DGTZ_IOLevel_NIM;
+  ExtTriggerMode=CAEN_DGTZ_TRGMODE_ACQ_ONLY;
+  EnableMask=1;
+
+  ChannelTriggerMode[0]=CAEN_DGTZ_TRGMODE_ACQ_ONLY;
+  PulsePolarity[0]=CAEN_DGTZ_PulsePolarityPositive;
+  DCoffset[0]=32767;
+  Threshold[0]=100;
+  Version_used[0]=1;
+
+  for(int i=1; i<MAX_SET; i++){
+    ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_DISABLED;
+    PulsePolarity[i]=CAEN_DGTZ_PulsePolarityPositive;
+    DCoffset[i]=0;
+    Threshold[i]=0;
+    Version_used[i]=0;
+  }
+
+
+
+  GWn   = 0;  
+  for(int i=0; i<MAX_GW; i++){
+    GWaddr[i]=0;
+    GWdata[i]=0;
+    GWmask[i]=0;
+  }
+    
+  Quit=0;
+  AcqRun=0;
+  PlotType=0;
+  ContinuousTrigger=0;
+  ContinuousWrite=0;
+  SingleWrite=0;
+  Restart=0;
+  RunHisto=0;
+  for(int i=0; i<MAX_CH; i++){
+    fout[i]=NULL;
+    dc_file[i]=50;
+    thr_file[i]=100;
+  }
+
+  
+  
+    
+}
+
+
+
+
+
+void Digitizer::OpenDigitizer(){
+
+  CAEN_DGTZ_ErrorCode ret = CAEN_DGTZ_Success;
+  buffer = NULL;
+  EventPtr = NULL;
+  isVMEDevice= 0;
+  nCycles= 0;
+  Event16=NULL; /* generic event struct with 16 bit data (10, 12, 14 and 16 bit digitizers */
+
+   
+  int ReloadCfgStatus = 0x7FFFFFFF; // Init to the bigger positive number
+     
+  /* *************************************************************************************** */
+  /* Open the digitizer and read the board information                                       */
+  /* *************************************************************************************** */
+  isVMEDevice = 0;
+  isVMEDevice = BaseAddress ? 1 : 0;
+
+  ret = CAEN_DGTZ_OpenDigitizer(LinkType, LinkNum, ConetNode, BaseAddress, &handle);
+  if (ret) {
+    cout<<"can't open\n";
+    exit(0);
+  }
+
+  ret = CAEN_DGTZ_GetInfo(handle, &BoardInfo);
+  if (ret) {
+    exit(0);
+      
+  }
+  printf("Connected to CAEN Digitizer Model %s\n", BoardInfo.ModelName);
+  printf("ROC FPGA Release is %s\n", BoardInfo.ROC_FirmwareRel);
+  printf("AMC FPGA Release is %s\n", BoardInfo.AMC_FirmwareRel);
+
+  // Check firmware rivision (DPP firmwares cannot be used with WaveDump */
+  sscanf(BoardInfo.AMC_FirmwareRel, "%d", &MajorNumber);
+  if (MajorNumber >= 128) {
+    printf("This digitizer has a DPP firmware\n");
+    exit(0);
+  }
+
+
+  // Perform calibration (if needed).
+    
+  /* *************************************************************************************** */
+  /* program the digitizer                                                                   */
+  /* *************************************************************************************** */
+  ret = ProgramDigitizer();
+  if (ret) {
+    exit(0);
+  }
+
+
+  // Read again the board infos, just in case some of them were changed by the programming
+  // (like, for example, the TSample and the number of channels if DES mode is changed)
+  if(ReloadCfgStatus > 0) {
+    ret = CAEN_DGTZ_GetInfo(handle, &BoardInfo);
+    if (ret) {
+      exit(0);
+    }
+      
+  }
+    
+  // Allocate memory for the event data and readout buffer
+  ret = CAEN_DGTZ_AllocateEvent(handle, (void**)&Event16);
+	    
+  if (ret != CAEN_DGTZ_Success) {
+    exit(0);
+  }
+  ret = CAEN_DGTZ_MallocReadoutBuffer(handle, &buffer,&AllocatedSize); /* WARNING: This malloc must be done after the digitizer programming */
+  if (ret) {
+    exit(0);
+  }
+
+
+  
+}
+
+
+
+void Digitizer::Readout(){
+  
+  if (Restart && AcqRun) 
+    {
+      Calibrate_DC_Offset();
+      CAEN_DGTZ_SWStartAcquisition(handle);
+    }
+  else
+    printf("[s] start/stop the acquisition, [q] quit, [SPACE] help\n");
+  Restart = 0;
+  PrevRateTime = get_time();
+
+  /* *************************************************************************************** */
+  /* Readout Loop                                                                            */
+  /* *************************************************************************************** */
+  Quit=false;
+  while(!Quit) {
+    // Check for keyboard commands (key pressed)
+    CheckKeyboardCommands();
+
+	
+    if (AcqRun == 0)
+      continue;
+
+    /* Send a software trigger */
+    if (ContinuousTrigger) {
+      CAEN_DGTZ_SendSWtrigger(handle);
+    }
+
+    /* Wait for interrupt (if enabled) */
+    if (InterruptNumEvents > 0) {
+      int32_t boardId;
+      int VMEHandle = -1;
+      int InterruptMask = (1 << VME_INTERRUPT_LEVEL);
+
+      BufferSize = 0;
+      NEvents = 0;
+      // Interrupt handling
+      if (isVMEDevice) {
+	ret = CAEN_DGTZ_VMEIRQWait ((CAEN_DGTZ_ConnectionType)LinkType, LinkNum, ConetNode, (uint8_t)InterruptMask, INTERRUPT_TIMEOUT, &VMEHandle);
+      }
+      else
+	ret = CAEN_DGTZ_IRQWait(handle, INTERRUPT_TIMEOUT);
+      if (ret == CAEN_DGTZ_Timeout)  // No active interrupt requests
+	goto InterruptTimeout;
+      if (ret != CAEN_DGTZ_Success)  {
+	exit(0);
+      }
+      // Interrupt Ack
+      if (isVMEDevice) {
+	printf("isvme\n");
+	ret = CAEN_DGTZ_VMEIACKCycle(VMEHandle, VME_INTERRUPT_LEVEL, &boardId);
+	if ((ret != CAEN_DGTZ_Success) || (boardId != VME_INTERRUPT_STATUS_ID)) {
+	  goto InterruptTimeout;
+	} else {
+	  if (INTERRUPT_MODE == CAEN_DGTZ_IRQ_MODE_ROAK)
+	    ret = CAEN_DGTZ_RearmInterrupt(handle);
+	}
+      }
+    }
+
+    /* Read data from the board */
+    ret = CAEN_DGTZ_ReadData(handle, CAEN_DGTZ_SLAVE_TERMINATED_READOUT_MBLT, buffer, &BufferSize);
+    if (ret) {
+      exit(0);
+    }
+    NEvents = 0;
+    if (BufferSize != 0) {
+      ret = CAEN_DGTZ_GetNumEvents(handle, buffer, BufferSize, &NEvents);
+      if (ret) {
+	exit(0);
+      }
+    }
+    else {
+      uint32_t lstatus;
+      ret = CAEN_DGTZ_ReadRegister(handle, CAEN_DGTZ_ACQ_STATUS_ADD, &lstatus);
+      if (ret) {
+	printf("Warning: Failure reading reg:%x (%d)\n", CAEN_DGTZ_ACQ_STATUS_ADD, ret);
+      }
+      else {
+	if (lstatus & (0x1 << 19)) {
+	  exit(0);
+	}
+      }
+    }
+	
+	
+  InterruptTimeout:
+    /* Calculate throughput and trigger rate (every second) */
+    Nb += BufferSize;
+    Ne += NEvents;
+    CurrentTime = get_time();
+    ElapsedTime = CurrentTime - PrevRateTime;
+
+    nCycles++;
+    if (ElapsedTime > 1000) {
+      if (Nb == 0)
+	if (ret == CAEN_DGTZ_Timeout) printf ("Timeout...\n"); else printf("No data...\n");
+      else
+	printf("Reading at %.2f MB/s (Trg Rate: %.2f Hz)\n", (float)Nb/((float)ElapsedTime*1048.576f), (float)Ne*1000.0f/(float)ElapsedTime);
+      nCycles= 0;
+      Nb = 0;
+      Ne = 0;
+      PrevRateTime = CurrentTime;
+    }
+
+    /* Analyze data */
+    for(int i = 0; i < (int)NEvents; i++) {
+
+      /* Get one event from the readout buffer */
+      ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, i, &EventInfo, &EventPtr);
+      //cout<<ret<<endl;
+      if (ret) {
+	continue;
+	//exit(0);
+      }
+      /* decode the event */
+      ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event16);
+
+      if (ret) {
+	cout<<"decode\n";
+	exit(0);
+      }
+	    
+      /* Write Event data to file */
+      if (SingleWrite) {
+	// Note: use a thread here to allow parallel readout and file writing
+	ret = WriteOutputFiles(&EventInfo, Event16);
+	if (ret) {
+	  exit(0);
+	}
+	if (SingleWrite==1) {
+	  printf("Single Event saved to output files\n");
+	  SingleWrite = 0;
+	}
+      }
+
+    }
+  }
+
+}
+
+
+void Digitizer::CloseDigitizer(){
+  
+  /* stop the acquisition */
+  CAEN_DGTZ_SWStopAcquisition(handle);
+
+  /* close the output files and free histograms*/
+  for (int ch = 0; ch < Nch; ch++) {
+    if (fout[ch])
+      fclose(fout[ch]);
+  }
+
+  /* close the device and free the buffers */
+  CAEN_DGTZ_FreeEvent(handle, (void**)&Event16);
+  CAEN_DGTZ_FreeReadoutBuffer(&buffer);
+  CAEN_DGTZ_CloseDigitizer(handle);
+
+}
+
+
+
+
+CAEN_DGTZ_ErrorCode Digitizer::ProgramDigitizer(){
+  int i,ret = 0;
+  
+  /* reset the digitizer */
+  ret |= CAEN_DGTZ_Reset(handle);
+  if (ret != 0) {
+    printf("Error: Unable to reset digitizer.\nPlease reset digitizer manually then restart the program\n");
+    return (CAEN_DGTZ_ErrorCode)ret;
+  }
+  
+  // Set the waveform test bit for debugging
+  if (TestPattern)
+    ret |= CAEN_DGTZ_WriteRegister(handle, CAEN_DGTZ_BROAD_CH_CONFIGBIT_SET_ADD, 1<<3);
+    
+  ret |= CAEN_DGTZ_SetRecordLength(handle, RecordLength);
+  ret |= CAEN_DGTZ_GetRecordLength(handle, &RecordLength);
+  
+
+  ret |= CAEN_DGTZ_SetPostTriggerSize(handle, PostTrigger);
+    
+  ret |= CAEN_DGTZ_SetIOLevel(handle, FPIOtype);
+  if( InterruptNumEvents > 0) {
+    // Interrupt handling
+    if( ret |= CAEN_DGTZ_SetInterruptConfig( handle, CAEN_DGTZ_ENABLE, VME_INTERRUPT_LEVEL, VME_INTERRUPT_STATUS_ID, (uint16_t)InterruptNumEvents, INTERRUPT_MODE)!= CAEN_DGTZ_Success) {
+      printf( "\nError configuring interrupts. Interrupts disabled\n\n");
+      InterruptNumEvents = 0;
+    }
+  }
+  
+	
+  ret |= CAEN_DGTZ_SetMaxNumEventsBLT(handle, NumEvents);
+  ret |= CAEN_DGTZ_SetAcquisitionMode(handle, CAEN_DGTZ_SW_CONTROLLED);
+  ret |= CAEN_DGTZ_SetExtTriggerInputMode(handle, ExtTriggerMode);
+
+    
+  ret |= CAEN_DGTZ_SetChannelEnableMask(handle, EnableMask);
+  for (i = 0; i < Nch; i++) {
+    if (EnableMask & (1<<i)) {
+      ret |= CAEN_DGTZ_SetChannelDCOffset(handle, i, DCoffset[i]);
+      ret |= CAEN_DGTZ_SetChannelTriggerThreshold(handle, i, Threshold[i]);
+      ret |= CAEN_DGTZ_SetTriggerPolarity(handle, i, (CAEN_DGTZ_TriggerPolarity_t)PulsePolarity[i]); //.TriggerEdge
+    }
+  }
+    
+  // channel pair settings for x730 boards
+  for (i = 0; i < Nch; i += 2) {
+    if (EnableMask & (0x3 << i)) {
+      CAEN_DGTZ_TriggerMode_t mode = ChannelTriggerMode[i];
+      uint32_t pair_chmask = 0;
+	
+      // Build mode and relevant channelmask. The behaviour is that,
+      // if the triggermode of one channel of the pair is DISABLED,
+      // this channel doesn't take part to the trigger generation.
+      // Otherwise, if both are different from DISABLED, the one of
+      // the even channel is used.
+      if (ChannelTriggerMode[i] != CAEN_DGTZ_TRGMODE_DISABLED) {
+	if (ChannelTriggerMode[i + 1] == CAEN_DGTZ_TRGMODE_DISABLED)
+	  pair_chmask = (0x1 << i);
+	else
+	  pair_chmask = (0x3 << i);
+      }
+      else {
+	mode = ChannelTriggerMode[i + 1];
+	pair_chmask = (0x2 << i);
+      }
+	
+      pair_chmask &= EnableMask;
+      ret |= CAEN_DGTZ_SetChannelSelfTrigger(handle, mode, pair_chmask);
+
+           
+    }
+  }
+
+  /* execute generic write commands */
+  for(i=0; i<GWn; i++){
+    ret |= WriteRegisterBitmask(GWaddr[i], GWdata[i], GWmask[i]);
+	
+  }
+  if (ret)
+    printf("Warning: errors found during the programming of the digitizer.\nSome settings may not be executed\n");
+
+  return CAEN_DGTZ_Success;
+}
+
+
+CAEN_DGTZ_ErrorCode Digitizer::WriteRegisterBitmask(uint32_t address, uint32_t data, uint32_t mask) {
+  int32_t ret = CAEN_DGTZ_Success;
+  uint32_t d32 = 0xFFFFFFFF;
+
+  ret = CAEN_DGTZ_ReadRegister(handle, address, &d32);
+  if(ret != CAEN_DGTZ_Success)
+    return (CAEN_DGTZ_ErrorCode)ret;
+
+  data &= mask;
+  d32 &= ~mask;
+  d32 |= data;
+  ret = CAEN_DGTZ_WriteRegister(handle, address, d32);
+  return (CAEN_DGTZ_ErrorCode)ret;
+}
+  
+
+
+
+
+CAEN_DGTZ_ErrorCode Digitizer::Calibrate_DC_Offset(){
+
+  //return CAEN_DGTZ_Success;
+  
+  float cal = 1;
+  float offset = 0;
+  int i = 0, k = 0, p = 0, acq = 0, ch=0;
+  CAEN_DGTZ_ErrorCode ret;
+  CAEN_DGTZ_AcqMode_t mem_mode;
+  uint32_t  AllocatedSize;
+
+  uint32_t BufferSize;
+	
+  CAEN_DGTZ_EventInfo_t       EventInfo;
+  char *buffer = NULL;
+  char *EventPtr = NULL;
+  CAEN_DGTZ_UINT16_EVENT_t    *Event16 = NULL;
+
+  ret = CAEN_DGTZ_GetAcquisitionMode(handle, &mem_mode);//chosen value stored
+  if (ret)
+    printf("Error trying to read acq mode!!\n");
+  ret = CAEN_DGTZ_SetAcquisitionMode(handle, CAEN_DGTZ_SW_CONTROLLED);
+  if (ret)
+    printf("Error trying to set acq mode!!\n");
+  ret = CAEN_DGTZ_SetExtTriggerInputMode(handle, CAEN_DGTZ_TRGMODE_DISABLED);
+  if (ret)
+    printf("Error trying to set ext trigger!!\n");
+  ret = CAEN_DGTZ_SetPostTriggerSize(handle, 0);
+  if (ret)
+    printf("Error trying to set post trigger!!\n");
+  ///malloc
+  ret = CAEN_DGTZ_MallocReadoutBuffer(handle, &buffer, &AllocatedSize);
+  if (ret) {
+      return ret;
+  }
+
+  ret = CAEN_DGTZ_AllocateEvent(handle, (void**)&Event16);		
+  if (ret != CAEN_DGTZ_Success) {
+  }
+
+  ret = CAEN_DGTZ_SWStartAcquisition(handle);
+  if (ret)
+    {
+      printf("Warning: error starting acq\n");
+      return ret;
+    }
+
+  float avg_value[NPOINTS] = { 0 };
+	
+  uint32_t dc[NPOINTS] = {25,75}; //test values (%)
+
+  for (ch = 0; ch < (int32_t)BoardInfo.Channels; ch++)    {
+    if (EnableMask & (1 << ch) && Version_used[ch] ==1)	{
+      
+      printf("Starting channel %d DAC calibration...\n", ch);
+      ret = CAEN_DGTZ_SetChannelSelfTrigger(handle,CAEN_DGTZ_TRGMODE_DISABLED, (1 << ch));			
+      if (ret)
+	printf("Warning: error disabling ch %d self trigger\n", ch);
+		
+		
+      cal_ok[ch] = 1;
+      if (cal_ok[ch])  {
+	for (p = 0; p < NPOINTS; p++){
+	  //cout<<abs((int)dc[p] - 100)<<endl;
+	  ret = CAEN_DGTZ_SetChannelDCOffset(handle, (uint32_t)ch, (uint32_t)((float)(fabs((int)dc[p] - 100))*(655.35)));
+	  if (ret)
+	    printf("Warning: error setting ch %d test offset\n", ch);
+			
+	  usleep(200000);
+			
+	  int value[NACQS] = { 0 };
+	  for (acq = 0; acq < NACQS; acq++){
+	    CAEN_DGTZ_SendSWtrigger(handle);
+			    
+	    ret = CAEN_DGTZ_ReadData(handle, CAEN_DGTZ_SLAVE_TERMINATED_READOUT_MBLT, buffer, &BufferSize);
+	    if (ret) {
+	      exit(0);
+	    }
+			    
+	    ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, 0, &EventInfo, &EventPtr);
+	    if (ret) {
+	      return ret;
+	    }
+	    // decode the event //
+	    ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event16);
+			    
+	    if (ret) {
+	      return ret;
+	    }
+			    
+			    
+	    for (i = 1; i < 7; i++){ //mean over 6 samples
+	      value[acq] += (int)(Event16->DataChannel[ch][i]);
+	    }
+	    value[acq] = (value[acq] / 6);
+			    
+	  }//for acq
+			
+	  ///check for clean baselines
+	  int max = 0;
+	  int mpp = 0;
+	  int size = (int)pow(2, (double)BoardInfo.ADC_NBits);
+	  int *freq = (int*)calloc(size, sizeof(int));
+			
+	  for (k = 0; k < NACQS; k++){
+	    if (value[k] > 0 && value[k] < size){
+	      freq[value[k]]++;
+	      if (freq[value[k]] > max) { max = freq[value[k]]; mpp = value[k]; }
+	    }
+	  }
+			
+	  free(freq);
+	  int ok = 0;
+	  for (k = 0; k < NACQS; k++) {
+	    if (value[k] == mpp || value[k] == (mpp + 1) || value[k] == (mpp - 1)){
+	      avg_value[p] = avg_value[p] + (float)value[k]; ok++;
+	    }
+	  }
+	  avg_value[p] = (avg_value[p] / (float)ok)*100. / (float)size;
+			
+	}//close for p
+	cal = ((float)(avg_value[1] - avg_value[0]) / (float)(dc[1] - dc[0]));
+	offset = (float)(dc[1] * avg_value[0] - dc[0] * avg_value[1]) / (float)(dc[1] - dc[0]);
+	//printf("Cal %f   offset %f\n", cal, offset);
+      }///close if calibration is possible
+		
+		
+      if (PulsePolarity[ch] == CAEN_DGTZ_PulsePolarityPositive){
+	DCoffset[ch] = (uint32_t)((float)(fabs(( ((float)dc_file[ch] - offset )/ cal ) - 100.))*(655.35));
+	if (DCoffset[ch] > 65535) DCoffset[ch] = 65535;
+	if (DCoffset[ch] < 0) DCoffset[ch] = 0;
+      }
+      else
+	if (PulsePolarity[ch] == CAEN_DGTZ_PulsePolarityNegative){
+	  DCoffset[ch] = (uint32_t)((float)(fabs(( (fabs(dc_file[ch] - 100.) - offset) / cal ) - 100.))*(655.35));
+	  if (DCoffset[ch] < 0) DCoffset[ch] = 0;
+	  if (DCoffset[ch] > 65535) DCoffset[ch] = 65535;
+		      
+	}
+		
+      ret = CAEN_DGTZ_SetChannelDCOffset(handle, (uint32_t)ch, DCoffset[ch]);
+      if (ret)
+	printf("Warning: error setting ch %d offset\n", ch);
+      usleep(200000);
+    }//if ch enabled
+	    
+  }//loop ch
+	
+  //printf("DAC Calibration ready\n");
+	
+  CAEN_DGTZ_SWStopAcquisition(handle);  
+	
+  ///free events e buffer
+  CAEN_DGTZ_FreeReadoutBuffer(&buffer);
+  CAEN_DGTZ_FreeEvent(handle, (void**)&Event16);
+
+  SetCorrectThreshold();
+	
+  CAEN_DGTZ_SetPostTriggerSize(handle, PostTrigger);
+  CAEN_DGTZ_SetAcquisitionMode(handle, mem_mode);
+  CAEN_DGTZ_SetExtTriggerInputMode(handle, ExtTriggerMode);
+  if (ret)
+    printf("Warning: error setting recorded parameters\n");
+
+  return CAEN_DGTZ_Success;
+  
+}
+
+CAEN_DGTZ_ErrorCode Digitizer::SetCorrectThreshold(){
+  
+  CAEN_DGTZ_UINT16_EVENT_t    *Event16;
+  int i = 0,ch=0;
+  CAEN_DGTZ_ErrorCode ret;
+  uint32_t  AllocatedSize;
+  
+  uint32_t BufferSize;
+  CAEN_DGTZ_EventInfo_t       EventInfo;
+  char *buffer = NULL;
+  char *EventPtr = NULL;
+  
+  ///malloc
+  ret = CAEN_DGTZ_MallocReadoutBuffer(handle, &buffer, &AllocatedSize);
+  if (ret) {
+    return ret;
+  }
+  
+  ret = CAEN_DGTZ_AllocateEvent(handle, (void**)&Event16);
+  if (ret != CAEN_DGTZ_Success) {
+    return ret;
+  }
+  
+  uint32_t mask;
+  CAEN_DGTZ_GetChannelEnableMask(handle, &mask);
+  
+  CAEN_DGTZ_SWStartAcquisition(handle);
+  for (ch = 0; ch < (int32_t)BoardInfo.Channels; ch++)
+    {
+      
+      if (EnableMask & (1 << ch) && Version_used[ch] == 1)
+	{
+	  if (cal_ok[ch])
+	    {
+	      int baseline = 0;
+	      CAEN_DGTZ_SendSWtrigger(handle);
+	      
+	      ret = CAEN_DGTZ_ReadData(handle, CAEN_DGTZ_SLAVE_TERMINATED_READOUT_MBLT, buffer, &BufferSize);
+	      if (ret) {
+		exit(0);
+	      }
+	      
+	      ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, 0, &EventInfo, &EventPtr);
+	      if (ret) {
+		return ret;
+	      }
+	      // decode the event //
+	      ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event16);
+	      
+	      if (ret) {
+		return ret;
+	      }
+	      
+	      
+	      for (i = 1; i < 11; i++) //mean over 10 samples
+		{
+		  baseline += (int)(Event16->DataChannel[ch][i]);
+		  
+		}
+	      baseline = (baseline / 10);
+	      
+	      if (PulsePolarity[ch] == CAEN_DGTZ_PulsePolarityPositive)
+		Threshold[ch] = (uint32_t)baseline + thr_file[ch];
+	      else 	if (PulsePolarity[ch] == CAEN_DGTZ_PulsePolarityNegative)
+		Threshold[ch] = (uint32_t)baseline - thr_file[ch];
+	      
+	      if (Threshold[ch] < 0) Threshold[ch] = 0;
+	      int size = (int)pow(2, (double)BoardInfo.ADC_NBits);
+	      if (Threshold[ch] > (uint32_t)size) Threshold[ch] = size;
+	    }//if cal ok ch
+	  else
+	    Threshold[ch] = thr_file[ch];
+	  
+	  //Threshold[ch]=100;
+	  
+	  ret = CAEN_DGTZ_SetChannelTriggerThreshold(handle, ch, Threshold[ch]);
+	  if (ret)
+	    printf("Warning: error setting ch %d corrected threshold\n", ch);
+	  
+	  CAEN_DGTZ_SetChannelSelfTrigger(handle, ChannelTriggerMode[ch], (1 << ch));
+	  
+	}
+    }
+  CAEN_DGTZ_SWStopAcquisition(handle);
+  
+  CAEN_DGTZ_FreeReadoutBuffer(&buffer);
+  CAEN_DGTZ_FreeEvent(handle, (void**)&Event16);
+  
+  return CAEN_DGTZ_Success;
+}
+
+
+
+void Digitizer::CheckKeyboardCommands(){
+  int c = 0;
+  
+  if(!kbhit())
+    return;
+
+  c = getch();
+
+  switch(c) {
+  case 'q' :
+    Quit = 1;
+    break;
+  case 'R' :
+    Restart = 1;
+    break;
+  case 't' :
+    if (!ContinuousTrigger) {
+      CAEN_DGTZ_SendSWtrigger(handle);
+      printf("Single Software Trigger issued\n");
+    }
+    break;
+  case 'T' :
+    ContinuousTrigger ^= 1;
+    if (ContinuousTrigger)
+      printf("Continuous trigger is enabled\n");
+    else
+      printf("Continuous trigger is disabled\n");
+    break;
+  case 'w' :
+    SingleWrite = 1;
+    cout<<SingleWrite<<endl;
+    break;
+  case 'W' :
+    ContinuousWrite ^= 1;
+    if (ContinuousWrite)
+      printf("Continuous writing is enabled\n");
+    else
+      printf("Continuous writing is disabled\n");
+    break;
+  case 's' :
+    if (AcqRun == 0) {
+      Calibrate_DC_Offset();
+	    				
+      printf("Acquisition started\n");
+	    
+      CAEN_DGTZ_SWStartAcquisition(handle);
+	    
+      AcqRun = 1;
+	    
+    } else {
+      printf("Acquisition stopped\n");
+      CAEN_DGTZ_SWStopAcquisition(handle);
+      AcqRun = 0;
+      //Restart = 1;
+    }
+    break;
+  case 'm' :
+  case ' ' :
+    printf("\n                            Bindkey help                                \n");
+    printf("--------------------------------------------------------------------------\n");;
+    printf("  [q]   Quit\n");
+    printf("  [R]   Reload configuration file and restart\n");
+    printf("  [s]   Start/Stop acquisition\n");
+    printf("  [t]   Send a software trigger (single shot)\n");
+    printf("  [T]   Enable/Disable continuous software trigger\n");
+    printf("  [w]   Write one event to output file\n");
+    printf("  [W]   Enable/Disable continuous writing to output file\n");
+    printf("[SPACE] This help\n");
+    printf("--------------------------------------------------------------------------\n");
+    printf("Press a key to continue\n");
+    getch();
+    break;
+  default :   break;
+  }
+}
+
+
+
+CAEN_DGTZ_ErrorCode Digitizer::WriteOutputFiles(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EVENT_t *Event16){
+
+  //CAEN_DGTZ_UINT16_EVENT_t  *Event16 = NULL;
+  cout<<"save file\n";
+  
+  //Event16 = (CAEN_DGTZ_UINT16_EVENT_t *)Event;
+  for (int ch = 0; ch < Nch; ch++) {
+    int Size = Event16->ChSize[ch];
+    if (Size <= 0) {
+      continue;
+    }
+
+    // Check the file format type
+
+    cout<<"ascii\n";
+    // Ascii file format
+    if (!fout[ch]) {
+      char fname[100];
+      sprintf(fname, "wave%d.txt", ch);
+      if ((fout[ch] = fopen(fname, "w")) == NULL)
+	return CAEN_DGTZ_GenericError;
+    }/*
+    fprintf(fout[ch], "Record Length: %d\n", Size);
+    fprintf(fout[ch], "BoardID: %2d\n", EventInfo->BoardId);
+    fprintf(fout[ch], "Channel: %d\n", ch);
+    fprintf(fout[ch], "Event Number: %d\n", EventInfo->EventCounter);
+    fprintf(fout[ch], "Pattern: 0x%04X\n", EventInfo->Pattern & 0xFFFF);
+    fprintf(fout[ch], "Trigger Time Stamp: %u\n", EventInfo->TriggerTimeTag);
+    fprintf(fout[ch], "DC offset (DAC): 0x%04X\n", DCoffset[ch] & 0xFFFF);*/
+    for(int j=0; j<Size; j++) {
+      fprintf(fout[ch], "%d\n", Event16->DataChannel[ch][j]);
+    }
+    if (SingleWrite) {
+      fclose(fout[ch]);
+      fout[ch]= NULL;
+    }
+  }
+  return CAEN_DGTZ_Success;
+}
