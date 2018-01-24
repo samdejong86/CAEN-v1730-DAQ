@@ -14,32 +14,31 @@ using namespace std;
 #ifndef FILEMAN_h
 #define FILEMAN_h
 
+
+
+
 class fileManager{
 
  public:
-  fileManager(){
-    fname="CAEN.root";
-    mask = bitset<8>(0);
-  }
-  fileManager(string filename, uint16_t EnableMask){
-    fname = filename;
-    mask = bitset<8>(EnableMask);
-  }
+  fileManager();
+  fileManager(string filename, uint16_t EnableMask);
 
   void OpenFile();
   void addEvent(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EVENT_t *Event16);
   void CloseFile();
+
+  void setRunStartTime(double rstart){RunStartTime=rstart;}
   
  private:
   
   string fname;
   TFile *f;
   TTree *t;
-
   vector<vector<double> > data;
-  uint32_t TriggerTimeTag;
-
   bitset<8> mask;
+
+  double RunStartTime;
+  double eventTime;
 
 };
 

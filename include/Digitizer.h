@@ -108,6 +108,8 @@ class Digitizer{
 
   fileManager fman;
   string fname;
+
+  double RunStartTime;
   
 };
 

@@ -222,6 +222,9 @@ void Digitizer::Readout(){
     {
       Calibrate_DC_Offset();
       CAEN_DGTZ_SWStartAcquisition(handle);
+      RunStartTime = markTime();
+      cout<<RunStartTime<<endl;
+      fman.setRunStartTime(RunStartTime);
     }
   else
     printf("[s] start/stop the acquisition, [q] quit, [SPACE] help\n");
@@ -788,6 +791,9 @@ void Digitizer::CheckKeyboardCommands(){
       printf("Acquisition started\n");
 	    
       CAEN_DGTZ_SWStartAcquisition(handle);
+      RunStartTime = markTime();
+      cout<<RunStartTime<<endl;
+      fman.setRunStartTime(RunStartTime);
 	    
       AcqRun = 1;
 	    

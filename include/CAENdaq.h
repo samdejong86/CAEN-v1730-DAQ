@@ -57,3 +57,7 @@ typedef enum {
 #define NPOINTS 2
 
 #define NACQS   50
+
+
+//double markTime();
+

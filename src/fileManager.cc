@@ -2,6 +2,20 @@
 #include <sstream>
 #include <stdint.h>
 
+fileManager::fileManager(){
+  fname="CAEN.root";
+  mask = bitset<8>(0);
+  RunStartTime=0;
+}
+
+fileManager::fileManager(string filename, uint16_t EnableMask){
+  fname = filename;
+  mask = bitset<8>(EnableMask);
+  RunStartTime=0;
+}
+
+
+
 void fileManager::OpenFile(){
 
   f = new TFile(fname.c_str(), "RECREATE");  //open TFile
@@ -23,7 +37,7 @@ void fileManager::OpenFile(){
   }
 
   //time is the unix time that the event occured
-  t->Branch("time", &TriggerTimeTag, "time/I");
+  t->Branch("time", &eventTime, "time/D");
 
 }
 
@@ -46,7 +60,9 @@ void fileManager::addEvent(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EV
       data[ch].push_back(Event16->DataChannel[ch][i]);
     }
     
-    TriggerTimeTag = EventInfo->TriggerTimeTag;  
+    //TriggerTimeTag =
+
+    eventTime = (double)EventInfo->TriggerTimeTag/1000+RunStartTime;  
 
 
   }
