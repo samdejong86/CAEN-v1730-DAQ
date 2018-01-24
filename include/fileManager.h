@@ -23,6 +23,9 @@ class fileManager{
   fileManager();
   fileManager(string filename, uint16_t EnableMask);
 
+  ~fileManager(){
+  }
+
   void OpenFile();
   void addEvent(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EVENT_t *Event16);
   void CloseFile();
@@ -39,6 +42,7 @@ class fileManager{
 
   double RunStartTime;
   double eventTime;
+  bool isOpen;
 
 };
 

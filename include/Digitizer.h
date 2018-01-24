@@ -22,24 +22,22 @@ class Digitizer{
   
   Digitizer(XmlParser settings);
 
+  ~Digitizer(){}
 
   void DefaultSettings();
-  void OpenDigitizer();
+  bool OpenDigitizer();
   void Readout();
   void CloseDigitizer();
 
   void CheckKeyboardCommands();
   
   
-  CAEN_DGTZ_ErrorCode ProgramDigitizer();
-  //CAEN_DGTZ_ErrorCode WriteOutputFiles(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EVENT_t *event);
-  
+  CAEN_DGTZ_ErrorCode ProgramDigitizer();  
   CAEN_DGTZ_ErrorCode Calibrate_DC_Offset();
   CAEN_DGTZ_ErrorCode WriteRegisterBitmask(uint32_t address, uint32_t data, uint32_t mask);
   CAEN_DGTZ_ErrorCode SetCorrectThreshold();
 
   void printOn(ostream & out) const;
-
   friend ostream& operator<<(ostream& os, const Digitizer& r);
     
  private:
@@ -110,9 +108,45 @@ class Digitizer{
   string fname;
 
   double RunStartTime;
+
+
+
+  
   
 };
 
+static const string errors[32] = {"Operation completed successfully",
+				  "Communication error",
+				  "Unspecified error",
+				  "Invalid parameter",
+				  "Invalid Link Type",
+				  "Invalid device handler",
+				  "Maximum number of devices exceeded",
+				  "Operation not allowed on this type of board",
+				  "The interrupt level is not allowed",
+				  "The event number is bad",
+				  "Unable to read the registry",
+				  "Unable to write into the registry",
+				  "The Channel is busy",
+				  "The channel number is invalid",
+				  "Invalid FPIO Mode",
+				  "Wrong acquisition mode",
+				  "This function is not allowed for this module",
+				  "Communication Timeout",
+				  "The event is not found",
+				  "The event is invalid",
+				  "Out of memory",
+				  "Unable to calibrate the board",
+				  "Unable to open the digitizer",
+				  "The Digitizer is already open",
+				  "The Digitizer is not ready to operate",
+				  "The Digitizer has not the IRQ configured",
+				  "The digitizer flash memory is corrupted",
+				  "The digitizer DPP firmware is not supported in this lib version",
+				  "Invalid Firmware License",
+				  "The digitizer is found in a corrupted status",
+				  "The given trace is not supported by the digitizer",
+				  "The given probe is not supported for the given digitizer's trace"};
 
 #endif
 

@@ -13,19 +13,7 @@
 #include <CAENDigitizerType.h>
 
 #include "keyb.h"
-#include "fft.h"
-
-/*
-#ifndef OUTFILEFLAGS_e
-#define OUTFILEFLAGS_e
-
-typedef enum {
-	OFF_BINARY= 0x00000001,  // Bit 0: 1 = BINARY, 0 =ASCII
-	OFF_HEADER= 0x00000002,  // Bit 1: 1 = include header, 0 = just samples data
-} OUTFILE_FLAGS;
-
-#endif
-*/
+//#include "fft.h"
 
 
 #define MAXNB   1

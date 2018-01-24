@@ -133,21 +133,13 @@ void Digitizer::DefaultSettings(){
 
 
 
-void Digitizer::OpenDigitizer(){
+bool Digitizer::OpenDigitizer(){
 
-  fman = fileManager(fname, EnableMask);
-
-  fman.OpenFile();
   
   CAEN_DGTZ_ErrorCode ret = CAEN_DGTZ_Success;
-  buffer = NULL;
-  EventPtr = NULL;
   isVMEDevice= 0;
-  nCycles= 0;
-  Event16=NULL; /* generic event struct with 16 bit data (10, 12, 14 and 16 bit digitizers */
-
+  
    
-  int ReloadCfgStatus = 0x7FFFFFFF; // Init to the bigger positive number
      
   /* *************************************************************************************** */
   /* Open the digitizer and read the board information                                       */
@@ -157,13 +149,28 @@ void Digitizer::OpenDigitizer(){
 
   ret = CAEN_DGTZ_OpenDigitizer(LinkType, LinkNum, ConetNode, BaseAddress, &handle);
   if (ret) {
-    cout<<"can't open\n";
-    exit(0);
+    cout<<"Unable to open the digitizer.\n";
+    cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
+    return false;
   }
 
+  
+  int ReloadCfgStatus = 0x7FFFFFFF; // Init to the bigger positive number
+  buffer = NULL;
+  EventPtr = NULL;
+  nCycles= 0;
+  Event16=NULL; /* generic event struct with 16 bit data (10, 12, 14 and 16 bit digitizers */
+
+ 
+  fman = fileManager(fname, EnableMask);
+  fman.OpenFile();
+
+
+  
   ret = CAEN_DGTZ_GetInfo(handle, &BoardInfo);
   if (ret) {
-    exit(0);
+    cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
+    return false;
       
   }
   printf("Connected to CAEN Digitizer Model %s\n", BoardInfo.ModelName);
@@ -174,7 +181,8 @@ void Digitizer::OpenDigitizer(){
   sscanf(BoardInfo.AMC_FirmwareRel, "%d", &MajorNumber);
   if (MajorNumber >= 128) {
     printf("This digitizer has a DPP firmware\n");
-    exit(0);
+    cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
+    return false;
   }
 
 
@@ -185,7 +193,7 @@ void Digitizer::OpenDigitizer(){
   /* *************************************************************************************** */
   ret = ProgramDigitizer();
   if (ret) {
-    exit(0);
+    return false;
   }
 
 
@@ -194,7 +202,8 @@ void Digitizer::OpenDigitizer(){
   if(ReloadCfgStatus > 0) {
     ret = CAEN_DGTZ_GetInfo(handle, &BoardInfo);
     if (ret) {
-      exit(0);
+    cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
+    return false;
     }
       
   }
@@ -203,14 +212,16 @@ void Digitizer::OpenDigitizer(){
   ret = CAEN_DGTZ_AllocateEvent(handle, (void**)&Event16);
 	    
   if (ret != CAEN_DGTZ_Success) {
-    exit(0);
+    cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
+    return false;
   }
   ret = CAEN_DGTZ_MallocReadoutBuffer(handle, &buffer,&AllocatedSize); /* WARNING: This malloc must be done after the digitizer programming */
   if (ret) {
-    exit(0);
+    cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
+    return false;
   }
 
-
+  return true;
   
 }
 
@@ -265,6 +276,7 @@ void Digitizer::Readout(){
       if (ret == CAEN_DGTZ_Timeout)  // No active interrupt requests
 	goto InterruptTimeout;
       if (ret != CAEN_DGTZ_Success)  {
+	cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
 	exit(0);
       }
       // Interrupt Ack
@@ -283,12 +295,14 @@ void Digitizer::Readout(){
     /* Read data from the board */
     ret = CAEN_DGTZ_ReadData(handle, CAEN_DGTZ_SLAVE_TERMINATED_READOUT_MBLT, buffer, &BufferSize);
     if (ret) {
+      cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
       exit(0);
     }
     NEvents = 0;
     if (BufferSize != 0) {
       ret = CAEN_DGTZ_GetNumEvents(handle, buffer, BufferSize, &NEvents);
       if (ret) {
+	cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
 	exit(0);
       }
     }
@@ -297,6 +311,7 @@ void Digitizer::Readout(){
       ret = CAEN_DGTZ_ReadRegister(handle, CAEN_DGTZ_ACQ_STATUS_ADD, &lstatus);
       if (ret) {
 	printf("Warning: Failure reading reg:%x (%d)\n", CAEN_DGTZ_ACQ_STATUS_ADD, ret);
+	cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
       }
       else {
 	if (lstatus & (0x1 << 19)) {
@@ -332,6 +347,7 @@ void Digitizer::Readout(){
       ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, i, &EventInfo, &EventPtr);
       //cout<<ret<<endl;
       if (ret) {
+	cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
 	continue;
 	//exit(0);
       }
@@ -339,7 +355,7 @@ void Digitizer::Readout(){
       ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event16);
 
       if (ret) {
-	cout<<"decode\n";
+	cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
 	exit(0);
       }
 	    
@@ -388,6 +404,7 @@ CAEN_DGTZ_ErrorCode Digitizer::ProgramDigitizer(){
   ret |= CAEN_DGTZ_Reset(handle);
   if (ret != 0) {
     printf("Error: Unable to reset digitizer.\nPlease reset digitizer manually then restart the program\n");
+    cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
     return (CAEN_DGTZ_ErrorCode)ret;
   }
   
@@ -459,8 +476,10 @@ CAEN_DGTZ_ErrorCode Digitizer::ProgramDigitizer(){
     ret |= WriteRegisterBitmask(GWaddr[i], GWdata[i], GWmask[i]);
 	
   }
-  if (ret)
+  if (ret){
     printf("Warning: errors found during the programming of the digitizer.\nSome settings may not be executed\n");
+    cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
+  }
 
   return CAEN_DGTZ_Success;
 }
@@ -472,6 +491,7 @@ CAEN_DGTZ_ErrorCode Digitizer::WriteRegisterBitmask(uint32_t address, uint32_t d
 
   ret = CAEN_DGTZ_ReadRegister(handle, address, &d32);
   if(ret != CAEN_DGTZ_Success)
+    cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
     return (CAEN_DGTZ_ErrorCode)ret;
 
   data &= mask;
@@ -508,7 +528,7 @@ CAEN_DGTZ_ErrorCode Digitizer::Calibrate_DC_Offset(){
     printf("Error trying to read acq mode!!\n");
   ret = CAEN_DGTZ_SetAcquisitionMode(handle, CAEN_DGTZ_SW_CONTROLLED);
   if (ret)
-    printf("Error trying to set acq mode!!\n");
+  cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
   ret = CAEN_DGTZ_SetExtTriggerInputMode(handle, CAEN_DGTZ_TRGMODE_DISABLED);
   if (ret)
     printf("Error trying to set ext trigger!!\n");
@@ -518,17 +538,21 @@ CAEN_DGTZ_ErrorCode Digitizer::Calibrate_DC_Offset(){
   ///malloc
   ret = CAEN_DGTZ_MallocReadoutBuffer(handle, &buffer, &AllocatedSize);
   if (ret) {
-      return ret;
+    cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
+    return ret;
   }
 
   ret = CAEN_DGTZ_AllocateEvent(handle, (void**)&Event16);		
   if (ret != CAEN_DGTZ_Success) {
+    cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
+  
   }
 
   ret = CAEN_DGTZ_SWStartAcquisition(handle);
   if (ret)
     {
       printf("Warning: error starting acq\n");
+      cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
       return ret;
     }
 
@@ -561,17 +585,20 @@ CAEN_DGTZ_ErrorCode Digitizer::Calibrate_DC_Offset(){
 			    
 	    ret = CAEN_DGTZ_ReadData(handle, CAEN_DGTZ_SLAVE_TERMINATED_READOUT_MBLT, buffer, &BufferSize);
 	    if (ret) {
+	      cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
 	      exit(0);
 	    }
 			    
 	    ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, 0, &EventInfo, &EventPtr);
 	    if (ret) {
+	      cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
 	      return ret;
 	    }
 	    // decode the event //
 	    ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event16);
 			    
 	    if (ret) {
+	      cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
 	      return ret;
 	    }
 			    
@@ -692,17 +719,20 @@ CAEN_DGTZ_ErrorCode Digitizer::SetCorrectThreshold(){
 	      
 	      ret = CAEN_DGTZ_ReadData(handle, CAEN_DGTZ_SLAVE_TERMINATED_READOUT_MBLT, buffer, &BufferSize);
 	      if (ret) {
+		cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
 		exit(0);
 	      }
 	      
 	      ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, 0, &EventInfo, &EventPtr);
 	      if (ret) {
+		cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
 		return ret;
 	      }
 	      // decode the event //
 	      ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event16);
 	      
 	      if (ret) {
+		cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
 		return ret;
 	      }
 	      
@@ -823,49 +853,6 @@ void Digitizer::CheckKeyboardCommands(){
   default :   break;
   }
 }
-
-
-/*
-CAEN_DGTZ_ErrorCode Digitizer::WriteOutputFiles(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EVENT_t *Event16){
-
-  //CAEN_DGTZ_UINT16_EVENT_t  *Event16 = NULL;
-  //cout<<"save file\n";
-  
-  //Event16 = (CAEN_DGTZ_UINT16_EVENT_t *)Event;
-  for (int ch = 0; ch < Nch; ch++) {
-    cout<<ch<<endl;
-    int Size = Event16->ChSize[ch];
-    if (Size <= 0) {
-      continue;
-    }
-
-    // Check the file format type
-
-    cout<<"ascii\n";
-    // Ascii file format
-    if (!fout[ch]) {
-      char fname[100];
-      sprintf(fname, "wave%d.txt", ch);
-      if ((fout[ch] = fopen(fname, "w")) == NULL)
-	return CAEN_DGTZ_GenericError;
-    }
-    fprintf(fout[ch], "Record Length: %d\n", Size);
-    fprintf(fout[ch], "BoardID: %2d\n", EventInfo->BoardId);
-    fprintf(fout[ch], "Channel: %d\n", ch);
-    fprintf(fout[ch], "Event Number: %d\n", EventInfo->EventCounter);
-    fprintf(fout[ch], "Pattern: 0x%04X\n", EventInfo->Pattern & 0xFFFF);
-    fprintf(fout[ch], "Trigger Time Stamp: %u\n", EventInfo->TriggerTimeTag);
-    fprintf(fout[ch], "DC offset (DAC): 0x%04X\n", DCoffset[ch] & 0xFFFF);
-    for(int j=0; j<Size; j++) {
-      fprintf(fout[ch], "%d\n", Event16->DataChannel[ch][j]);
-    }
-    if (SingleWrite) {
-      fclose(fout[ch]);
-      fout[ch]= NULL;
-    }
-  }
-  return CAEN_DGTZ_Success;
-}*/
 
 
 void Digitizer::printOn(ostream & out) const{
