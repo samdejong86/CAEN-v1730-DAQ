@@ -20,8 +20,8 @@ Digitizer::Digitizer(XmlParser settings){
     PostTrigger = (int)settings.getValue("PostTrigger");
   }
 
-  if(settings.fieldExists("filename")){
-    fname=settings.getStringValue("filename");
+  if(settings.fieldExists("outfilename")){
+    fname=settings.getStringValue("outfilename");
   }
 
   uint16_t tempEnableMask=0;

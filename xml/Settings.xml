@@ -1,8 +1,8 @@
 <xml>
   <Active>
-    <filename>
+    <outfilename>
       output.root
-    </filename>
+    </outfilename>
     <RecordLength>
       1024
     </RecordLength>
@@ -15,9 +15,6 @@
     <ch0>
       1
     </ch0>
-    <ch1>
-      0
-    </ch1>
     <ch1>
       0
     </ch1>
@@ -42,11 +39,74 @@
     <PulsePolarity0>
       POSITIVE
     </PulsePolarity0>
+    <PulsePolarity1>
+      POSITIVE
+    </PulsePolarity1>
+    <PulsePolarity2>
+      POSITIVE
+    </PulsePolarity2>
+    <PulsePolarity3>
+      POSITIVE
+    </PulsePolarity3>
+    <PulsePolarity4>
+      POSITIVE
+    </PulsePolarity4>
+    <PulsePolarity5>
+      POSITIVE
+    </PulsePolarity5>
+    <PulsePolarity6>
+      POSITIVE
+    </PulsePolarity6>
+    <PulsePolarity7>
+      POSITIVE
+    </PulsePolarity7>
     <DCoffset0>
       32767
     </DCoffset0>
+    <DCoffset1>
+      32767
+    </DCoffset1>
+    <DCoffset2>
+      32767
+    </DCoffset2>
+    <DCoffset3>
+      32767
+    </DCoffset3>
+    <DCoffset4>
+      32767
+    </DCoffset4>
+    <DCoffset5>
+      32767
+    </DCoffset5>
+    <DCoffset6>
+      32767
+    </DCoffset6>
+    <DCoffset7>
+      32767
+    </DCoffset7>
     <TriggerThreshold0>
       100
-    </TriggerThreshold0>   
+    </TriggerThreshold0>  
+    <TriggerThreshold1>
+      100
+    </TriggerThreshold1>   
+    <TriggerThreshold2>
+      100
+    </TriggerThreshold2>  
+    <TriggerThreshold3>
+      100
+    </TriggerThreshold3>  
+    <TriggerThreshold4>
+      100
+    </TriggerThreshold4>  
+    <TriggerThreshold5>
+      100
+    </TriggerThreshold5>  
+    <TriggerThreshold6>
+      100
+    </TriggerThreshold6>  
+    <TriggerThreshold7>
+      100
+    </TriggerThreshold7>  
   </Active>
 </xml>
