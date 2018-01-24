@@ -14,15 +14,14 @@ Digitizer::Digitizer(XmlParser settings){
 
   if(settings.fieldExists("BaseAddress")){
     BaseAddress = (int)settings.getValue("BaseAddress");
-  }
-  
+  }  
   
   if(settings.fieldExists("PostTrigger")){
     PostTrigger = (int)settings.getValue("PostTrigger");
   }
 
   if(settings.fieldExists("filename")){
-    fname=setting.getStringValue("filename");
+    fname=settings.getStringValue("filename");
   }
 
   uint16_t tempEnableMask=0;
@@ -864,6 +863,8 @@ CAEN_DGTZ_ErrorCode Digitizer::WriteOutputFiles(CAEN_DGTZ_EventInfo_t *EventInfo
 
 
 void Digitizer::printOn(ostream & out) const{
+  out<<"filename \t"<<fname<<endl;
+
   out<<"Digitizer Settings:"<<endl;
   if(LinkType==CAEN_DGTZ_USB)
     out<<"LinkType:\tUSB"<<endl;

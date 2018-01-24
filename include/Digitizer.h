@@ -32,7 +32,7 @@ class Digitizer{
   
   
   CAEN_DGTZ_ErrorCode ProgramDigitizer();
-  CAEN_DGTZ_ErrorCode WriteOutputFiles(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EVENT_t *event);
+  //CAEN_DGTZ_ErrorCode WriteOutputFiles(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EVENT_t *event);
   
   CAEN_DGTZ_ErrorCode Calibrate_DC_Offset();
   CAEN_DGTZ_ErrorCode WriteRegisterBitmask(uint32_t address, uint32_t data, uint32_t mask);
@@ -107,7 +107,7 @@ class Digitizer{
   char *EventPtr;
 
   fileManager fman;
-  
+  string fname;
   
 };
 

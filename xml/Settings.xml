@@ -1,5 +1,8 @@
 <xml>
   <Active>
+    <filename>
+      output.root
+    </filename>
     <RecordLength>
       1024
     </RecordLength>
