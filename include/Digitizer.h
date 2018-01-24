@@ -3,6 +3,7 @@
 
 #include "CAENdaq.h"
 #include "xmlParser.h"
+#include "fileManager.h"
 
 using namespace std;
 
@@ -75,10 +76,6 @@ class Digitizer{
   uint32_t GWdata[MAX_GW];
   uint32_t GWmask[MAX_GW];
   
-
-  
-
-
   //from WDrun:
   int Quit;
   int AcqRun;
@@ -90,14 +87,10 @@ class Digitizer{
   int RunHisto;
   FILE *fout[MAX_CH];
 
-
-  
   int cal_ok[MAX_CH];
   int dc_file[MAX_CH];
   int thr_file[MAX_CH];
 
-
-  
   uint64_t CurrentTime, PrevRateTime, ElapsedTime;
   uint32_t AllocatedSize, BufferSize, NEvents;
   int isVMEDevice, MajorNumber;
@@ -112,6 +105,8 @@ class Digitizer{
   int Ne=0;
   char *buffer;
   char *EventPtr;
+
+  fileManager fman;
   
   
 };

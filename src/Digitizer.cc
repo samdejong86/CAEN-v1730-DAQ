@@ -21,6 +21,10 @@ Digitizer::Digitizer(XmlParser settings){
     PostTrigger = (int)settings.getValue("PostTrigger");
   }
 
+  if(settings.fieldExists("filename")){
+    fname=setting.getStringValue("filename");
+  }
+
   uint16_t tempEnableMask=0;
   stringstream ss;
   for(int i=0; i<MAX_SET; i++){
@@ -120,6 +124,8 @@ void Digitizer::DefaultSettings(){
     dc_file[i]=50;
     thr_file[i]=100;
   }
+
+  fname="CAEN.root";
   
     
 }
@@ -130,6 +136,10 @@ void Digitizer::DefaultSettings(){
 
 void Digitizer::OpenDigitizer(){
 
+  fman = fileManager(fname, EnableMask);
+
+  fman.OpenFile();
+  
   CAEN_DGTZ_ErrorCode ret = CAEN_DGTZ_Success;
   buffer = NULL;
   EventPtr = NULL;
@@ -332,12 +342,8 @@ void Digitizer::Readout(){
       }
 	    
       /* Write Event data to file */
-      if (SingleWrite) {
-	// Note: use a thread here to allow parallel readout and file writing
-	ret = WriteOutputFiles(&EventInfo, Event16);
-	if (ret) {
-	  exit(0);
-	}
+      if (SingleWrite||ContinuousWrite) {
+	fman.addEvent(&EventInfo, Event16);
 	if (SingleWrite==1) {
 	  printf("Single Event saved to output files\n");
 	  SingleWrite = 0;
@@ -366,6 +372,8 @@ void Digitizer::CloseDigitizer(){
   CAEN_DGTZ_FreeReadoutBuffer(&buffer);
   CAEN_DGTZ_CloseDigitizer(handle);
 
+  fman.CloseFile();
+  
 }
 
 
@@ -766,7 +774,6 @@ void Digitizer::CheckKeyboardCommands(){
     break;
   case 'w' :
     SingleWrite = 1;
-    cout<<SingleWrite<<endl;
     break;
   case 'W' :
     ContinuousWrite ^= 1;
@@ -813,14 +820,15 @@ void Digitizer::CheckKeyboardCommands(){
 }
 
 
-
+/*
 CAEN_DGTZ_ErrorCode Digitizer::WriteOutputFiles(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EVENT_t *Event16){
 
   //CAEN_DGTZ_UINT16_EVENT_t  *Event16 = NULL;
-  cout<<"save file\n";
+  //cout<<"save file\n";
   
   //Event16 = (CAEN_DGTZ_UINT16_EVENT_t *)Event;
   for (int ch = 0; ch < Nch; ch++) {
+    cout<<ch<<endl;
     int Size = Event16->ChSize[ch];
     if (Size <= 0) {
       continue;
@@ -835,14 +843,14 @@ CAEN_DGTZ_ErrorCode Digitizer::WriteOutputFiles(CAEN_DGTZ_EventInfo_t *EventInfo
       sprintf(fname, "wave%d.txt", ch);
       if ((fout[ch] = fopen(fname, "w")) == NULL)
 	return CAEN_DGTZ_GenericError;
-    }/*
+    }
     fprintf(fout[ch], "Record Length: %d\n", Size);
     fprintf(fout[ch], "BoardID: %2d\n", EventInfo->BoardId);
     fprintf(fout[ch], "Channel: %d\n", ch);
     fprintf(fout[ch], "Event Number: %d\n", EventInfo->EventCounter);
     fprintf(fout[ch], "Pattern: 0x%04X\n", EventInfo->Pattern & 0xFFFF);
     fprintf(fout[ch], "Trigger Time Stamp: %u\n", EventInfo->TriggerTimeTag);
-    fprintf(fout[ch], "DC offset (DAC): 0x%04X\n", DCoffset[ch] & 0xFFFF);*/
+    fprintf(fout[ch], "DC offset (DAC): 0x%04X\n", DCoffset[ch] & 0xFFFF);
     for(int j=0; j<Size; j++) {
       fprintf(fout[ch], "%d\n", Event16->DataChannel[ch][j]);
     }
@@ -852,7 +860,7 @@ CAEN_DGTZ_ErrorCode Digitizer::WriteOutputFiles(CAEN_DGTZ_EventInfo_t *EventInfo
     }
   }
   return CAEN_DGTZ_Success;
-}
+}*/
 
 
 void Digitizer::printOn(ostream & out) const{
