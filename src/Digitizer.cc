@@ -149,7 +149,6 @@ bool Digitizer::OpenDigitizer(){
 
   ret = CAEN_DGTZ_OpenDigitizer(LinkType, LinkNum, ConetNode, BaseAddress, &handle);
   if (ret) {
-    cout<<"Unable to open the digitizer.\n";
     cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
     return false;
   }
