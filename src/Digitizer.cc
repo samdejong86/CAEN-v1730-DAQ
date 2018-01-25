@@ -74,6 +74,14 @@ Digitizer::Digitizer(XmlParser settings){
 	PulsePolarity[i]=CAEN_DGTZ_PulsePolarityNegative;    
     }
     
+    if(settings.fieldExists("trslope"+num)){
+      if(settings.getStringValue("trslope"+num).compare("POSITIVE")==0)
+	TrigPolarity[i]=CAEN_DGTZ_TriggerOnRisingEdge;
+      else
+	TrigPolarity[i]=CAEN_DGTZ_TriggerOnFallingEdge;    
+    }
+    
+    
     if(settings.fieldExists("DCoffset"+num))
       DCoffset[i] = (uint32_t)settings.getValue("DCoffset"+num);
 
@@ -116,10 +124,12 @@ void Digitizer::DefaultSettings(){
   DCoffset[0]=32767;
   Threshold[0]=100;
   Version_used[0]=1;
+  TrigPolarity[0]=CAEN_DGTZ_TriggerOnRisingEdge;
 
   for(int i=1; i<MAX_SET; i++){
     ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_DISABLED;
     PulsePolarity[i]=CAEN_DGTZ_PulsePolarityPositive;
+    TrigPolarity[i]=CAEN_DGTZ_TriggerOnRisingEdge;
     DCoffset[i]=0;
     Threshold[i]=0;
     Version_used[i]=0;
@@ -514,7 +524,7 @@ CAEN_DGTZ_ErrorCode Digitizer::ProgramDigitizer(){
     if (EnableMask & (1<<i)) {
       ret |= CAEN_DGTZ_SetChannelDCOffset(handle, i, DCoffset[i]);
       ret |= CAEN_DGTZ_SetChannelTriggerThreshold(handle, i, Threshold[i]);
-      ret |= CAEN_DGTZ_SetTriggerPolarity(handle, i, (CAEN_DGTZ_TriggerPolarity_t)PulsePolarity[i]); //.TriggerEdge
+      ret |= CAEN_DGTZ_SetTriggerPolarity(handle, i, TrigPolarity[i]); //.TriggerEdge
     }
   }
     
@@ -985,7 +995,7 @@ void Digitizer::printOn(ostream & out) const{
       continue;
     }
     out<<endl;
-    out<<"\tTriggerMode:\t";
+    out<<"\tTriggerMode:\t ";
     if(ChannelTriggerMode[i]==CAEN_DGTZ_TRGMODE_DISABLED)
       out<<"Disabled\n";
     else if(ChannelTriggerMode[i]==CAEN_DGTZ_TRGMODE_EXTOUT_ONLY)
@@ -995,14 +1005,20 @@ void Digitizer::printOn(ostream & out) const{
     else if(ChannelTriggerMode[i]==CAEN_DGTZ_TRGMODE_ACQ_AND_EXTOUT)
       out<<"Acq and Extout\n";
 
-    out<<"\tPulsePolarity\t";
+    out<<"\tPulsePolarity\t ";
     if(PulsePolarity[i]==CAEN_DGTZ_PulsePolarityPositive)
       out<<"Positive\n";
     else if(PulsePolarity[i]==CAEN_DGTZ_PulsePolarityNegative)
       out<<"Negative\n";
 
-    out<<"\tDCoffset \t"<<DCoffset[i]<<endl;
-    out<<"\tThreshold \t"<<Threshold[i]<<endl;
+    out<<"\tTrigger Polarity ";
+    if(TrigPolarity[i]==CAEN_DGTZ_TriggerOnRisingEdge)
+      out<<"Positive\n";
+    else if(TrigPolarity[i]==CAEN_DGTZ_TriggerOnFallingEdge)
+      out<<"Negative\n";
+
+    out<<"\tDCoffset \t "<<DCoffset[i]<<endl;
+    out<<"\tThreshold \t "<<Threshold[i]<<endl;
 
   }
 

@@ -41,7 +41,7 @@ XmlParser getOpt(int argc, char *argv[]){
       {"DCoffset5",     required_argument, 0, 'F'},     
       {"DCoffset6",     required_argument, 0, 'G'},     
       {"DCoffset7",     required_argument, 0, 'H'},
-      {"threshold0",    required_argument, 0, 'I'},     //Trigger threshold
+      {"threshold0",    required_argument, 0, 'I'},     // Trigger threshold
       {"threshold1",    required_argument, 0, 'J'},      
       {"threshold2",    required_argument, 0, 'K'},      
       {"threshold3",    required_argument, 0, 'L'},      
@@ -49,10 +49,18 @@ XmlParser getOpt(int argc, char *argv[]){
       {"threshold5",    required_argument, 0, 'N'},      
       {"threshold6",    required_argument, 0, 'O'},      
       {"threshold7",    required_argument, 0, 'P'},
-      {"posttrigger",   required_argument, 0, 'Q'},
-      {"duration",      required_argument, 0, 'd'},
-      {"xmlout",        required_argument, 0, 's'},
-      {"quit",          no_argument, 0, 'q'},
+      {"posttrigger",   required_argument, 0, 'Q'},     // post trigger
+      {"duration",      required_argument, 0, 'd'},     // duration
+      {"xmlout",        required_argument, 0, 's'},     // xml output file
+      {"quit",          no_argument,       0, 'q'},     // quit after saving xml
+      {"trslope0",      required_argument, 0, 'R'},     // trigger slope
+      {"trslope1",      required_argument, 0, 'S'},
+      {"trslope2",      required_argument, 0, 'T'},
+      {"trslope3",      required_argument, 0, 'U'},
+      {"trslope4",      required_argument, 0, 'V'},
+      {"trslope5",      required_argument, 0, 'W'},
+      {"trslope6",      required_argument, 0, 'X'},
+      {"trslope7",      required_argument, 0, 'Y'},
       
       {0, 0, 0, 0}
     };
@@ -331,7 +339,87 @@ XmlParser getOpt(int argc, char *argv[]){
 	cout<<"Invalid post trigger setting. Must be numerical\n";
 	exit(0);
       }      
-      break;      
+      break;
+    case 'R':
+      if(strcmp (optarg,"POSITIVE")== 0){
+	settings.addValue("trslope0", "POSITIVE");
+      }else if(strcmp (optarg,"NEGATIVE")== 0){
+	settings.addValue("trslope0", "NEGATIVE");
+      } else{
+	cout<<"Incorrect trigger polarity for channel 0. Valid options are POSITIVE or NEGATIVE\n";
+	exit(0);
+      }      
+      break;   
+    case 'S':
+      if(strcmp (optarg,"POSITIVE")== 0){
+	settings.addValue("trslope1", "POSITIVE");
+      }else if(strcmp (optarg,"NEGATIVE")== 0){
+	settings.addValue("trslope1", "NEGATIVE");
+      } else{
+	cout<<"Incorrect trigger polarity for channel 1. Valid options are POSITIVE or NEGATIVE\n";
+	exit(0);
+      }      
+      break;  
+    case 'T':
+      if(strcmp (optarg,"POSITIVE")== 0){
+	settings.addValue("trslope2", "POSITIVE");
+      }else if(strcmp (optarg,"NEGATIVE")== 0){
+	settings.addValue("trslope2", "NEGATIVE");
+      } else{
+	cout<<"Incorrect trigger polarity for channel 2. Valid options are POSITIVE or NEGATIVE\n";
+	exit(0);
+      }      
+      break;  
+    case 'U':
+      if(strcmp (optarg,"POSITIVE")== 0){
+	settings.addValue("trslope3", "POSITIVE");
+      }else if(strcmp (optarg,"NEGATIVE")== 0){
+	settings.addValue("trslope3", "NEGATIVE");
+      } else{
+	cout<<"Incorrect trigger polarity for channel 3. Valid options are POSITIVE or NEGATIVE\n";
+	exit(0);
+      }      
+      break;  
+    case 'V':
+      if(strcmp (optarg,"POSITIVE")== 0){
+	settings.addValue("trslope4", "POSITIVE");
+      }else if(strcmp (optarg,"NEGATIVE")== 0){
+	settings.addValue("trslope4", "NEGATIVE");
+      } else{
+	cout<<"Incorrect trigger polarity for channel 4. Valid options are POSITIVE or NEGATIVE\n";
+	exit(0);
+      }      
+      break;  
+    case 'W':
+      if(strcmp (optarg,"POSITIVE")== 0){
+	settings.addValue("trslope5", "POSITIVE");
+      }else if(strcmp (optarg,"NEGATIVE")== 0){
+	settings.addValue("trslope5", "NEGATIVE");
+      } else{
+	cout<<"Incorrect trigger polarity for channel 5. Valid options are POSITIVE or NEGATIVE\n";
+	exit(0);
+      }      
+      break;  
+    case 'X':
+      if(strcmp (optarg,"POSITIVE")== 0){
+	settings.addValue("trslope6", "POSITIVE");
+      }else if(strcmp (optarg,"NEGATIVE")== 0){
+	settings.addValue("trslope6", "NEGATIVE");
+      } else{
+	cout<<"Incorrect trigger polarity for channel 6. Valid options are POSITIVE or NEGATIVE\n";
+	exit(0);
+      }      
+      break;  
+    case 'Y':
+      if(strcmp (optarg,"POSITIVE")== 0){
+	settings.addValue("trslope7", "POSITIVE");
+      }else if(strcmp (optarg,"NEGATIVE")== 0){
+	settings.addValue("trslope7", "NEGATIVE");
+      } else{
+	cout<<"Incorrect trigger polarity for channel 7. Valid options are POSITIVE or NEGATIVE\n";
+	exit(0);
+      }      
+      break;   
 
       
     }

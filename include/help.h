@@ -27,6 +27,7 @@ void printHelp(string progName){
   cout<<"  --DCoffset<CH> OFFSET      Set DC offset of channel CH in ADC counts\n";
   cout<<"  --threshold<CH> THRESHOLD  Set the trigger threshold of channel CH\n";
   cout<<"                             in ADC counts\n";
+  cout<<"  --trslope<CH> POLARITY     Trigger slope. Can be POSITIVE or NEGATIVE\n";
   cout<<"  --posttrigger VAL          Set the post trigger\n";
   cout<<"  -x XMLFILE, --xml XMLFILE  Use settings in XMLFILE. This\n";
   cout<<"                             overrides other command line settings\n";
