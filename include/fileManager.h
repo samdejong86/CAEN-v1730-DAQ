@@ -15,6 +15,7 @@ using namespace std;
 #define FILEMAN_h
 
 
+const double rolloverAdd=21.4748;
 
 
 class fileManager{
@@ -30,7 +31,10 @@ class fileManager{
   void addEvent(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EVENT_t *Event16);
   void CloseFile();
 
-  void setRunStartTime(double rstart){RunStartTime=rstart;}
+  void setRunStartTime(double rstart){
+    RunStartTime=rstart;
+    nRollover=0;
+  }
   
  private:
   
@@ -43,6 +47,10 @@ class fileManager{
   double RunStartTime;
   double eventTime;
   bool isOpen;
+
+  uint32_t lastTrigTime;
+  int nRollover;
+
 
 };
 

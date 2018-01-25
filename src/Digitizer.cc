@@ -11,7 +11,6 @@ Digitizer::Digitizer(XmlParser settings){
   if(settings.fieldExists("duration")){
     string d = settings.getStringValue("duration");
     if(d.find(":")!= std::string::npos){
-      cout<<"duration is time\n";
       timeLimit=true;
       char token=':';
       vector<string> parts = split(d.c_str(), token);
@@ -20,7 +19,6 @@ Digitizer::Digitizer(XmlParser settings){
       startImmed=true;
 
     } else{
-      cout<<"duration is number of events\n";
       eventLimit=true;
       numOfEvents=(int)settings.getValue("duration");
       startImmed=true;
@@ -451,8 +449,6 @@ void Digitizer::CloseDigitizer(){
   } else
     return;
   
-  cout<<"subMessage\n";
-
   char *cd;
   cd = getenv("PWD");
   string pwd = cd;  
@@ -931,7 +927,6 @@ void Digitizer::startAcq(){
   
   CAEN_DGTZ_SWStartAcquisition(handle);
   RunStartTime = markTime();
-  cout<<RunStartTime<<endl;
   fman.setRunStartTime(RunStartTime);
   
   AcqRun = 1;

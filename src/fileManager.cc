@@ -7,6 +7,8 @@ fileManager::fileManager(){
   mask = bitset<8>(0);
   RunStartTime=0;
   isOpen=false;
+  lastTrigTime=0;
+  nRollover=0;
 }
 
 fileManager::fileManager(string filename, uint16_t EnableMask){
@@ -14,6 +16,8 @@ fileManager::fileManager(string filename, uint16_t EnableMask){
   mask = bitset<8>(EnableMask);
   RunStartTime=0;
   isOpen=false;
+  lastTrigTime=0;
+  nRollover=0;
 }
 
 
@@ -71,8 +75,16 @@ void fileManager::addEvent(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EV
     
     //TriggerTimeTag =
 
-    eventTime = (double)EventInfo->TriggerTimeTag/1000+RunStartTime;  
+    eventTime = (double)EventInfo->TriggerTimeTag/1.0e8+RunStartTime+nRollover*rolloverAdd;  
 
+    if(EventInfo->TriggerTimeTag<lastTrigTime){
+      nRollover++;
+      lastTrigTime=0;
+      
+    }else
+      lastTrigTime=EventInfo->TriggerTimeTag;
+  
+    
 
   }
 
