@@ -436,6 +436,36 @@ void Digitizer::CloseDigitizer(){
   CAEN_DGTZ_CloseDigitizer(handle);
 
   fman.CloseFile();
+
+
+#ifdef NOTIFY
+
+  stringstream ss;
+  string subMessage="";
+  if(eventLimit){
+    ss<<numOfEvents;
+    subMessage="\"Finished measureing "+ss.str()+" events\"";    
+  }else if(timeLimit){
+    ss<<DurationOfRun;
+    subMessage="\"Finshed "+ss.str()+" second run\"";
+  } else
+    return;
+  
+  cout<<"subMessage\n";
+
+  char *cd;
+  cd = getenv("PWD");
+  string pwd = cd;  
+  string icon = pwd+"/icon/CAEN.png";
+
+  string command = "notify-send "+subMessage+" -i "+icon;
+  int a = system(command.c_str());
+  if(a){
+    cout<<"Something went wrong. "<<a<<endl;
+  }
+
+#endif
+  
   
 }
 

@@ -13,6 +13,7 @@ CPPFLAGS += -Iinclude
 CPPFLAGS +=  -Wall -O2 $(ROOTCFLAGS)
 CPPFLAGS += -lCAENDigitizer
 CPPFLAGS += -DLINUX
+CPPFLAGS += -DNOTIFY
 
 CFLAGS += -Wall
 LDFLAGS += -Llib
