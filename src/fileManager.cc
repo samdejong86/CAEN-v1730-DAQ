@@ -44,6 +44,9 @@ void fileManager::OpenFile(){
 
   //time is the unix time that the event occured
   t->Branch("time", &eventTime, "time/D");
+  t->Branch("xinc", &xinc, "xinc/D");
+
+  xinc=2e-9;
 
   isOpen=true;
   
@@ -73,10 +76,10 @@ void fileManager::addEvent(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EV
       data[ch].push_back(Event16->DataChannel[ch][i]);
     }
     
-    //TriggerTimeTag =
 
-    eventTime = (double)EventInfo->TriggerTimeTag*1.0e-8+RunStartTime+nRollover*rolloverAdd;  
+    eventTime = (double)EventInfo->TriggerTimeTag*1.0e-8+RunStartTime+nRollover*rolloverAdd; 
 
+    
     if(EventInfo->TriggerTimeTag<lastTrigTime){
       nRollover++;
       lastTrigTime=0;

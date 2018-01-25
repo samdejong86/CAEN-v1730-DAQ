@@ -50,7 +50,8 @@ class fileManager{
 
   uint32_t lastTrigTime;
   int nRollover;
-
+  
+  double xinc;
 
 };
 

@@ -109,6 +109,7 @@ class Digitizer{
   string fname;
 
   double RunStartTime;
+  double nowTime;
 
   bool eventLimit;
   bool timeLimit;

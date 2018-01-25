@@ -153,6 +153,7 @@ void Digitizer::DefaultSettings(){
   timeLimit=false;
   numOfEvents=-1;
   DurationOfRun=-1;
+  nowTime=0;
 
   startImmed=false;
   
@@ -283,14 +284,7 @@ void Digitizer::Readout(){
     // Check for keyboard commands (key pressed)
     //if(!eventLimit&&!timeLimit)
     CheckKeyboardCommands();
-    CurrentTime=markTime();
-    if(timeLimit&&CurrentTime-RunStartTime>DurationOfRun)
-      Quit=true;
-
-    if(eventLimit&&nevent>numOfEvents)
-      Quit=true;
-
-    //cout<<nevent<<endl;
+   //cout<<nevent<<endl;
     
 	
     if (AcqRun == 0)
@@ -376,7 +370,7 @@ void Digitizer::Readout(){
       if (Nb == 0)
 	if (ret == CAEN_DGTZ_Timeout) printf ("Timeout...\n"); else printf("No data...\n");
       else
-	printf("Reading at %.2f MB/s (Trg Rate: %.2f Hz)\n", (float)Nb/((float)ElapsedTime*1048.576f), (float)Ne*1000.0f/(float)ElapsedTime);
+	printf("Reading at %.2f MB/s (Trg Rate: %.2f Hz, %d events)\n", (float)Nb/((float)ElapsedTime*1048.576f), (float)Ne*1000.0f/(float)ElapsedTime, NEvents);
       nCycles= 0;
       Nb = 0;
       Ne = 0;
@@ -412,6 +406,18 @@ void Digitizer::Readout(){
       }
 
     }
+    nowTime=markTime();
+    if(timeLimit&&nowTime-RunStartTime>=DurationOfRun){
+      Quit=true;
+      cout<<"end: "<<nowTime<<endl;
+      break;
+    }
+
+    if(eventLimit&&nevent>=numOfEvents)
+      Quit=true;
+
+   
+    
   }
 
 }
@@ -485,8 +491,7 @@ CAEN_DGTZ_ErrorCode Digitizer::ProgramDigitizer(){
     
   ret |= CAEN_DGTZ_SetRecordLength(handle, RecordLength);
   ret |= CAEN_DGTZ_GetRecordLength(handle, &RecordLength);
-  
-
+    
   ret |= CAEN_DGTZ_SetPostTriggerSize(handle, PostTrigger);
     
   ret |= CAEN_DGTZ_SetIOLevel(handle, FPIOtype);
@@ -927,6 +932,8 @@ void Digitizer::startAcq(){
   
   CAEN_DGTZ_SWStartAcquisition(handle);
   RunStartTime = markTime();
+  cout.precision(15);
+  cout<<"runstart "<<RunStartTime<<endl;
   fman.setRunStartTime(RunStartTime);
   
   AcqRun = 1;
