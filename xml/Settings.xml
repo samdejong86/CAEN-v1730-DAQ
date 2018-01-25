@@ -1,17 +1,20 @@
 <xml>
   <Active>
-    <outfilename>
+    <duration>
+      100
+    </duration>
+    <outfile>
       output.root
-    </outfilename>
-    <RecordLength>
+    </outfile>
+    <reclen>
       1024
-    </RecordLength>
-    <BaseAddress>
+    </reclen>
+    <baseaddress>
       0x32200000
-    </BaseAddress>
-    <PostTrigger>
+    </baseaddress>
+    <posttrigger>
       50
-    </PostTrigger>
+    </posttrigger>
     <ch0>
       1
     </ch0>
@@ -36,30 +39,30 @@
     <ch7>
       0
     </ch7>
-    <PulsePolarity0>
+    <polarity0>
       POSITIVE
-    </PulsePolarity0>
-    <PulsePolarity1>
+    </polarity0>
+    <polarity1>
       POSITIVE
-    </PulsePolarity1>
-    <PulsePolarity2>
+    </polarity1>
+    <polarity2>
       POSITIVE
-    </PulsePolarity2>
-    <PulsePolarity3>
+    </polarity2>
+    <polarity3>
       POSITIVE
-    </PulsePolarity3>
-    <PulsePolarity4>
+    </polarity3>
+    <polarity4>
       POSITIVE
-    </PulsePolarity4>
-    <PulsePolarity5>
+    </polarity4>
+    <polarity5>
       POSITIVE
-    </PulsePolarity5>
-    <PulsePolarity6>
+    </polarity5>
+    <polarity6>
       POSITIVE
-    </PulsePolarity6>
-    <PulsePolarity7>
+    </polarity6>
+    <polarity7>
       POSITIVE
-    </PulsePolarity7>
+    </polarity7>
     <DCoffset0>
       32767
     </DCoffset0>
@@ -84,29 +87,29 @@
     <DCoffset7>
       32767
     </DCoffset7>
-    <TriggerThreshold0>
+    <threshold0>
       100
-    </TriggerThreshold0>  
-    <TriggerThreshold1>
+    </threshold0>  
+    <threshold1>
       100
-    </TriggerThreshold1>   
-    <TriggerThreshold2>
+    </threshold1>   
+    <threshold2>
       100
-    </TriggerThreshold2>  
-    <TriggerThreshold3>
+    </threshold2>  
+    <threshold3>
       100
-    </TriggerThreshold3>  
-    <TriggerThreshold4>
+    </threshold3>  
+    <threshold4>
       100
-    </TriggerThreshold4>  
-    <TriggerThreshold5>
+    </threshold4>  
+    <threshold5>
       100
-    </TriggerThreshold5>  
-    <TriggerThreshold6>
+    </threshold5>  
+    <threshold6>
       100
-    </TriggerThreshold6>  
-    <TriggerThreshold7>
+    </threshold6>  
+    <threshold7>
       100
-    </TriggerThreshold7>  
+    </threshold7>  
   </Active>
 </xml>

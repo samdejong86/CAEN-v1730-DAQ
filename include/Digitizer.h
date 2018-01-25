@@ -28,9 +28,9 @@ class Digitizer{
   bool OpenDigitizer();
   void Readout();
   void CloseDigitizer();
-
   void CheckKeyboardCommands();
-  
+
+  void startAcq();
   
   CAEN_DGTZ_ErrorCode ProgramDigitizer();  
   CAEN_DGTZ_ErrorCode Calibrate_DC_Offset();
@@ -55,6 +55,7 @@ class Digitizer{
   int Nbit;
   float Ts;
   int NumEvents;
+  int nevent;
   uint32_t RecordLength;
   int PostTrigger;
   int InterruptNumEvents;
@@ -109,6 +110,11 @@ class Digitizer{
 
   double RunStartTime;
 
+  bool eventLimit;
+  bool timeLimit;
+  int numOfEvents;
+  int DurationOfRun;
+  bool startImmed;
 
 
   

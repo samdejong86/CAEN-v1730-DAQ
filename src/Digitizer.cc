@@ -8,20 +8,43 @@ static CAEN_DGTZ_IRQMode_t INTERRUPT_MODE = CAEN_DGTZ_IRQ_MODE_ROAK;
 Digitizer::Digitizer(XmlParser settings){
   DefaultSettings(); 
 
-  if(settings.fieldExists("RecordLength")){
-    RecordLength = (uint32_t)settings.getValue("RecordLength");
+  if(settings.fieldExists("duration")){
+    string d = settings.getStringValue("duration");
+    if(d.find(":")!= std::string::npos){
+      cout<<"duration is time\n";
+      timeLimit=true;
+      char token=':';
+      vector<string> parts = split(d.c_str(), token);
+
+      DurationOfRun = 3600*atoi(parts[0].c_str())+60*atoi(parts[1].c_str())+atoi(parts[2].c_str());
+      startImmed=true;
+
+    } else{
+      cout<<"duration is number of events\n";
+      eventLimit=true;
+      numOfEvents=(int)settings.getValue("duration");
+      startImmed=true;
+      
+    }
+  }
+  
+  
+
+  
+  if(settings.fieldExists("reclen")){
+    RecordLength = (uint32_t)settings.getValue("reclen");
   }
 
-  if(settings.fieldExists("BaseAddress")){
-    BaseAddress = (int)settings.getValue("BaseAddress");
+  if(settings.fieldExists("baseaddress")){
+    BaseAddress = (int)settings.getValue("baseaddress");
   }  
   
-  if(settings.fieldExists("PostTrigger")){
-    PostTrigger = (int)settings.getValue("PostTrigger");
+  if(settings.fieldExists("posttrigger")){
+    PostTrigger = (int)settings.getValue("posttrigger");
   }
 
-  if(settings.fieldExists("outfilename")){
-    fname=settings.getStringValue("outfilename");
+  if(settings.fieldExists("outfile")){
+    fname=settings.getStringValue("outfile");
   }
 
   uint16_t tempEnableMask=0;
@@ -46,8 +69,8 @@ Digitizer::Digitizer(XmlParser settings){
       }
     }
     
-    if(settings.fieldExists("PulsePolarity"+num)){
-      if(settings.getStringValue("PulsePolarity"+num).compare("POSITIVE")==0)
+    if(settings.fieldExists("polarity"+num)){
+      if(settings.getStringValue("polarity"+num).compare("POSITIVE")==0)
 	PulsePolarity[i]=CAEN_DGTZ_PulsePolarityPositive;
       else
 	PulsePolarity[i]=CAEN_DGTZ_PulsePolarityNegative;    
@@ -56,8 +79,8 @@ Digitizer::Digitizer(XmlParser settings){
     if(settings.fieldExists("DCoffset"+num))
       DCoffset[i] = (uint32_t)settings.getValue("DCoffset"+num);
 
-    if(settings.fieldExists("TriggerThreshold"+num))
-      Threshold[i] = (uint32_t)settings.getValue("TriggerThreshold"+num);
+    if(settings.fieldExists("threshold"+num))
+      Threshold[i] = (uint32_t)settings.getValue("threshold"+num);
   }
 
   if(tempEnableMask!=0)
@@ -81,6 +104,7 @@ void Digitizer::DefaultSettings(){
   Nbit = 14;
   Ts = 2.0;
   NumEvents=1;
+  nevent=0;
   RecordLength=1024;
   PostTrigger=50;
   InterruptNumEvents=0;
@@ -114,7 +138,7 @@ void Digitizer::DefaultSettings(){
   AcqRun=0;
   PlotType=0;
   ContinuousTrigger=0;
-  ContinuousWrite=0;
+  ContinuousWrite=1;
   SingleWrite=0;
   Restart=0;
   RunHisto=0;
@@ -125,6 +149,14 @@ void Digitizer::DefaultSettings(){
   }
 
   fname="CAEN.root";
+
+  
+  eventLimit=false;
+  timeLimit=false;
+  numOfEvents=-1;
+  DurationOfRun=-1;
+
+  startImmed=false;
   
     
 }
@@ -227,13 +259,17 @@ bool Digitizer::OpenDigitizer(){
 
 
 void Digitizer::Readout(){
+
+  if(startImmed){
+    startAcq();
+  }
   
   if (Restart && AcqRun) 
     {
       Calibrate_DC_Offset();
       CAEN_DGTZ_SWStartAcquisition(handle);
       RunStartTime = markTime();
-      cout<<RunStartTime<<endl;
+      //cout<<RunStartTime<<endl;
       fman.setRunStartTime(RunStartTime);
     }
   else
@@ -247,8 +283,17 @@ void Digitizer::Readout(){
   Quit=false;
   while(!Quit) {
     // Check for keyboard commands (key pressed)
+    //if(!eventLimit&&!timeLimit)
     CheckKeyboardCommands();
+    CurrentTime=markTime();
+    if(timeLimit&&CurrentTime-RunStartTime>DurationOfRun)
+      Quit=true;
 
+    if(eventLimit&&nevent>numOfEvents)
+      Quit=true;
+
+    //cout<<nevent<<endl;
+    
 	
     if (AcqRun == 0)
       continue;
@@ -324,6 +369,7 @@ void Digitizer::Readout(){
     /* Calculate throughput and trigger rate (every second) */
     Nb += BufferSize;
     Ne += NEvents;
+    nevent +=NEvents;
     CurrentTime = get_time();
     ElapsedTime = CurrentTime - PrevRateTime;
 
@@ -815,16 +861,8 @@ void Digitizer::CheckKeyboardCommands(){
     break;
   case 's' :
     if (AcqRun == 0) {
-      Calibrate_DC_Offset();
-	    				
-      printf("Acquisition started\n");
-	    
-      CAEN_DGTZ_SWStartAcquisition(handle);
-      RunStartTime = markTime();
-      cout<<RunStartTime<<endl;
-      fman.setRunStartTime(RunStartTime);
-	    
-      AcqRun = 1;
+
+      startAcq();
 	    
     } else {
       printf("Acquisition stopped\n");
@@ -854,30 +892,58 @@ void Digitizer::CheckKeyboardCommands(){
 }
 
 
+
+void Digitizer::startAcq(){
+      
+  Calibrate_DC_Offset();
+  
+  printf("Acquisition started\n");
+  
+  CAEN_DGTZ_SWStartAcquisition(handle);
+  RunStartTime = markTime();
+  cout<<RunStartTime<<endl;
+  fman.setRunStartTime(RunStartTime);
+  
+  AcqRun = 1;
+}
+
 void Digitizer::printOn(ostream & out) const{
   out<<"filename \t"<<fname<<endl;
 
+  out<<"Duration of run \t";
+  if(eventLimit) out<<numOfEvents<<" events\n";
+  else if(timeLimit) out<<DurationOfRun<<" seconds\n";
+  else out<<"manual\n";
+  
   out<<"Digitizer Settings:"<<endl;
   if(LinkType==CAEN_DGTZ_USB)
-    out<<"LinkType:\tUSB"<<endl;
+    out<<"LinkType:\t\tUSB"<<endl;
 
-  out<<"LinkNum \t"<< LinkNum <<endl;
-  out<<"ConetNode \t"<<ConetNode  <<endl;
-  out<<"BaseAddress \t"<<std::hex<< BaseAddress<<std::dec <<endl;
-  out<<"Nch \t"<< Nch <<endl;
-  out<<"Nbit \t"<< Nbit <<endl;
-  out<<"Ts \t"<<Ts  <<endl;
-  out<<"NumEvents \t"<< NumEvents <<endl;
-  out<<"RecordLength \t"<< RecordLength <<endl;
-  out<<"PostTrigger \t"<< PostTrigger <<endl;
+  out<<"LinkNum \t\t"<< LinkNum <<endl;
+  out<<"ConetNode \t\t"<<ConetNode  <<endl;
+  out<<"BaseAddress \t\t"<<std::hex<< BaseAddress<<std::dec <<endl;
+  out<<"Nch \t\t\t"<< Nch <<endl;
+  out<<"Nbit \t\t\t"<< Nbit <<endl;
+  out<<"Ts \t\t\t"<<Ts  <<endl;
+  out<<"RecordLength \t\t"<< RecordLength <<endl;
+  out<<"PostTrigger \t\t"<< PostTrigger <<endl;
   out<<"InterruptNumEvents \t"<<InterruptNumEvents  <<endl;
-  out<<"TestPattern \t"<<TestPattern  <<endl;
-  out<<"FPIOtype \t"<<FPIOtype  <<endl;
-  out<<"ExtTriggerMode \t"<< ExtTriggerMode <<endl;
+  out<<"TestPattern \t\t"<<TestPattern  <<endl;
+  out<<"FPIOtype \t\t"<<FPIOtype  <<endl;
+  out<<"ExtTriggerMode \t\t";//<< ExtTriggerMode <<endl;
 
+  if(ExtTriggerMode==CAEN_DGTZ_TRGMODE_DISABLED)
+    out<<"Disabled\n";
+  else if(ExtTriggerMode==CAEN_DGTZ_TRGMODE_EXTOUT_ONLY)
+    out<<"Ext Out Only\n";
+  else if(ExtTriggerMode==CAEN_DGTZ_TRGMODE_ACQ_ONLY)
+    out<<"Acq only\n";
+  else if(ExtTriggerMode==CAEN_DGTZ_TRGMODE_ACQ_AND_EXTOUT)
+    out<<"Acq and Extout\n";
+  
   bitset<8> mask(EnableMask);
   
-  out<<"EnableMask \t"<<mask <<endl;
+  out<<"EnableMask \t\t"<<mask <<endl;
 
  
   for(int i=0; i<Nch; i++){
