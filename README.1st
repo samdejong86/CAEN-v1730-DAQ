@@ -47,6 +47,7 @@ Usage:
 
 	Long options can be used as xml tags in an xml settings file
 
+	NOTE: I am still debugging the time stamp. something doesn't add up
 
 
 Files:
