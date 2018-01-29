@@ -380,7 +380,7 @@ void Digitizer::Readout(){
       if (Nb == 0)
 	if (ret == CAEN_DGTZ_Timeout) printf ("Timeout...\n"); else printf("No data...\n");
       else
-	printf("Reading at %.2f MB/s (Trg Rate: %.2f Hz, %d events)\n", (float)Nb/((float)ElapsedTime*1048.576f), (float)Ne*1000.0f/(float)ElapsedTime, NEvents);
+	printf("Reading at %.2f MB/s (Trg Rate: %.2f Hz, %d events)\n", (float)Nb/((float)ElapsedTime*1048.576f), (float)Ne*1000.0f/(float)ElapsedTime, nevent);
       nCycles= 0;
       Nb = 0;
       Ne = 0;
@@ -452,7 +452,6 @@ void Digitizer::CloseDigitizer(){
   fman.CloseFile();
 
 
-#ifdef NOTIFY
 
   stringstream ss;
   string subMessage="";
@@ -465,6 +464,8 @@ void Digitizer::CloseDigitizer(){
   } else
     return;
   
+#ifdef NOTIFY
+  
   char *cd;
   cd = getenv("PWD");
   string pwd = cd;  
@@ -475,8 +476,12 @@ void Digitizer::CloseDigitizer(){
   if(a){
     cout<<"Something went wrong. "<<a<<endl;
   }
-
+  
 #endif
+
+  cout<<subMessage<<endl;
+
+  
   
   
 }

@@ -4,3 +4,4 @@
 *.txt
 *.root
 CAENdaq
+ignored/*

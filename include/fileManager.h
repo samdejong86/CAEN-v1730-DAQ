@@ -15,7 +15,7 @@ using namespace std;
 #define FILEMAN_h
 
 
-const double rolloverAdd=21.4748;
+const double rolloverAdd=8e-9*2147483647;
 
 
 class fileManager{

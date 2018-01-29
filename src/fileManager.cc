@@ -77,17 +77,17 @@ void fileManager::addEvent(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EV
     }
     
 
-    eventTime = (double)EventInfo->TriggerTimeTag*1.0e-8+RunStartTime+nRollover*rolloverAdd; 
 
     
     if(EventInfo->TriggerTimeTag<lastTrigTime){
       nRollover++;
       lastTrigTime=0;
-      
+           
     }else
       lastTrigTime=EventInfo->TriggerTimeTag;
   
     
+    eventTime = (double)EventInfo->TriggerTimeTag*8e-9+RunStartTime+nRollover*rolloverAdd; 
 
   }
 
