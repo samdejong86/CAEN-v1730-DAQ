@@ -6,9 +6,17 @@ void printHelp(string progName){
   cout<<endl;
   cout<<"Reads waveforms from a CAEN V1730 digitizer.\n\n";
 
-  cout<<"optional arguments:\n";
+  cout<<"Mandatory arguments to long options are mandatory for short options too.\n";
   cout<<"  -h, --help                 Show this help message and exit\n";
   cout<<"  -v, --verbose              Prints verbose setup information\n";
+  cout<<"  -x XMLFILE, --xml XMLFILE  Use settings in XMLFILE. This\n";
+  cout<<"                             overrides other command line settings\n";
+  cout<<"  --xmlout XMLFILE           Save settings to xml file\n";
+  cout<<"  -q, --quit                 Used with --xmlout. Quits program after\n";
+  cout<<"                             saving settings\n";
+  cout<<endl;
+  cout<<" The following options can also be set using an XML file, with the\n";
+  cout<<" long options as the XML tags:\n";
   cout<<"  -w CH, --ch CH             Record the wavefrom on CH\n";
   cout<<"                             Valid options are 0-7\n";
   cout<<"  -o FILE, --outfile FILE    Save waveform to FILE\n";
@@ -29,13 +37,7 @@ void printHelp(string progName){
   cout<<"                             in ADC counts\n";
   cout<<"  --trslope<CH> POLARITY     Trigger slope. Can be POSITIVE or NEGATIVE\n";
   cout<<"  --posttrigger VAL          Set the post trigger\n";
-  cout<<"  -x XMLFILE, --xml XMLFILE  Use settings in XMLFILE. This\n";
-  cout<<"                             overrides other command line settings\n";
-  cout<<"  --xmlout XMLFILE           Save settings to xml file\n";
-  cout<<"  -q, --quit                 Used with --xmlout. Quits program after\n";
-  cout<<"                             saving settings\n";
   cout<<endl;
-  cout<<"Long options can be used as xml tags in an xml settings file\n";
     
   
   
