@@ -19,9 +19,10 @@ int main(int argc, char *argv[]){
   Digitizer digi(settings);
 
   
-  if(verbose)
+  if(verbose){
     cout<<digi;
-
+    digi.setVerbose(verbose);
+  }
   bool digiOpen = digi.OpenDigitizer();
 
   if(digiOpen){

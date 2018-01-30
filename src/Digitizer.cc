@@ -101,6 +101,8 @@ Digitizer::Digitizer(XmlParser settings){
 
 void Digitizer::DefaultSettings(){
 
+  verbose=false;
+  
   //default settings
   LinkType = CAEN_DGTZ_USB;
   LinkNum=0;
@@ -180,7 +182,8 @@ bool Digitizer::OpenDigitizer(){
   CAEN_DGTZ_ErrorCode ret = CAEN_DGTZ_Success;
   isVMEDevice= 0;
   
-   
+  if(verbose)
+    cout<<"Digitizer: Opening digitizer"<<endl;
      
   /* *************************************************************************************** */
   /* Open the digitizer and read the board information                                       */
@@ -203,6 +206,7 @@ bool Digitizer::OpenDigitizer(){
 
  
   fman = fileManager(fname, EnableMask);
+  fman.setVerbose(verbose);
   fman.OpenFile();
 
 
@@ -278,10 +282,9 @@ void Digitizer::Readout(){
       Calibrate_DC_Offset();
       CAEN_DGTZ_SWStartAcquisition(handle);
       RunStartTime = markTime();
-      //cout<<RunStartTime<<endl;
       fman.setRunStartTime(RunStartTime);
     }
-  else
+  else if(!startImmed)
     printf("[s] start/stop the acquisition, [q] quit, [SPACE] help\n");
   Restart = 0;
   PrevRateTime = get_time();
@@ -380,7 +383,8 @@ void Digitizer::Readout(){
       if (Nb == 0)
 	if (ret == CAEN_DGTZ_Timeout) printf ("Timeout...\n"); else printf("No data...\n");
       else
-	printf("Reading at %.2f MB/s (Trg Rate: %.2f Hz, %d events)\n", (float)Nb/((float)ElapsedTime*1048.576f), (float)Ne*1000.0f/(float)ElapsedTime, nevent);
+	if(verbose)
+	  printf("Reading at %.2f MB/s (Trg Rate: %.2f Hz, %d events)\n", (float)Nb/((float)ElapsedTime*1048.576f), (float)Ne*1000.0f/(float)ElapsedTime, nevent);
       nCycles= 0;
       Nb = 0;
       Ne = 0;
@@ -419,7 +423,8 @@ void Digitizer::Readout(){
     nowTime=markTime();
     if(timeLimit&&nowTime-RunStartTime>=DurationOfRun){
       Quit=true;
-      cout<<"end: "<<nowTime<<endl;
+      if(verbose)
+	cout<<"Digitizer: end time: "<<nowTime<<endl;
       break;
     }
 
@@ -434,6 +439,9 @@ void Digitizer::Readout(){
 
 
 void Digitizer::CloseDigitizer(){
+
+  if(verbose)
+    cout<<"Digitzer: Closing digitizer\n";
   
   /* stop the acquisition */
   CAEN_DGTZ_SWStopAcquisition(handle);
@@ -451,18 +459,21 @@ void Digitizer::CloseDigitizer(){
 
   fman.CloseFile();
 
-
+  
 
   stringstream ss;
   string subMessage="";
   if(eventLimit){
     ss<<numOfEvents;
-    subMessage="\"Finished measureing "+ss.str()+" events\"";    
+    subMessage="Finished measureing "+ss.str()+" events";    
   }else if(timeLimit){
     ss<<DurationOfRun;
-    subMessage="\"Finshed "+ss.str()+" second run\"";
+    subMessage="Finshed "+ss.str()+" second run";
   } else
     return;
+
+  string quote="\"";
+  
   
 #ifdef NOTIFY
   
@@ -471,7 +482,7 @@ void Digitizer::CloseDigitizer(){
   string pwd = cd;  
   string icon = pwd+"/icon/CAEN.png";
 
-  string command = "notify-send "+subMessage+" -i "+icon;
+  string command = "notify-send "+quote+subMessage+quote+" -i "+icon;
   int a = system(command.c_str());
   if(a){
     cout<<"Something went wrong. "<<a<<endl;
@@ -491,6 +502,9 @@ void Digitizer::CloseDigitizer(){
 
 CAEN_DGTZ_ErrorCode Digitizer::ProgramDigitizer(){
   int i,ret = 0;
+
+  if(verbose)
+    cout<<"Digitizer: Programming digitizer\n";
   
   /* reset the digitizer */
   ret |= CAEN_DGTZ_Reset(handle);
@@ -653,8 +667,8 @@ CAEN_DGTZ_ErrorCode Digitizer::Calibrate_DC_Offset(){
 
   for (ch = 0; ch < (int32_t)BoardInfo.Channels; ch++)    {
     if (EnableMask & (1 << ch) && Version_used[ch] ==1)	{
-      
-      printf("Starting channel %d DAC calibration...\n", ch);
+      if(verbose)
+	printf("Digitizer: Starting channel %d DAC calibration...\n", ch);
       ret = CAEN_DGTZ_SetChannelSelfTrigger(handle,CAEN_DGTZ_TRGMODE_DISABLED, (1 << ch));			
       if (ret)
 	printf("Warning: error disabling ch %d self trigger\n", ch);
@@ -942,13 +956,15 @@ void Digitizer::CheckKeyboardCommands(){
 void Digitizer::startAcq(){
       
   Calibrate_DC_Offset();
-  
-  printf("Acquisition started\n");
+
+  if(verbose)
+    printf("Digitizer: Acquisition started\n");
   
   CAEN_DGTZ_SWStartAcquisition(handle);
   RunStartTime = markTime();
   cout.precision(15);
-  cout<<"runstart "<<RunStartTime<<endl;
+  if(verbose)
+    cout<<"Digitizer: Start time: "<<RunStartTime<<endl;
   fman.setRunStartTime(RunStartTime);
   
   AcqRun = 1;

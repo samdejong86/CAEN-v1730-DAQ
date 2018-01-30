@@ -7,8 +7,11 @@ fileManager::fileManager(){
   mask = bitset<8>(0);
   RunStartTime=0;
   isOpen=false;
-  lastTrigTime=0;
-  nRollover=0;
+  for(int i=0; i<8; i++){
+    lastTrigTime[i]=0;
+    nRollover[i]=0;
+  }
+  verbose=false;
 }
 
 fileManager::fileManager(string filename, uint16_t EnableMask){
@@ -16,13 +19,20 @@ fileManager::fileManager(string filename, uint16_t EnableMask){
   mask = bitset<8>(EnableMask);
   RunStartTime=0;
   isOpen=false;
-  lastTrigTime=0;
-  nRollover=0;
+  for(int i=0; i<8; i++){
+    lastTrigTime[i]=0;
+    nRollover[i]=0;
+  }
+  verbose=false;
 }
 
 
 
 void fileManager::OpenFile(){
+
+  if(verbose)
+    cout<<"fileManager: Opening "<<fname<<endl;
+  
 
   f = new TFile(fname.c_str(), "RECREATE");  //open TFile
   t = new TTree("data", "Waveform data");  //initalize the TTree
@@ -57,6 +67,8 @@ void fileManager::CloseFile(){
     t->Write();
     f->Close();
   }
+  if(verbose)
+    cout<<"fileManager: Closed "<<fname<<endl;
 }
 
 
@@ -79,15 +91,15 @@ void fileManager::addEvent(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EV
 
 
     
-    if(EventInfo->TriggerTimeTag<lastTrigTime){
-      nRollover++;
-      lastTrigTime=0;
+    if(EventInfo->TriggerTimeTag<lastTrigTime[ch]){
+      nRollover[ch]++;
+      lastTrigTime[ch]=0;
            
     }else
-      lastTrigTime=EventInfo->TriggerTimeTag;
+      lastTrigTime[ch]=EventInfo->TriggerTimeTag;
   
     
-    eventTime = (double)EventInfo->TriggerTimeTag*8e-9+RunStartTime+nRollover*rolloverAdd; 
+    eventTime = (double)EventInfo->TriggerTimeTag*8e-9+RunStartTime+nRollover[ch]*rolloverAdd; 
 
   }
 

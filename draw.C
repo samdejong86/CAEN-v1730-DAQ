@@ -21,14 +21,7 @@ void draw(string filename, int ch, int event){
   t->SetBranchAddress("xinc", &xinc);
 
   t->GetEntry(event);
-
-  cout<<data->size()<<endl;
-  
-  cout.precision(15);
-  cout<<tm<<endl;
-
-  
-  
+ 
   TGraph *gr = new TGraph();
   
   for(int i=0; i<data->size(); i++){

@@ -39,7 +39,11 @@ class Digitizer{
 
   void printOn(ostream & out) const;
   friend ostream& operator<<(ostream& os, const Digitizer& r);
-    
+
+  void setVerbose(bool v){
+    verbose = v;
+  }
+  
  private:
     
   int  handle = -1;
@@ -118,7 +122,7 @@ class Digitizer{
   int DurationOfRun;
   bool startImmed;
 
-
+  bool verbose;
   
   
 };

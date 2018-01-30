@@ -33,10 +33,17 @@ class fileManager{
 
   void setRunStartTime(double rstart){
     RunStartTime=rstart;
-    nRollover=0;
+    for(int i=0; i<8; i++){
+      lastTrigTime[i]=0;
+      nRollover[i]=0;
+    }
   }
+
+  void setVerbose(bool v){verbose=v;}
   
  private:
+ 
+  bool verbose;
   
   string fname;
   TFile *f;
@@ -48,8 +55,8 @@ class fileManager{
   double eventTime;
   bool isOpen;
 
-  uint32_t lastTrigTime;
-  int nRollover;
+  uint32_t lastTrigTime[8];
+  int nRollover[8];
   
   double xinc;
 
