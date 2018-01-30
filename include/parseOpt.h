@@ -269,7 +269,7 @@ XmlParser getOpt(int argc, char *argv[]){
       }      
       break;
     case 'I':
-      if(string(optarg).find_first_not_of("0123456789") == std::string::npos){
+      if(string(optarg).find_first_not_of("-0123456789") == std::string::npos){
 	settings.addValue("threshold0", optarg);
       } else{
 	cout<<"Invalid trigger threshold for channel 0. Must be numerical\n";
@@ -277,7 +277,7 @@ XmlParser getOpt(int argc, char *argv[]){
       }      
       break;
     case 'J':
-      if(string(optarg).find_first_not_of("0123456789") == std::string::npos){
+      if(string(optarg).find_first_not_of("-0123456789") == std::string::npos){
 	settings.addValue("threshold1", optarg);
       } else{
 	cout<<"Invalid trigger threshold for channel 1. Must be numerical\n";
@@ -285,7 +285,7 @@ XmlParser getOpt(int argc, char *argv[]){
       }      
       break;
     case 'K':
-      if(string(optarg).find_first_not_of("0123456789") == std::string::npos){
+      if(string(optarg).find_first_not_of("-0123456789") == std::string::npos){
 	settings.addValue("threshold2", optarg);
       } else{
 	cout<<"Invalid trigger threshold for channel 2. Must be numerical\n";
@@ -293,7 +293,7 @@ XmlParser getOpt(int argc, char *argv[]){
       }      
       break;
     case 'L':
-      if(string(optarg).find_first_not_of("0123456789") == std::string::npos){
+      if(string(optarg).find_first_not_of("-0123456789") == std::string::npos){
 	settings.addValue("threshold3", optarg);
       } else{
 	cout<<"Invalid trigger threshold for channel 3. Must be numerical\n";
@@ -301,7 +301,7 @@ XmlParser getOpt(int argc, char *argv[]){
       }      
       break;
     case 'M':
-      if(string(optarg).find_first_not_of("0123456789") == std::string::npos){
+      if(string(optarg).find_first_not_of("-0123456789") == std::string::npos){
 	settings.addValue("threshold4", optarg);
       } else{
 	cout<<"Invalid trigger threshold for channel 4. Must be numerical\n";
@@ -309,7 +309,7 @@ XmlParser getOpt(int argc, char *argv[]){
       }      
       break;
     case 'N':
-      if(string(optarg).find_first_not_of("0123456789") == std::string::npos){
+      if(string(optarg).find_first_not_of("-0123456789") == std::string::npos){
 	settings.addValue("threshold5", optarg);
       } else{
 	cout<<"Invalid trigger threshold for channel 5. Must be numerical\n";
@@ -317,7 +317,7 @@ XmlParser getOpt(int argc, char *argv[]){
       }      
       break;
     case 'O':
-      if(string(optarg).find_first_not_of("0123456789") == std::string::npos){
+      if(string(optarg).find_first_not_of("-0123456789") == std::string::npos){
 	settings.addValue("threshold6", optarg);
       } else{
 	cout<<"Invalid trigger threshold for channel 6. Must be numerical\n";
@@ -325,7 +325,7 @@ XmlParser getOpt(int argc, char *argv[]){
       }      
       break;
     case 'P':
-      if(string(optarg).find_first_not_of("0123456789") == std::string::npos){
+      if(string(optarg).find_first_not_of("-0123456789") == std::string::npos){
 	settings.addValue("threshold7", optarg);
       } else{
 	cout<<"Invalid trigger threshold for channel 7. Must be numerical\n";

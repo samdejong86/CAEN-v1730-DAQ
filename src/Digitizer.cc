@@ -55,10 +55,10 @@ Digitizer::Digitizer(XmlParser settings){
     if(settings.fieldExists("ch"+num)){
       if(settings.getValue("ch"+num)==1){
 	tempEnableMask += (1<<i);      
-	ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_ACQ_ONLY;
+	//ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_ACQ_ONLY;
 	Version_used[i]=1;
       }else{
-	ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_DISABLED;
+	//ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_DISABLED;
 	PulsePolarity[i]=CAEN_DGTZ_PulsePolarityPositive;
 	DCoffset[i]=0;
 	Threshold[i]=0;
@@ -85,8 +85,11 @@ Digitizer::Digitizer(XmlParser settings){
     if(settings.fieldExists("DCoffset"+num))
       DCoffset[i] = (uint32_t)settings.getValue("DCoffset"+num);
 
-    if(settings.fieldExists("threshold"+num))
+    if(settings.fieldExists("threshold"+num)){
+      ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_ACQ_ONLY;
       Threshold[i] = (uint32_t)settings.getValue("threshold"+num);
+    } else
+      ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_DISABLED;
   }
 
   if(tempEnableMask!=0)
@@ -573,6 +576,15 @@ CAEN_DGTZ_ErrorCode Digitizer::ProgramDigitizer(){
       ret |= CAEN_DGTZ_SetChannelSelfTrigger(handle, mode, pair_chmask);
 
            
+    }
+  }
+
+  if(verbose){
+    cout<<"Digitizer: Trigger enabled:\n";
+    for(int i=0; i<8; i++){
+      CAEN_DGTZ_TriggerMode_t mode;
+      CAEN_DGTZ_GetChannelSelfTrigger(handle, i, &mode);
+      cout<<"\tChannel "<<i<<"\tEnabled: "<<mode<<endl;
     }
   }
 
