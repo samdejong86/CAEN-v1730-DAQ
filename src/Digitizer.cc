@@ -56,7 +56,6 @@ Digitizer::Digitizer(XmlParser settings){
       if(settings.getValue("ch"+num)==1){
 	tempEnableMask += (1<<i);      
 	//ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_ACQ_ONLY;
-	Version_used[i]=1;
       }else{
 	//ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_DISABLED;
 	PulsePolarity[i]=CAEN_DGTZ_PulsePolarityPositive;
@@ -88,8 +87,11 @@ Digitizer::Digitizer(XmlParser settings){
     if(settings.fieldExists("threshold"+num)){
       ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_ACQ_ONLY;
       Threshold[i] = (uint32_t)settings.getValue("threshold"+num);
-    } else
+      Version_used[i]=1;
+    } else {
       ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_DISABLED;
+      Version_used[i]=0;
+    }
   }
 
   if(tempEnableMask!=0)
@@ -103,7 +105,7 @@ Digitizer::Digitizer(XmlParser settings){
 
 
 void Digitizer::DefaultSettings(){
-
+  manualStop=false;
   verbose=false;
   
   //default settings
@@ -289,6 +291,8 @@ void Digitizer::Readout(){
     }
   else if(!startImmed)
     printf("[s] start/stop the acquisition, [q] quit, [SPACE] help\n");
+  else
+    printf("[q] to stop run manually\n");
   Restart = 0;
   PrevRateTime = get_time();
 
@@ -466,7 +470,9 @@ void Digitizer::CloseDigitizer(){
 
   stringstream ss;
   string subMessage="";
-  if(eventLimit){
+  if(manualStop){
+    subMessage="Run aborted";
+  }else if(eventLimit){
     ss<<numOfEvents;
     subMessage="Finished measureing "+ss.str()+" events";    
   }else if(timeLimit){
@@ -492,9 +498,7 @@ void Digitizer::CloseDigitizer(){
   }
   
 #endif
-
   cout<<subMessage<<endl;
-
   
   
   
@@ -551,7 +555,7 @@ CAEN_DGTZ_ErrorCode Digitizer::ProgramDigitizer(){
   }
     
   // channel pair settings for x730 boards
-  for (i = 0; i < Nch; i += 2) {
+  for (i = 0; i < 8; i += 2) {
     if (EnableMask & (0x3 << i)) {
       CAEN_DGTZ_TriggerMode_t mode = ChannelTriggerMode[i];
       uint32_t pair_chmask = 0;
@@ -572,6 +576,8 @@ CAEN_DGTZ_ErrorCode Digitizer::ProgramDigitizer(){
 	pair_chmask = (0x2 << i);
       }
 	
+          
+      
       pair_chmask &= EnableMask;
       ret |= CAEN_DGTZ_SetChannelSelfTrigger(handle, mode, pair_chmask);
 
@@ -678,7 +684,7 @@ CAEN_DGTZ_ErrorCode Digitizer::Calibrate_DC_Offset(){
   uint32_t dc[NPOINTS] = {25,75}; //test values (%)
 
   for (ch = 0; ch < (int32_t)BoardInfo.Channels; ch++)    {
-    if (EnableMask & (1 << ch) && Version_used[ch] ==1)	{
+    if (EnableMask & (1 << ch)){
       if(verbose)
 	printf("Digitizer: Starting channel %d DAC calibration...\n", ch);
       ret = CAEN_DGTZ_SetChannelSelfTrigger(handle,CAEN_DGTZ_TRGMODE_DISABLED, (1 << ch));			
@@ -759,14 +765,13 @@ CAEN_DGTZ_ErrorCode Digitizer::Calibrate_DC_Offset(){
       if (PulsePolarity[ch] == CAEN_DGTZ_PulsePolarityPositive){
 	DCoffset[ch] = (uint32_t)((float)(fabs(( ((float)dc_file[ch] - offset )/ cal ) - 100.))*(655.35));
 	if (DCoffset[ch] > 65535) DCoffset[ch] = 65535;
-	if (DCoffset[ch] < 0) DCoffset[ch] = 0;
+	if (DCoffset[ch] < 0) DCoffset[ch] = 0;		      
       }
       else
 	if (PulsePolarity[ch] == CAEN_DGTZ_PulsePolarityNegative){
 	  DCoffset[ch] = (uint32_t)((float)(fabs(( (fabs(dc_file[ch] - 100.) - offset) / cal ) - 100.))*(655.35));
 	  if (DCoffset[ch] < 0) DCoffset[ch] = 0;
-	  if (DCoffset[ch] > 65535) DCoffset[ch] = 65535;
-		      
+	  if (DCoffset[ch] > 65535) DCoffset[ch] = 65535;		      
 	}
 		
       ret = CAEN_DGTZ_SetChannelDCOffset(handle, (uint32_t)ch, DCoffset[ch]);
@@ -904,6 +909,7 @@ void Digitizer::CheckKeyboardCommands(){
   switch(c) {
   case 'q' :
     Quit = 1;
+    manualStop=true;
     break;
   case 'R' :
     Restart = 1;
@@ -1054,8 +1060,6 @@ void Digitizer::printOn(ostream & out) const{
     out<<"\tThreshold \t "<<Threshold[i]<<endl;
 
   }
-
-  
 
   
 }

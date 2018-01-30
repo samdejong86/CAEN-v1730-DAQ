@@ -123,6 +123,8 @@ class Digitizer{
   bool startImmed;
 
   bool verbose;
+
+  bool manualStop;
   
   
 };
