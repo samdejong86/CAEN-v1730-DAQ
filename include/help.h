@@ -2,7 +2,12 @@
 
 void printHelp(string progName){
   
-  cout<<"usage: "<<progName<<"  [-h] [-v] [-x XMLFILE]"<<endl;
+  cout<<"usage: CAENdaq  [-h] [-v] [-x XMLFILE] [--xmlout XMLFILE] [-q] [w0] [w1]\n";//<<endl;
+  cout<<"                [w2] [w3] ... [-o FILE] [-r RECLEN] [-a BASEADDRESS] \n";
+  cout<<"                [-d DURATION] [--posttrigger VAL]\n";
+  cout<<"                [--polarity0 POLARITY] ... [--DCoffset0 OFFSET] ...\n";
+  cout<<"                [--threshold0 THRESHOLD] ... [--trslope0 POLARITY] ... \n";
+
   cout<<endl;
   cout<<"Reads waveforms from a CAEN V1730 digitizer.\n\n";
 
@@ -20,7 +25,7 @@ void printHelp(string progName){
   cout<<"  -w<CH>, --ch<CH>           Record the wavefrom on CH\n";
   cout<<"                             Valid options are 0-7\n";
   cout<<"  -o FILE, --outfile FILE    Save waveform to FILE\n";
-  cout<<"  -r RECLEN, --reclen RECLEN Set recordlength to RECLEN\n";
+  cout<<"  -r RECLEN, --reclen RECLEN Set number of samples recorded to RECLEN\n";
   cout<<"  -a BASEADDRESS, --baseaddress BASEADDRESS\n";
   cout<<"                             Set digitizer base address to BASEADDRESS\n";
   cout<<"  -d DURATION, --duration DURATION\n";
