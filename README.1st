@@ -16,38 +16,40 @@ Installation:
 
 Usage:
 	CAENdaq  [-h] [-v] [-x XMLFILE]
-
 	optional arguments:
 	  -h, --help                 Show this help message and exit
 	  -v, --verbose              Prints verbose setup information
-	  -w CH, --ch CH             Record the wavefrom on CH
-                             	     Valid options are 0-7
-  	  -o FILE, --outfile FILE    Save waveform to FILE
+	  ---------------------------------------------------------------
+  	  -w CH, --ch CH             Record the wavefrom on CH
+             	                     Valid options are 0-7
+	  -o FILE, --outfile FILE    Save waveform to FILE
   	  -r RECLEN, --reclen RECLEN Set recordlength to RECLEN
   	  -a BASEADDRESS, --baseaddress BASEADDRESS
-             		  	     Set digitizer base address to BASEADDRESS
-  	  -d DURATION, --duration DURATION
-                                     Duration of the run. If an integer is
+             		             Set digitizer base address to BASEADDRESS
+	  -d DURATION, --duration DURATION
+				     Duration of the run. If an integer is
                              	     specified, that many events are recorded.
                              	     If a time is specified in HH:MM:SS format
                              	     the daq will run for that long. Acquisition
                              	     starts automatically.
-				     If not used, daq must be started manually
-  	  --polarity<CH> POLARITY    Set pulse polarity of channel CH
+                             	     If not used, daq must be started manually
+          --polarity<CH> POLARITY    Set pulse polarity of channel CH
                                      Valid options are POSITIVE or NEGATIVE
-	  --DCoffset<CH> OFFSET      Set DC offset of channel CH in ADC counts
-	  --threshold<CH> THRESHOLD  Set the trigger threshold of channel CH
-                                     in ADC counts
+          --DCoffset<CH> OFFSET      Set DC offset of channel CH in ADC counts
+          --threshold<CH> THRESHOLD  Set the trigger threshold of channel CH
+                             	     in ADC counts
+          --trslope<CH> POLARITY     Trigger slope. Can be POSITIVE or NEGATIVE
           --posttrigger VAL          Set the post trigger
+	  ---------------------------------------------------------------
   	  -x XMLFILE, --xml XMLFILE  Use settings in XMLFILE. This
                                      overrides other command line settings
           --xmlout XMLFILE           Save settings to xml file
-   	  -q, --quit                 Used with --xmlout. Quits program after
-                                     saving settings
+          -q, --quit                 Used with --xmlout. Quits program after
+                             	     saving settings
 
-	Long options can be used as xml tags in an xml settings file
+	 Long options between ------ can be used as xml tags in an xml settings file
 
-	NOTE: I am still debugging the time stamp. something doesn't add up
+
 
 
 Files:
