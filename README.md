@@ -1,22 +1,23 @@
 # CAEN V1370 DAQ
 
-Description:
-	DAQ software for a CAEN V1730 digitizer with waveform recording firmware. Software assumes connection through a V1718 VME-USB Bridge
+## Description:
 
-	This software is based on the CAEN wavedump example program
+DAQ software for a CAEN V1730 digitizer with waveform recording firmware. Software assumes connection through a V1718 VME-USB Bridge
 
-Installation:
-	Requires the CAEN Digitizer libraries. Install in this order:
-		 CAEN VME library 
-    		 CAEN USB library 
-		 CAEN Comm library
-    		 CAEN digitizer
+This software is based on the CAEN wavedump example program
 
-	Requires ROOT (available at https://root.cern.ch/downloading-root)
+## Installation:
+Requires the CAEN Digitizer libraries. Install in this order:
+	 CAEN VME library 
+	 CAEN USB library 
+	 CAEN Comm library
+	 CAEN digitizer
 
-	Once these are installed, use make to build the software.
+Requires ROOT (available [Here](https://root.cern.ch/downloading-root))
 
-Usage:
+Once these are installed, use make to build the software.
+
+## Usage:
 	CAENdaq  [-h] [-v] [-x XMLFILE]
 	optional arguments:
 	  -h, --help                 Show this help message and exit
@@ -54,7 +55,7 @@ Usage:
 
 
 
-Files:
+## Files:
 
 	src/
 		source files
