@@ -18,43 +18,47 @@ Requires ROOT (available [here](https://root.cern.ch/downloading-root))
 Once these are installed, use make to build the software.
 
 ## Usage:
-	CAENdaq  [-h] [-v] [-x XMLFILE]
-	optional arguments:
-	  -h, --help                 Show this help message and exit
-	  -v, --verbose              Prints verbose setup information
-	  ---------------------------------------------------------------
-  	  -w CH, --ch CH             Record the wavefrom on CH
-             	                     Valid options are 0-7
+
+	usage: CAENdaq  [-h] [-v] [-x XMLFILE] [--xmlout XMLFILE] [-q] [w0] [w1]
+	                [w2] [w3] ... [-o FILE] [-r RECLEN] [-a BASEADDRESS]
+        	        [-d DURATION] [--posttrigger VAL]
+        	        [--polarity0 POLARITY] ... [--DCoffset0 OFFSET] ...
+        	        [--threshold0 THRESHOLD] ... [--trslope0 POLARITY] ...
+
+	Reads waveforms from a CAEN V1730 digitizer.
+
+	Mandatory arguments to long options are mandatory for short options too.
+  	-h, --help                 Show this help message and exit
+  	-v, --verbose              Prints verbose setup information
+  	-x XMLFILE, --xml XMLFILE  Use settings in XMLFILE. This
+  	                           overrides other command line settings
+  	--xmlout XMLFILE           Save settings to xml file
+  	-q, --quit                 Used with --xmlout. Quits program after
+  	                           saving settings
+
+	 The following options can also be set using an XML file, with the
+	 long options as the XML tags:
+	  -w<CH>, --ch<CH>           Record the wavefrom on CH
+	                             Valid options are 0-7
 	  -o FILE, --outfile FILE    Save waveform to FILE
-  	  -r RECLEN, --reclen RECLEN Set recordlength to RECLEN
-  	  -a BASEADDRESS, --baseaddress BASEADDRESS
-             		             Set digitizer base address to BASEADDRESS
+	  -r RECLEN, --reclen RECLEN Set number of samples recorded to RECLEN
+	  -a BASEADDRESS, --baseaddress BASEADDRESS
+	                             Set digitizer base address to BASEADDRESS
 	  -d DURATION, --duration DURATION
-				     Duration of the run. If an integer is
-                             	     specified, that many events are recorded.
-                             	     If a time is specified in HH:MM:SS format
-                             	     the daq will run for that long. Acquisition
-                             	     starts automatically.
-                             	     If not used, daq must be started manually
-          --polarity<CH> POLARITY    Set pulse polarity of channel CH
-                                     Valid options are POSITIVE or NEGATIVE
-          --DCoffset<CH> OFFSET      Set DC offset of channel CH in ADC counts
-          --threshold<CH> THRESHOLD  Set the trigger threshold of channel CH
-                             	     in ADC counts
-          --trslope<CH> POLARITY     Trigger slope. Can be POSITIVE or NEGATIVE
-          --posttrigger VAL          Set the post trigger
-	  ---------------------------------------------------------------
-  	  -x XMLFILE, --xml XMLFILE  Use settings in XMLFILE. This
-                                     overrides other command line settings
-          --xmlout XMLFILE           Save settings to xml file
-          -q, --quit                 Used with --xmlout. Quits program after
-                             	     saving settings
-
-	 Long options between ------ can be used as xml tags in an xml settings file
-
-
-
-
+	                             Duration of the run. If an integer is
+        	                     specified, that many events are recorded.
+                	             If a time is specified in HH:MM:SS format
+                        	     the daq will run for that long. Acquisition
+                        	     starts automatically.
+               		             If not used, daq must be started manually
+  	--polarity<CH> POLARITY    Set pulse polarity of channel CH
+  	                           Valid options are POSITIVE or NEGATIVE
+  	--DCoffset<CH> OFFSET      Set DC offset of channel CH in ADC counts
+  	--threshold<CH> THRESHOLD  Set the trigger threshold of channel CH
+  	                           in ADC counts
+  	--trslope<CH> POLARITY     Trigger slope. Can be POSITIVE or NEGATIVE
+  	--posttrigger VAL          Set the post trigger
+	
 ## Files:
 
 	src/
@@ -63,8 +67,15 @@ Once these are installed, use make to build the software.
 		header files
 	xml/Settings.xml
 		an example settings file
+	icon/CAEN.png
+		Icon for the notification
 	Makefile
 		for building the software
 	draw.C
 		A root script for drawing waveforms
 	
+## Acknowledgements 
+
+This software used code in CAEN's wavedump example, modified to be in an object oriented framework.
+
+
