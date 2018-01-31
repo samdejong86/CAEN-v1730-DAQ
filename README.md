@@ -8,12 +8,12 @@ This software is based on the CAEN wavedump example program
 
 ## Installation:
 Requires the CAEN Digitizer libraries. Install in this order:
-	 CAEN VME library 
-	 CAEN USB library 
-	 CAEN Comm library
-	 CAEN digitizer
+	 1 CAEN VME library 
+	 2 CAEN USB library 
+	 3 CAEN Comm library
+	 4 CAEN digitizer
 
-Requires ROOT (available [Here](https://root.cern.ch/downloading-root))
+Requires ROOT (available [here](https://root.cern.ch/downloading-root))
 
 Once these are installed, use make to build the software.
 
