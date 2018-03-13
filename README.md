@@ -8,12 +8,21 @@ This software is based on the CAEN wavedump example program
 
 ## Installation:
 Requires the CAEN Digitizer libraries. Install in this order:
-1. CAEN VME library 
-2. CAEN USB library 
-3. CAEN Comm library
-4. CAEN digitizer
+1. [CAEN VME library](http://www.caen.it/csite/CaenProd.jsp?idmod=689&parent=38) 
+2. [CAEN USB library](http://www.caen.it/csite/CaenProd.jsp?idmod=417&parent=11)
+3. [CAEN Comm library](http://www.caen.it/csite/CaenProd.jsp?parent=38&idmod=684)
+4. [CAEN digitizer](http://www.caen.it/csite/CaenProd.jsp?parent=43&idmod=717)
 
-Requires ROOT (available [here](https://root.cern.ch/downloading-root))
+Requires ROOT (available [here](https://root.cern.ch/downloading-root)). You may need these libraries:
+1. libX11-devel.x86_64
+2. libXpm-devel.x86_64
+3. libXft-devel.x86_64
+4. libXext-devel.x86_64
+
+* If you are getting an error about 'shape.h', try:
+
+        ln -s /usr/include/X11/extensions/shapeproto.h /usr/include/X11/extensions/shape.h
+
 
 Once these are installed, use make to build the software.
 

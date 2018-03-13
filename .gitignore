@@ -5,3 +5,4 @@
 *.root
 CAENdaq
 ignored/*
+flymd.*
