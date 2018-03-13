@@ -105,6 +105,12 @@ Digitizer::Digitizer(XmlParser settings){
 
 
 void Digitizer::DefaultSettings(){
+
+  handle = -1;
+  Nb=0;
+  Ne=0;
+  nCycles= 0;
+
   manualStop=false;
   verbose=false;
   

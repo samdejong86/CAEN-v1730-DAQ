@@ -46,7 +46,7 @@ class Digitizer{
   
  private:
     
-  int  handle = -1;
+  int  handle;
   CAEN_DGTZ_BoardInfo_t       BoardInfo;
   CAEN_DGTZ_ErrorCode ret;
 
@@ -98,15 +98,15 @@ class Digitizer{
   uint64_t CurrentTime, PrevRateTime, ElapsedTime;
   uint32_t AllocatedSize, BufferSize, NEvents;
   int isVMEDevice, MajorNumber;
-  int nCycles= 0;
+  int nCycles;
     
   CAEN_DGTZ_EventInfo_t       EventInfo;
 
   CAEN_DGTZ_UINT16_EVENT_t    *Event16; 
 
   //int ch;
-  int Nb=0;
-  int Ne=0;
+  int Nb;
+  int Ne;
   char *buffer;
   char *EventPtr;
 
