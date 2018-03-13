@@ -22,12 +22,13 @@ class fileManager{
 
  public:
   fileManager();
-  fileManager(string filename, uint16_t EnableMask);
+  fileManager(string filename, uint16_t EnableMask, int saveInt);
 
   ~fileManager(){
   }
 
   void OpenFile();
+  void OpenNewFile();
   void addEvent(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EVENT_t *Event16);
   void CloseFile();
 
@@ -59,6 +60,9 @@ class fileManager{
   int nRollover[8];
   
   double xinc;
+
+  int saveInterval;
+  int counter;
 
 };
 

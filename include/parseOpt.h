@@ -22,6 +22,7 @@ XmlParser getOpt(int argc, char *argv[]){
       {"verbose",	no_argument,       0, 'v'},	// verbose mode
       {"xml",   	required_argument, 0, 'x'},	// xml file
       {"outfile",       required_argument, 0, 'o'},     // output file name
+      {"saveInterval",  required_argument, 0, 'n'},     // save after n events
       {"reclen",        required_argument, 0, 'r'},     // RecordLength
       {"baseaddress",   required_argument, 0, 'a'},     // digitizer base address
       {"ch",		required_argument, 0, 'w'},	// record waveform
@@ -67,7 +68,7 @@ XmlParser getOpt(int argc, char *argv[]){
 
     int option_index = 0;
     // leave case out of the list if no short option is to be allowed
-    c = getopt_long (argc, argv, "hvqx:w:a:r:o:d:", long_options, &option_index);
+    c = getopt_long (argc, argv, "hvqx:w:a:r:o:d:n:", long_options, &option_index);
 
     if (c == -1)
     {
@@ -97,6 +98,8 @@ XmlParser getOpt(int argc, char *argv[]){
     case 'o':
       settings.addValue("outfile", optarg);
       break;
+    case 'n':
+      settings.addValue("saveInterval", optarg);
     case 'r':
       if(string(optarg).find_first_not_of("0123456789") == std::string::npos){
 	settings.addValue("reclen", optarg);

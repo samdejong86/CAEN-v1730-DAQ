@@ -1,8 +1,11 @@
 <xml>
   <Active>
     <duration>
-      100
+      1000
     </duration>
+    <saveInterval>
+      100
+    </saveInterval>
     <outfile>
       output.root
     </outfile>

@@ -125,7 +125,8 @@ class Digitizer{
   bool verbose;
 
   bool manualStop;
-  
+
+  int saveInterval;
   
 };
 

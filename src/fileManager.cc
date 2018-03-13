@@ -3,7 +3,19 @@
 #include <stdint.h>
 
 fileManager::fileManager(){
-  fname="CAEN.root";
+  string temp="CAEN.root";
+  saveInterval=100;
+  
+  string suffix=".root";
+  size_t pos = temp.find(suffix);
+  
+  if (pos != std::string::npos) {
+    // If found then erase it from string
+    temp.erase(pos, suffix.length());
+  }
+  
+  fname=temp;
+  
   mask = bitset<8>(0);
   RunStartTime=0;
   isOpen=false;
@@ -14,8 +26,23 @@ fileManager::fileManager(){
   verbose=false;
 }
 
-fileManager::fileManager(string filename, uint16_t EnableMask){
-  fname = filename;
+fileManager::fileManager(string filename, uint16_t EnableMask, int saveInt){
+  string temp = filename;
+
+  saveInterval=saveInt;
+
+  
+  string suffix=".root";
+  size_t pos = temp.find(suffix);
+  
+  if (pos != std::string::npos) {
+    // If found then erase it from string
+    temp.erase(pos, suffix.length());
+  }
+  
+  fname=temp;
+  
+  
   mask = bitset<8>(EnableMask);
   RunStartTime=0;
   isOpen=false;
@@ -30,16 +57,21 @@ fileManager::fileManager(string filename, uint16_t EnableMask){
 
 void fileManager::OpenFile(){
 
-  if(verbose)
+  if(verbose){
     cout<<"fileManager: Opening "<<fname<<endl;
-  
+    cout<<"fileManager: Save interval: "<<saveInterval<<endl;
+  }
 
-  f = new TFile(fname.c_str(), "RECREATE");  //open TFile
+  string firstFile = fname+"_0.root";
+
+  f = new TFile(firstFile.c_str(), "RECREATE");  //open TFile
   t = new TTree("data", "Waveform data");  //initalize the TTree
 
   //resize the vector of vectors to have 4 entries
   data.resize(8);  
 
+  counter=0;
+  
   stringstream ss;
   
   //add vectors to TTree
@@ -67,6 +99,39 @@ void fileManager::CloseFile(){
     t->Write();
     f->Close();
   }
+
+  string files="";
+
+  stringstream ss;
+  for(int i=0; i<counter/saveInterval; i++){
+    ss<<i;
+    files += fname+"_"+ss.str()+".root ";
+    ss.str("");
+  }
+  string targetFile = fname+".root";
+  
+  remove(targetFile.c_str());
+
+  string command = "hadd -f -v0"+targetFile+" "+files;
+  if(verbose)
+    command = "hadd -f -v "+targetFile+" "+files;
+
+  
+  if(verbose){
+    cout<<"fileManager: Merging temporary files"<<endl;
+  }
+  int ret = system(command.c_str());
+
+  if(ret!=0)
+    cout<<"fileManager: Error with merger command"<<endl;
+  
+  for(int i=0; i<counter/saveInterval; i++){
+    ss<<i;
+    remove((fname+"_"+ss.str()+".root").c_str());
+    ss.str("");
+  }
+
+  
   if(verbose)
     cout<<"fileManager: Closed "<<fname<<endl;
 }
@@ -74,8 +139,11 @@ void fileManager::CloseFile(){
 
 void fileManager::addEvent(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EVENT_t *Event16){
 
+  
   if(!isOpen)
     return;
+
+  if(counter!=0&&counter%saveInterval==0) OpenNewFile();
   
   for(int ch=0; ch<8; ch++){
     if(mask[ch]==0)
@@ -108,5 +176,49 @@ void fileManager::addEvent(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EV
   for(int ch=0; ch<8; ch++)
     data[ch].clear();
 
+  counter++;
+  
+}
+
+
+void fileManager::OpenNewFile(){
+
+  if(verbose){
+    cout<<"fileManager: number of events so far = "<<counter<<endl;
+  }
+
+  t->Write(); //write the data ntuple
+  f->Close();
+  
+  
+
+  stringstream ss;
+  ss<<counter/saveInterval;
+
+  string thisFile=fname+"_"+ss.str()+".root";
+  
+  ss.str("");
+
+
+  f = new TFile(thisFile.c_str(), "RECREATE");  //open TFile
+  t = new TTree("data", "Waveform data");  //initalize the TTree
+
+  //resize the vector of vectors to have 4 entries
+  data.resize(8);  
+    
+  //add vectors to TTree
+  for(int i=0; i<8; i++){
+    ss<<i;
+    string branch="ch"+ss.str();
+    ss.str("");
+    if(mask[i]==1){
+      t->Branch(branch.c_str(), &data[i]);
+    }
+  }
+
+  //time is the unix time that the event occured
+  t->Branch("time", &eventTime, "time/D");
+  t->Branch("xinc", &xinc, "xinc/D");
+  
 
 }

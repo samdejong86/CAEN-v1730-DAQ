@@ -25,6 +25,8 @@ void printHelp(string progName){
   cout<<"  -w<CH>, --ch<CH>           Record the wavefrom on CH\n";
   cout<<"                             Valid options are 0-7\n";
   cout<<"  -o FILE, --outfile FILE    Save waveform to FILE\n";
+  cout<<"  -n NUM, --saveInterval     After NUM events, save a temporary file.\n";
+  cout<<"                             At the end of the run, these will be merged\n";
   cout<<"  -r RECLEN, --reclen RECLEN Set number of samples recorded to RECLEN\n";
   cout<<"  -a BASEADDRESS, --baseaddress BASEADDRESS\n";
   cout<<"                             Set digitizer base address to BASEADDRESS\n";

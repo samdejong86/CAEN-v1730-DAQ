@@ -26,7 +26,8 @@ Digitizer::Digitizer(XmlParser settings){
     }
   }
   
-  
+  if(settings.fieldExists("saveInterval"))
+    saveInterval = (int)settings.getValue("saveInterval");
 
   
   if(settings.fieldExists("reclen")){
@@ -111,6 +112,8 @@ void Digitizer::DefaultSettings(){
   Ne=0;
   nCycles= 0;
 
+  saveInterval=100;
+  
   manualStop=false;
   verbose=false;
   
@@ -216,7 +219,7 @@ bool Digitizer::OpenDigitizer(){
   Event16=NULL; /* generic event struct with 16 bit data (10, 12, 14 and 16 bit digitizers */
 
  
-  fman = fileManager(fname, EnableMask);
+  fman = fileManager(fname, EnableMask, saveInterval);
   fman.setVerbose(verbose);
   fman.OpenFile();
 
