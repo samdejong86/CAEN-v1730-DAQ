@@ -22,7 +22,7 @@ void printHelp(string progName){
   cout<<endl;
   cout<<" The following options can also be set using an XML file, with the\n";
   cout<<" long options as the XML tags:\n";
-  cout<<"  -w<CH>, --ch<CH>           Record the wavefrom on CH\n";
+  cout<<"  -w<CH>, --ch<CH>           Record the waveform on CH\n";
   cout<<"                             Valid options are 0-7\n";
   cout<<"  -o FILE, --outfile FILE    Save waveform to FILE\n";
   cout<<"  -n NUM, --saveInterval     After NUM events, save a temporary file.\n";

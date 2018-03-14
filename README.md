@@ -13,6 +13,8 @@ Requires the CAEN Digitizer libraries. Install in this order:
 3. [CAEN Comm library](http://www.caen.it/csite/CaenProd.jsp?parent=38&idmod=684)
 4. [CAEN digitizer](http://www.caen.it/csite/CaenProd.jsp?parent=43&idmod=717)
 
+**Note:** Updates to your system may break the CAEN libraries. If the DAQ software stops working, try reinstalling the libraries.
+
 Requires ROOT (available [here](https://root.cern.ch/downloading-root)). You may need these libraries:
 1. libX11-devel.x86_64
 2. libXpm-devel.x86_64
@@ -47,7 +49,7 @@ Once these are installed, use make to build the software.
 
 	 The following options can also be set using an XML file, with the
 	 long options as the XML tags:
-	  -w<CH>, --ch<CH>           Record the wavefrom on CH
+	  -w<CH>, --ch<CH>           Record the waveform on CH
 	                             Valid options are 0-7
 	  -o FILE, --outfile FILE    Save waveform to FILE
 	  -r RECLEN, --reclen RECLEN Set number of samples recorded to RECLEN
