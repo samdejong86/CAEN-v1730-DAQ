@@ -112,16 +112,13 @@ void fileManager::CloseFile(){
   
   remove(targetFile.c_str());
 
-  string command = "hadd -f -v0"+targetFile+" "+files;
-  if(verbose)
-    command = "hadd -f -v "+targetFile+" "+files;
-
+  string command = "hadd -f "+targetFile+" "+files;
   
   if(verbose){
     cout<<"fileManager: Merging temporary files"<<endl;
   }
   int ret = system(command.c_str());
-
+  
   if(ret!=0)
     cout<<"fileManager: Error with merger command"<<endl;
   
