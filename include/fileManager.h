@@ -2,6 +2,7 @@
 #include <bitset>
 #include <CAENDigitizer.h>
 #include <CAENDigitizerType.h>
+#include "util.h"
 
 #include "TFile.h"
 #include "TTree.h"
@@ -40,6 +41,8 @@ class fileManager{
     }
   }
 
+  void DeleteDir();
+  
   void setVerbose(bool v){verbose=v;}
   
  private:
@@ -47,6 +50,7 @@ class fileManager{
   bool verbose;
   
   string fname;
+  string dirname;
   TFile *f;
   TTree *t;
   vector<vector<double> > data;

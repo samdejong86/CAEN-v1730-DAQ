@@ -1,5 +1,4 @@
 #include "Digitizer.h"
-#include "util.h"
 #include <sstream>
 #include <bitset>
 
@@ -13,7 +12,7 @@ Digitizer::Digitizer(XmlParser settings){
     if(d.find(":")!= std::string::npos){
       timeLimit=true;
       char token=':';
-      vector<string> parts = split(d.c_str(), token);
+      vector<string> parts = util::split(d.c_str(), token);
 
       DurationOfRun = 3600*atoi(parts[0].c_str())+60*atoi(parts[1].c_str())+atoi(parts[2].c_str());
       startImmed=true;
@@ -208,6 +207,7 @@ bool Digitizer::OpenDigitizer(){
   ret = CAEN_DGTZ_OpenDigitizer(LinkType, LinkNum, ConetNode, BaseAddress, &handle);
   if (ret) {
     cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
+    fman.DeleteDir();
     return false;
   }
 
@@ -295,7 +295,7 @@ void Digitizer::Readout(){
     {
       Calibrate_DC_Offset();
       CAEN_DGTZ_SWStartAcquisition(handle);
-      RunStartTime = markTime();
+      RunStartTime = util::markTime();
       fman.setRunStartTime(RunStartTime);
     }
   else if(!startImmed)
@@ -303,7 +303,7 @@ void Digitizer::Readout(){
   else
     printf("[q] to stop run manually\n");
   Restart = 0;
-  PrevRateTime = get_time();
+  PrevRateTime = util::get_time();
 
   /* *************************************************************************************** */
   /* Readout Loop                                                                            */
@@ -391,7 +391,7 @@ void Digitizer::Readout(){
     Nb += BufferSize;
     Ne += NEvents;
     nevent +=NEvents;
-    CurrentTime = get_time();
+    CurrentTime = util::get_time();
     ElapsedTime = CurrentTime - PrevRateTime;
 
     nCycles++;
@@ -436,7 +436,7 @@ void Digitizer::Readout(){
       }
 
     }
-    nowTime=markTime();
+    nowTime=util::markTime();
     if(timeLimit&&nowTime-RunStartTime>=DurationOfRun){
       Quit=true;
       if(verbose)
@@ -988,7 +988,7 @@ void Digitizer::startAcq(){
     printf("Digitizer: Acquisition started\n");
   
   CAEN_DGTZ_SWStartAcquisition(handle);
-  RunStartTime = markTime();
+  RunStartTime = util::markTime();
   cout.precision(15);
   if(verbose)
     cout<<"Digitizer: Start time: "<<RunStartTime<<endl;

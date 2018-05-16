@@ -4,6 +4,7 @@
 #include "CAENdaq.h"
 #include "xmlParser.h"
 #include "fileManager.h"
+#include "util.h"
 
 using namespace std;
 
