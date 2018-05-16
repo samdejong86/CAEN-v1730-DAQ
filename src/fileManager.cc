@@ -19,18 +19,20 @@ void fileManager::init(string filename="CAEN.root", uint16_t EnableMask=0, int s
   }
   
   stringstream ss;
-  ss<<util::markTime();
+  ss<<int(util::markTime());
   dirname ="./temp_"+ss.str();
   ss.str();
-  
-  //make a temporary directory to store intermediate files
-  const int dir_err = mkdir(dirname.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-  if (-1 == dir_err)
-    {
-      cout<<"fileManager: Error creating temporary file directory"<<endl;
-      exit(1);
-    }
 
+
+
+  string makeCommand = "mkdir -p "+dirname;  
+ 
+  int ret = system(makeCommand.c_str());
+  if(ret!=0){
+    cout<<"fileManager: Error creating temporary file directory"<<endl;
+    exit(0);
+  }
+ 
 
 
   
@@ -111,9 +113,10 @@ void fileManager::CloseFile(){
     cout<<"fileManager: Merging temporary files"<<endl;
   }
   int ret = system(command.c_str());
-  
+    
   if(ret!=0)
     cout<<"fileManager: Error with merger command"<<endl;
+  
   
   for(int i=0; i<counter/saveInterval; i++){
     ss<<i;
@@ -130,7 +133,7 @@ void fileManager::CloseFile(){
 
   
   DeleteDir();
-
+  
   
   if(verbose)
     cout<<"fileManager: Closed "<<fname<<endl;
@@ -225,7 +228,7 @@ void fileManager::OpenNewFile(){
 
 
 void fileManager::DeleteDir(){
-  string command = "rm -d "+dirname;  
+  string command = "rmdir "+dirname+"/";  
 
   int ret = system(command.c_str());
   if(ret!=0)
