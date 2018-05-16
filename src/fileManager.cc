@@ -3,47 +3,8 @@
 #include <stdint.h>
 #include <sys/stat.h>
 
-fileManager::fileManager(){
-  string temp="CAEN.root";
-  saveInterval=100;
-  
-  string suffix=".root";
-  size_t pos = temp.find(suffix);
-  
-  if (pos != std::string::npos) {
-    // If found then erase it from string
-    temp.erase(pos, suffix.length());
-  }
 
-  stringstream ss;
-  ss<<int(util::markTime());
-  dirname="./temp_"+ss.str();
-  ss.str();
-  
-  //make a temporary directory to store intermediate files
-  const int dir_err = mkdir(dirname.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-  if (-1 == dir_err)
-    {
-      printf("Error creating directory!n");
-      exit(1);
-    }
-
-
-
-  
-  fname=dirname+"/"+temp;
-
-  mask = bitset<8>(0);
-  RunStartTime=0;
-  isOpen=false;
-  for(int i=0; i<8; i++){
-    lastTrigTime[i]=0;
-    nRollover[i]=0;
-  }
-  verbose=false;
-}
-
-fileManager::fileManager(string filename, uint16_t EnableMask, int saveInt){
+void fileManager::init(string filename="CAEN.root", uint16_t EnableMask=0, int saveInt=100){
   string temp = filename;
 
   saveInterval=saveInt;
@@ -66,7 +27,7 @@ fileManager::fileManager(string filename, uint16_t EnableMask, int saveInt){
   const int dir_err = mkdir(dirname.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
   if (-1 == dir_err)
     {
-      printf("Error creating directory!n");
+      cout<<"fileManager: Error creating temporary file directory"<<endl;
       exit(1);
     }
 
@@ -159,6 +120,16 @@ void fileManager::CloseFile(){
     remove((fname+"_"+ss.str()+".root").c_str());
     ss.str("");
   }
+
+  
+  string moveCmd = "mv "+targetFile+" ./";
+  ret = system(moveCmd.c_str());
+  
+  if(ret!=0)
+    cout<<"fileManager: Unable to move output file"<<endl;
+
+  
+  DeleteDir();
 
   
   if(verbose)

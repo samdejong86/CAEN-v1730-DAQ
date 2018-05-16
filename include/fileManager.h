@@ -22,12 +22,16 @@ const double rolloverAdd=8e-9*2147483647;
 class fileManager{
 
  public:
-  fileManager();
-  fileManager(string filename, uint16_t EnableMask, int saveInt);
+  fileManager(){
+    init("CAEN.root", 0, 100);
+  }
+  fileManager(string filename, uint16_t EnableMask, int saveInt){
+    init(filename, EnableMask, saveInt);
+  }
 
   ~fileManager(){
   }
-
+    
   void OpenFile();
   void OpenNewFile();
   void addEvent(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EVENT_t *Event16);
@@ -46,7 +50,9 @@ class fileManager{
   void setVerbose(bool v){verbose=v;}
   
  private:
- 
+
+  void init(string filename, uint16_t EnableMask, int saveInt);
+  
   bool verbose;
   
   string fname;
