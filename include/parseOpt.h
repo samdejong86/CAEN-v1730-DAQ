@@ -1,3 +1,4 @@
+#include <sys/stat.h>
 
 bool verbose;
 
@@ -442,9 +443,16 @@ XmlParser getOpt(int argc, char *argv[]){
   
   
 
-  if(settingsFile!="")
-    settings = XmlParser(settingsFile, verbose);
+  if(settingsFile!=""){
+    struct stat buffer;  
+    if (stat (settingsFile.c_str(), &buffer) == 0){
+      settings = XmlParser(settingsFile, verbose);
+    } else{
+      cout<<"\033[5;31;1mWARNING: Specified xml file does not exist!\nDefault settings will be used\033[m\n";
+    }
 
+    
+  }
 
   return settings;
 
