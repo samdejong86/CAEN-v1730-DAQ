@@ -3,9 +3,11 @@
 #include <stdint.h>
 #include <sys/stat.h>
 
+#include <algorithm>
 
 void fileManager::init(string filename="CAEN.root", uint16_t EnableMask=0, int saveInt=100){
   string temp = filename;
+  finalFilename = filename;
 
   saveInterval=saveInt;
 
@@ -17,23 +19,24 @@ void fileManager::init(string filename="CAEN.root", uint16_t EnableMask=0, int s
     // If found then erase it from string
     temp.erase(pos, suffix.length());
   }
+  temp.erase(std::remove(temp.begin(), temp.end(), '/'), temp.end());
   
   stringstream ss;
   ss<<int(util::markTime());
   dirname ="./temp_"+ss.str();
   ss.str();
 
-
+  
 
   string makeCommand = "mkdir -p "+dirname;  
+
  
   int ret = system(makeCommand.c_str());
   if(ret!=0){
     cout<<"fileManager: Error creating temporary file directory"<<endl;
     exit(0);
   }
- 
-  
+
 
   
   fname=dirname+"/"+temp;  
@@ -106,7 +109,7 @@ void fileManager::CloseFile(){
     
     ss.str("");
   }
-  string targetFile = fname+".root";
+  string targetFile = finalFilename;
   
   remove(targetFile.c_str());
 
@@ -126,14 +129,6 @@ void fileManager::CloseFile(){
     remove((fname+"_"+ss.str()+".root").c_str());
     ss.str("");
   }
-
-  
-  string moveCmd = "mv "+targetFile+" ./";
-  ret = system(moveCmd.c_str());
-  
-  if(ret!=0)
-    cout<<"fileManager: Unable to move output file"<<endl;
-
   
   DeleteDir();
   
@@ -205,7 +200,6 @@ void fileManager::OpenNewFile(){
 
   string thisFile=fname+"_"+ss.str()+".root";
   
-  cout<<"Opening "<<thisFile<<endl;
 
   ss.str("");
 

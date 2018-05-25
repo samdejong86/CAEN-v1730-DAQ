@@ -75,6 +75,8 @@ class fileManager{
   int counter;
   int fileCounter;
 
+  string finalFilename;
+
 };
 
 #endif
