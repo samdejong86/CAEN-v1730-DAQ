@@ -73,6 +73,7 @@ class fileManager{
 
   int saveInterval;
   int counter;
+  int fileCounter;
 
 };
 

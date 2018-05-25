@@ -33,7 +33,7 @@ void fileManager::init(string filename="CAEN.root", uint16_t EnableMask=0, int s
     exit(0);
   }
  
-
+  
 
   
   fname=dirname+"/"+temp;  
@@ -66,6 +66,7 @@ void fileManager::OpenFile(){
   data.resize(8);  
 
   counter=0;
+  fileCounter=0;
   
   stringstream ss;
   
@@ -90,17 +91,19 @@ void fileManager::OpenFile(){
 }
 
 void fileManager::CloseFile(){
-  if(isOpen){
+  //if(isOpen){
+  //cout<<"a file is open"<<endl;
     t->Write();
     f->Close();
-  }
+    //}
 
   string files="";
 
   stringstream ss;
-  for(int i=0; i<counter/saveInterval; i++){
+  for(int i=0; i<=fileCounter; i++){
     ss<<i;
     files += fname+"_"+ss.str()+".root ";
+    
     ss.str("");
   }
   string targetFile = fname+".root";
@@ -118,7 +121,7 @@ void fileManager::CloseFile(){
     cout<<"fileManager: Error with merger command"<<endl;
   
   
-  for(int i=0; i<counter/saveInterval; i++){
+  for(int i=0; i<=fileCounter; i++){
     ss<<i;
     remove((fname+"_"+ss.str()+".root").c_str());
     ss.str("");
@@ -187,7 +190,8 @@ void fileManager::addEvent(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EV
 void fileManager::OpenNewFile(){
 
   if(verbose){
-    cout<<"fileManager: number of events so far = "<<counter<<endl;
+    cout<<"fileManager: number of events so far = "<<counter<<endl;  
+    cout<<fileCounter<<endl;
   }
 
   t->Write(); //write the data ntuple
@@ -196,10 +200,13 @@ void fileManager::OpenNewFile(){
   
 
   stringstream ss;
-  ss<<counter/saveInterval;
+  fileCounter++;
+  ss<<fileCounter;
 
   string thisFile=fname+"_"+ss.str()+".root";
   
+  cout<<"Opening "<<thisFile<<endl;
+
   ss.str("");
 
 
