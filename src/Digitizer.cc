@@ -87,6 +87,7 @@ Digitizer::Digitizer(XmlParser settings){
     if(settings.fieldExists("threshold"+num)){
       ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_ACQ_ONLY;
       Threshold[i] = (uint32_t)settings.getValue("threshold"+num);
+      thr_file[i] = (uint32_t)settings.getValue("threshold"+num);
       Version_used[i]=1;
     } else {
       ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_DISABLED;
@@ -782,6 +783,10 @@ CAEN_DGTZ_ErrorCode Digitizer::Calibrate_DC_Offset(){
 	  if (DCoffset[ch] < 0) DCoffset[ch] = 0;
 	  if (DCoffset[ch] > 65535) DCoffset[ch] = 65535;		      
 	}
+      
+      if(verbose){
+	cout<<"Calibrated DC offset: "<<DCoffset[ch]<<endl;
+      }
 		
       ret = CAEN_DGTZ_SetChannelDCOffset(handle, (uint32_t)ch, DCoffset[ch]);
       if (ret)
@@ -883,11 +888,15 @@ CAEN_DGTZ_ErrorCode Digitizer::SetCorrectThreshold(){
 	      if (Threshold[ch] < 0) Threshold[ch] = 0;
 	      int size = (int)pow(2, (double)BoardInfo.ADC_NBits);
 	      if (Threshold[ch] > (uint32_t)size) Threshold[ch] = size;
+	      if(verbose){
+		cout<<"Initial threshold: "<<thr_file[ch]<<endl;
+		cout<<"Calibrated threshold: "<<Threshold[ch]<<endl;
+	      }
+	      
 	    }//if cal ok ch
 	  else
 	    Threshold[ch] = thr_file[ch];
 	  
-	  //Threshold[ch]=100;
 	  
 	  ret = CAEN_DGTZ_SetChannelTriggerThreshold(handle, ch, Threshold[ch]);
 	  if (ret)
