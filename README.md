@@ -53,6 +53,8 @@ Once these are installed, use make to build the software.
 	                             Valid options are 0-7
 	  -o FILE, --outfile FILE    Save waveform to FILE
 	  -r RECLEN, --reclen RECLEN Set number of samples recorded to RECLEN
+	  -n NUM, --saveInterval     After NUM events, save a temporary file.
+                        	     At the end of the run, these will be merged
 	  -a BASEADDRESS, --baseaddress BASEADDRESS
 	                             Set digitizer base address to BASEADDRESS
 	  -d DURATION, --duration DURATION
@@ -69,7 +71,14 @@ Once these are installed, use make to build the software.
   	                           in ADC counts
   	--trslope<CH> POLARITY     Trigger slope. Can be POSITIVE or NEGATIVE
   	--posttrigger VAL          Set the post trigger
-	
+
+### Note
+   When the program starts, it will create a temporary directory calle temp_`<timestamp>`, where `<timestamp>` is the unix time when the program started. Temporary root files containing `<saveInterval>` events will be saved here.
+
+When the program exits safely these files will be merged together, with the resulting file moved to the working directory. The temporary directory will then be removed. 
+
+If the program crashes, the temporary files will not be removed, so most of the data from the run can be salvaged by looking in this directory.
+
 ## Files:
 
 	src/
