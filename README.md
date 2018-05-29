@@ -73,7 +73,7 @@ Once these are installed, use make to build the software.
   	--posttrigger VAL          Set the post trigger
 
 ### Note
-   When the program starts, it will create a temporary directory calle temp_`<timestamp>`, where `<timestamp>` is the unix time when the program started. Temporary root files containing `<saveInterval>` events will be saved here.
+   When the program starts, it will create a temporary directory called temp_`<timestamp>`, where `<timestamp>` is the unix time when the program started. Temporary root files containing `<saveInterval>` events will be saved here.
 
 When the program exits safely these files will be merged together, with the resulting file moved to the working directory. The temporary directory will then be removed. 
 
