@@ -4,7 +4,7 @@ void printHelp(string progName){
   
   cout<<"usage: CAENdaq  [-h] [-v] [-x XMLFILE] [--xmlout XMLFILE] [-q] [w0] [w1]\n";//<<endl;
   cout<<"                [w2] [w3] ... [-o FILE] [-r RECLEN] [-a BASEADDRESS] \n";
-  cout<<"                [-d DURATION] [--posttrigger VAL]\n";
+  cout<<"                [-n NUM] [-d DURATION] [--posttrigger VAL]\n";
   cout<<"                [--polarity0 POLARITY] ... [--DCoffset0 OFFSET] ...\n";
   cout<<"                [--threshold0 THRESHOLD] ... [--trslope0 POLARITY] ... \n";
 
