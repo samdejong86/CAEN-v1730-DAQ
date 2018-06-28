@@ -100,6 +100,27 @@ void fileManager::CloseFile(){
     f->Close();
     //}
 
+
+    if(fileCounter==0){
+      string mvCommand = "mv "+fname+"_0.root "+finalFilename;
+      
+
+      int ret = system(mvCommand.c_str());
+
+      if(ret!=0){
+	cout<<"fileManager: Error moving temporary file. Temporary directory will not be removed\n";
+      } else {
+	DeleteDir();	
+      }
+
+
+
+      return;
+    }
+
+
+
+
   string files="";
 
   stringstream ss;
@@ -120,18 +141,23 @@ void fileManager::CloseFile(){
   }
   int ret = system(command.c_str());
     
-  if(ret!=0)
-    cout<<"fileManager: Error with merger command"<<endl;
-  
-  
-  for(int i=0; i<=fileCounter; i++){
-    ss<<i;
-    remove((fname+"_"+ss.str()+".root").c_str());
-    ss.str("");
+  bool mergeError=false;
+
+  if(ret!=0){
+    cout<<"fileManager: Error with merger command. Temporary files will not be deleted"<<endl;
+    mergeError=true;
   }
+    
   
-  DeleteDir();
+  if(!mergeError){
+    for(int i=0; i<=fileCounter; i++){
+      ss<<i;
+      remove((fname+"_"+ss.str()+".root").c_str());
+      ss.str("");
+    }
   
+    DeleteDir();
+  }
   
   if(verbose)
     cout<<"fileManager: Closed "<<fname<<endl;

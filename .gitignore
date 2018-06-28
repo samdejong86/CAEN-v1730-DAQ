@@ -6,3 +6,4 @@
 CAENdaq
 ignored/*
 flymd.*
+*.xml
