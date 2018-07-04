@@ -9,9 +9,16 @@
 #include "help.h"
 #include "parseOpt.h"
 
+volatile sig_atomic_t flag=0;
+
+void my_function(int sig){ // can be called asynchronously
+  flag = 1; // set flag
+}
+
 
 int main(int argc, char *argv[]){
 
+  signal(SIGINT, my_function); 
 
   XmlParser settings = getOpt(argc, argv);
     

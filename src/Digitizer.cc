@@ -3,6 +3,8 @@
 #include <bitset>
 
 static CAEN_DGTZ_IRQMode_t INTERRUPT_MODE = CAEN_DGTZ_IRQ_MODE_ROAK;
+extern volatile sig_atomic_t flag;
+
 
 Digitizer::Digitizer(XmlParser settings){
   DefaultSettings(); 
@@ -311,6 +313,10 @@ void Digitizer::Readout(){
   /* *************************************************************************************** */
   Quit=false;
   while(!Quit) {
+
+    if(flag==1)
+      Quit=true;
+    
     // Check for keyboard commands (key pressed)
     //if(!eventLimit&&!timeLimit)
     CheckKeyboardCommands();

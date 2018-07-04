@@ -11,6 +11,7 @@
 #include <string.h>
 #include <math.h>
 #include <CAENDigitizerType.h>
+#include <signal.h> 
 
 #include "keyb.h"
 //#include "fft.h"
@@ -47,5 +48,4 @@
 #define NACQS   50
 
 
-//double markTime();
-
+void my_function(int sig);

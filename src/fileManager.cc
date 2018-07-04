@@ -23,7 +23,7 @@ void fileManager::init(string filename="CAEN.root", uint16_t EnableMask=0, int s
   
   stringstream ss;
   ss<<int(util::markTime());
-  dirname ="./temp_"+ss.str();
+  dirname ="./"+temp+"_"+ss.str();
   ss.str();
 
   
