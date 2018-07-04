@@ -23,7 +23,6 @@ class fileManager{
 
  public:
   fileManager(){
-    init("CAEN.root", 0, 100);
   }
   fileManager(string filename, uint16_t EnableMask, int saveInt){
     init(filename, EnableMask, saveInt);
@@ -32,10 +31,13 @@ class fileManager{
   ~fileManager(){
   }
     
+  void init(string filename, uint16_t EnableMask, int saveInt);
   void OpenFile();
   void OpenNewFile();
   void addEvent(CAEN_DGTZ_EventInfo_t *EventInfo, CAEN_DGTZ_UINT16_EVENT_t *Event16);
   void CloseFile();
+  void DeleteDir();
+  void setVerbose(bool v){verbose=v;}
 
   void setRunStartTime(double rstart){
     RunStartTime=rstart;
@@ -45,13 +47,9 @@ class fileManager{
     }
   }
 
-  void DeleteDir();
-  
-  void setVerbose(bool v){verbose=v;}
   
  private:
 
-  void init(string filename, uint16_t EnableMask, int saveInt);
   
   bool verbose;
   

@@ -29,8 +29,9 @@ void fileManager::init(string filename="CAEN.root", uint16_t EnableMask=0, int s
   
 
   string makeCommand = "mkdir -p "+dirname;  
+  
+  cout<<endl<<makeCommand<<endl<<endl;
 
- 
   int ret = system(makeCommand.c_str());
   if(ret!=0){
     cout<<"fileManager: Error creating temporary file directory"<<endl;
@@ -212,8 +213,8 @@ void fileManager::OpenNewFile(){
 
   if(verbose){
     cout<<"fileManager: number of events so far = "<<counter<<endl;  
-    cout<<fileCounter<<endl;
   }
+  
 
   t->Write(); //write the data ntuple
   f->Close();
@@ -256,6 +257,8 @@ void fileManager::OpenNewFile(){
 
 void fileManager::DeleteDir(){
   string command = "rmdir "+dirname+"/";  
+
+  cout<<command<<endl;
 
   int ret = system(command.c_str());
   if(ret!=0)

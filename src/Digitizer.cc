@@ -221,7 +221,7 @@ bool Digitizer::OpenDigitizer(){
   nCycles= 0;
   Event16=NULL; /* generic event struct with 16 bit data (10, 12, 14 and 16 bit digitizers */
 
- 
+  cout<<"hello\n";
   fman = fileManager(fname, EnableMask, saveInterval);
   fman.setVerbose(verbose);
   fman.OpenFile();
@@ -314,8 +314,11 @@ void Digitizer::Readout(){
   Quit=false;
   while(!Quit) {
 
-    if(flag==1)
+    if(flag==1){
       Quit=true;
+      manualStop=true;
+
+    }
     
     // Check for keyboard commands (key pressed)
     //if(!eventLimit&&!timeLimit)
