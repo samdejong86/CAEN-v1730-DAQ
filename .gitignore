@@ -7,3 +7,4 @@ CAENdaq
 ignored/*
 flymd.*
 *.xml
+*.tgz
