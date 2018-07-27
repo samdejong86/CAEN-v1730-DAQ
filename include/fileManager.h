@@ -23,6 +23,7 @@ class fileManager{
 
  public:
   fileManager(){
+    initialized=false;
   }
   fileManager(string filename, uint16_t EnableMask, int saveInt){
     init(filename, EnableMask, saveInt);
@@ -38,6 +39,7 @@ class fileManager{
   void CloseFile();
   void DeleteDir();
   void setVerbose(bool v){verbose=v;}
+  bool isInit(){return initialized;}
 
   void setRunStartTime(double rstart){
     RunStartTime=rstart;
@@ -52,6 +54,7 @@ class fileManager{
 
   
   bool verbose;
+  bool initialized;
   
   string fname;
   string dirname;

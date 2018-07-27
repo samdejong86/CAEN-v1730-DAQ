@@ -194,6 +194,9 @@ void Digitizer::DefaultSettings(){
 
 bool Digitizer::OpenDigitizer(){
 
+  if(!fman.isInit())
+    fman.init(fname, EnableMask,saveInterval);
+  
   
   CAEN_DGTZ_ErrorCode ret = CAEN_DGTZ_Success;
   isVMEDevice= 0;

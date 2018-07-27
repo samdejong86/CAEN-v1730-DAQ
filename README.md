@@ -13,6 +13,8 @@ Requires the CAEN Digitizer libraries. Install in this order:
 3. [CAEN Comm library](http://www.caen.it/csite/CaenProd.jsp?parent=38&idmod=684)
 4. [CAEN digitizer](http://www.caen.it/csite/CaenProd.jsp?parent=43&idmod=717)
 
+If the tar files containing the libraries are placed in the **drivers** directory, run **source CAEN\_driver\_install.sh** as root in that directory to automatically install the libraries.
+
 **Note:** Updates to your system may break the CAEN libraries. If the DAQ software stops working, try reinstalling the VME and USB libraries.
 
 Requires ROOT (available [here](https://root.cern.ch/downloading-root)). You may need these libraries:
@@ -94,9 +96,11 @@ If the program crashes, the temporary files will not be removed, so most of the 
 		for building the software
 	draw.C
 		A root script for drawing waveforms
+	drivers/CAEN\_driver\_install.sh
+		A script for installing the CAEN libraries. The tar files containing the libraries must be located in the same directory as this script
 	
 ## Acknowledgements 
 
-This software used code in CAEN's wavedump example, modified to be in an object oriented framework.
+This software used code in CAEN's [wavedump](http://www.caen.it/csite/CaenProd.jsp?parent=38&idmod=692) example, modified to be in an object oriented framework.
 
 
