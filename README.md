@@ -4,6 +4,7 @@
 
 DAQ software for a CAEN V1730 digitizer with waveform recording firmware. Software assumes connection through a V1718 VME-USB Bridge
 
+
 This software is based on the CAEN wavedump example program
 
 ## Installation:
@@ -51,7 +52,7 @@ Once these are installed, use make to build the software.
 
      The following options can also be set using an XML file, with the
      long options as the XML tags:
-      -w<CH>, --ch<CH>           Record the waveform on CH
+      -w <CH>, --ch <CH>         Record the waveform on CH
                                  Valid options are 0-7
       -o FILE, --outfile FILE    Save waveform to FILE
       -n NUM, --saveInterval     After NUM events, save a temporary file.
@@ -82,14 +83,201 @@ When the program exits safely these files will be merged together, with the resu
 
 If the program crashes, the temporary files will not be removed, so most of the data from the run can be salvaged by looking in this directory.
 
+
+## Tutorial
+
+### Pulse and Trigger Polarity
+
+For a positive pulse, polarity<CH> should be set to POSITIVE, and for a negative pulse, it should be set to NEGATIVE. trslope<CH> may be set to POSITIVE or NEGATIVE depending on where the desired trigger point is. A general rule of thumb is that the trigger polarity and the pulse polarity should be the same.
+
+<details>
+  <summary>Positive pulse with positive trigger</summary>
+
+
+![Positive Pulse with Positive Trigger](img/PosPulsePosTrig.png "Positive Pulse with Positive Trigger")
+
+Trigger will occur when the signal **rises above** 100. The red line is the trigger point.
+
+Example command line arguments:
+
+    CAENdaq -o FILE.root -d 1000 --ch 0 --polarity0 POSITIVE --threshold0 100 --trslope0 POSITIVE
+
+[Example xml file](xml/PositivePulsePositiveTrigger.xml)
+
+</details>
+
+
+
+<details> <summary>Positive pulse with negative trigger</summary>
+
+![Positive Pulse with Negative Trigger](img/PosPulseNegTrig.png "Positive Pulse with Negative Trigger")
+
+Trigger will occur when the signal **falls below** 100. The red line is the trigger point.
+
+Example command line arguments:
+
+    CAENdaq -o FILE.root -d 1000 --ch 0 --polarity0 POSITIVE --threshold0 100 --trslope0 NEGATIVE
+
+[Example xml file](xml/PositivePulseNegativeTrigger.xml)
+
+</details>
+
+
+<details> <summary>Negative pulse with positive trigger</summary>
+
+![Negative Pulse with Positive Trigger](img/NegPulsePosTrig.png "Negative Pulse with Positive Trigger")
+
+Trigger will occur when the signal **rises above** 100. The red line is the trigger point.
+
+Example command line arguments:
+
+    CAENdaq -o FILE.root -d 1000 --ch 0 --polarity0 NEGATIVE --threshold0 100 --trslope0 POSITIVE
+
+[Example xml file](xml/NegativePulsePositiveTrigger.xml)
+
+</details>
+
+
+
+<details> <summary>Negative pulse with negative trigger</summary>
+
+![Negative Pulse with Negative Trigger](img/NegPulseNegTrig.png "Negative Pulse with Negative Trigger")
+
+Trigger will occur when the signal **falls below** 100. The red line is the trigger point.
+
+Example command line arguments:
+
+    CAENdaq -o FILE.root -d 1000 --ch 0 --polarity0 NEGATIVE --threshold0 100 --trslope0 NEGATIVE
+
+[Example xml file](xml/NegativePulseNegativeTrigger.xml)
+
+</details>
+
+### Record length
+
+The record length setting sets the number of samples in a waveform. A higher number will create a longer waveform.
+
+
+<details> <summary> Low record length </summary>
+
+In this example the record length is set to 512 samples.
+
+![Low record length](img/reclen_512.png "512 sample record length")
+
+Example command line arguments:
+
+    CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 512
+
+[Example xml file](xml/RecordLength_512.xml)
+
+</details>
+
+
+<details> <summary> Medium record length </summary>
+
+In this example the record length is set to 1024 samples (the default).
+
+![mid record length](img/reclen_1024.png "1024 sample record length")
+
+Example command line arguments:
+
+    CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 1024
+    
+[Example xml file](xml/RecordLength_1024.xml)
+
+</details>
+
+
+<details> <summary> High record length </summary>
+
+In this example the record length is set to 2048 samples.
+
+![high record length](img/reclen_2048.png "2048 sample record length")
+
+Example command line arguments:
+
+    CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 2048
+    
+[Example xml file](xml/RecordLength_2048.xml)
+
+</details>
+
+
+### Post Trigger
+
+The post trigger setting sets how much of the waveform will be after the trigger occurs. valid settings are 0 to 100. Setting this to 50 is a good rule of thumb.
+
+
+
+<details> <summary> Post trigger of 0 </summary>
+
+![post trigger 0](img/postTrig_0.png "Post Trigger set to 0")
+
+Example command line arguments:
+
+    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 0
+    
+[Example xml file](xml/PostTrigger_0.xml)
+
+</details>
+
+<details> <summary> Post trigger of 25 </summary>
+
+![post trigger 25](img/postTrig_25.png "Post Trigger set to 25")
+
+Example command line arguments:
+
+    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 25
+    
+[Example xml file](xml/PostTrigger_25.xml)
+
+</details>
+
+<details> <summary> Post trigger of 50 (the default setting)</summary>
+
+![post trigger 50](img/postTrig_50.png "Post Trigger set to 50")
+
+Example command line arguments:
+
+    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 50
+    
+[Example xml file](xml/PostTrigger_50.xml)
+
+</details>
+
+<details> <summary> Post trigger of 75 </summary>
+
+![post trigger 75](img/postTrig_75.png "Post Trigger set to 75")
+
+Example command line arguments:
+
+    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 75
+    
+[Example xml file](xml/PostTrigger_75.xml)
+
+</details>
+
+<details> <summary> Post trigger of 100 </summary>
+
+![post trigger 100](img/postTrig_100.png "Post Trigger set to 010")
+
+Example command line arguments:
+
+    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 100
+    
+[Example xml file](xml/PostTrigger_100.xml)
+
+</details>
+
 ## Files:
+
 
 	src/
 		source files
 	include/
 		header files
-	xml/Settings.xml
-		an example settings file
+	xml/*.xml
+		Some example settings files
 	icon/CAEN.png
 		Icon for the notification
 	Makefile
@@ -98,6 +286,8 @@ If the program crashes, the temporary files will not be removed, so most of the 
 		A root script for drawing waveforms
 	drivers/CAEN\_driver\_install.sh
 		A script for installing the CAEN libraries. The tar files containing the libraries must be located in the same directory as this script
+	img/*
+		Images used in the tutorial section of this document
 	
 ## Acknowledgements 
 

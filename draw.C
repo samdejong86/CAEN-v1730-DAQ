@@ -29,8 +29,9 @@ void draw(string filename, int ch, int event){
   }
 
   gr->GetXaxis()->SetTitle("time (#mus)");
-  gr->GetYaxis()->SetTitle("Voltage (mV)");
+  gr->GetYaxis()->SetTitle("ADC counts");
 
+  gr->GetYaxis()->SetTitleOffset(1.42);
   gr->Draw("AL");
   
 
