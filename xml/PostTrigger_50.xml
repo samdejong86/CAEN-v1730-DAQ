@@ -11,9 +11,6 @@
     </ch0>
     <posttrigger>
       50
-    </posttrigger> 
-    <threshold0>
-      100
-    </threshold0>     
+    </posttrigger>  
   </Active>
 </xml>

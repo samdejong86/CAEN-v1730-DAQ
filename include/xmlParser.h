@@ -208,7 +208,6 @@ public:
   }
   
 
-
   bool fieldExists(std::string xmlField){
     bool exist=false;
     for(int i=0; i<(int)tags.size(); i++){
@@ -222,6 +221,13 @@ public:
     for(int i=0; i<(int)tags.size(); i++) std::cout<<tags[i]<<"\t"<<vals[i]<<std::endl;
   }
 
+  bool isEmpty() {
+    if(tags.size()==0) return true;
+    else return false;
+
+  }
+
+  
   void writeXml(std::string filename){
 
     std::ofstream outfile;

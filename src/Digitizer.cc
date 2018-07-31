@@ -7,8 +7,11 @@ extern volatile sig_atomic_t flag;
 
 
 Digitizer::Digitizer(XmlParser settings){
-  DefaultSettings(); 
+  DefaultSettings();
 
+  if(settings.isEmpty()) return;
+
+  
   if(settings.fieldExists("duration")){
     string d = settings.getStringValue("duration");
     if(d.find(":")!= std::string::npos){
@@ -49,6 +52,7 @@ Digitizer::Digitizer(XmlParser settings){
 
   uint16_t tempEnableMask=0;
   stringstream ss;
+  
   for(int i=0; i<MAX_SET; i++){
     ss<<i;
     string num = ss.str();
@@ -56,10 +60,10 @@ Digitizer::Digitizer(XmlParser settings){
 
     if(settings.fieldExists("ch"+num)){
       if(settings.getValue("ch"+num)==1){
-	tempEnableMask += (1<<i);      
-	//ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_ACQ_ONLY;
+	tempEnableMask += (1<<i);
+	ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_ACQ_ONLY;
       }else{
-	//ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_DISABLED;
+	ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_DISABLED;
 	PulsePolarity[i]=CAEN_DGTZ_PulsePolarityPositive;
 	DCoffset[i]=0;
 	Threshold[i]=0;
@@ -87,12 +91,12 @@ Digitizer::Digitizer(XmlParser settings){
       DCoffset[i] = (uint32_t)settings.getValue("DCoffset"+num);
 
     if(settings.fieldExists("threshold"+num)){
-      ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_ACQ_ONLY;
+      //ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_ACQ_ONLY;
       Threshold[i] = (uint32_t)settings.getValue("threshold"+num);
       thr_file[i] = (uint32_t)settings.getValue("threshold"+num);
       Version_used[i]=1;
     } else {
-      ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_DISABLED;
+      //ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_DISABLED;
       Version_used[i]=0;
     }
   }
