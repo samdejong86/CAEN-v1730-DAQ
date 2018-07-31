@@ -49,6 +49,8 @@ Once these are installed, use make to build the software.
       --xmlout XMLFILE           Save settings to xml file
       -q, --quit                 Used with --xmlout. Quits program after
                                  saving settings
+      --tutorial                 Open the tutorial in a web browser
+
 
      The following options can also be set using an XML file, with the
      long options as the XML tags:

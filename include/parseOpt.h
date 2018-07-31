@@ -63,6 +63,7 @@ XmlParser getOpt(int argc, char *argv[]){
       {"trslope5",      required_argument, 0, 'W'},
       {"trslope6",      required_argument, 0, 'X'},
       {"trslope7",      required_argument, 0, 'Y'},
+      {"tutorial",      no_argument,       0, 'Z'},
       
       {0, 0, 0, 0}
     };
@@ -424,8 +425,14 @@ XmlParser getOpt(int argc, char *argv[]){
 	exit(0);
       }      
       break;   
-
-      
+    case 'Z':
+      string command = "xdg-open https://particle.phys.uvic.ca/~srdejong/CAEN-v1730-DAQ/Tutorial.html";
+      int ret = system(command.c_str());
+      if(ret!=0)
+	cout<<"Unable to open tutorial"<<endl;
+  
+      exit(0);
+      break;
     }
      
   }
