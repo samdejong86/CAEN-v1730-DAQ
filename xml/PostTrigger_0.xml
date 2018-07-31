@@ -1,0 +1,16 @@
+<xml>
+  <Active>
+    <duration>
+      1000
+    </duration>
+    <outfile>
+      FILE.root
+    </outfile>
+    <ch0>
+      1
+    </ch0>
+    <posttrigger>
+      0
+    </posttrigger>    
+  </Active>
+</xml>

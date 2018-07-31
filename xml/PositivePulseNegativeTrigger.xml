@@ -1,0 +1,28 @@
+<xml>
+  <Active>
+    <duration>
+      1000
+    </duration>
+    <outfile>
+      FILE.root
+    </outfile>
+    <reclen>
+      1024
+    </reclen>
+    <posttrigger>
+      50
+    </posttrigger>
+    <ch0>
+      1
+    </ch0>
+    <polarity0>
+      POSITIVE
+    </polarity0>
+    <threshold0>
+      100
+    </threshold0>  
+    <trslope0>
+      NEGATIVE
+    </trslope0>
+  </Active>
+</xml>
