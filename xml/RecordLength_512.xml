@@ -11,6 +11,9 @@
     </ch0>
     <reclen>
       512
-    </reclen>     
+    </reclen>   
+    <threshold0>
+      100
+    </threshold0>   
   </Active>
 </xml>

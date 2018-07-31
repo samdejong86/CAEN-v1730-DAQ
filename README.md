@@ -168,7 +168,7 @@ In this example the record length is set to 512 samples.
 
 Example command line arguments:
 
-    CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 512
+    CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 512 --threshold0 100
 
 [Example xml file](xml/RecordLength_512.xml)
 
@@ -183,7 +183,7 @@ In this example the record length is set to 1024 samples (the default).
 
 Example command line arguments:
 
-    CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 1024
+    CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 1024 --threshold0 100
     
 [Example xml file](xml/RecordLength_1024.xml)
 
@@ -198,7 +198,7 @@ In this example the record length is set to 2048 samples.
 
 Example command line arguments:
 
-    CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 2048
+    CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 2048 --threshold0 100
     
 [Example xml file](xml/RecordLength_2048.xml)
 
@@ -217,7 +217,7 @@ The post trigger setting sets how much of the waveform will be after the trigger
 
 Example command line arguments:
 
-    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 0
+    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 0 --threshold0 100
     
 [Example xml file](xml/PostTrigger_0.xml)
 
@@ -229,7 +229,7 @@ Example command line arguments:
 
 Example command line arguments:
 
-    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 25
+    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 25 --threshold0 100
     
 [Example xml file](xml/PostTrigger_25.xml)
 
@@ -241,7 +241,7 @@ Example command line arguments:
 
 Example command line arguments:
 
-    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 50
+    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 50 --threshold0 100
     
 [Example xml file](xml/PostTrigger_50.xml)
 
@@ -253,7 +253,7 @@ Example command line arguments:
 
 Example command line arguments:
 
-    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 75
+    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 75 --threshold0 100
     
 [Example xml file](xml/PostTrigger_75.xml)
 
@@ -265,7 +265,7 @@ Example command line arguments:
 
 Example command line arguments:
 
-    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 100
+    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 100 --threshold0 100
     
 [Example xml file](xml/PostTrigger_100.xml)
 

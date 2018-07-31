@@ -10,7 +10,6 @@ Digitizer::Digitizer(XmlParser settings){
   DefaultSettings();
 
   if(settings.isEmpty()) return;
-
   
   if(settings.fieldExists("duration")){
     string d = settings.getStringValue("duration");
@@ -30,8 +29,9 @@ Digitizer::Digitizer(XmlParser settings){
     }
   }
   
-  if(settings.fieldExists("saveInterval"))
+  if(settings.fieldExists("saveInterval")){
     saveInterval = (int)settings.getValue("saveInterval");
+  }
 
   
   if(settings.fieldExists("reclen")){
@@ -52,6 +52,8 @@ Digitizer::Digitizer(XmlParser settings){
 
   uint16_t tempEnableMask=0;
   stringstream ss;
+
+  bool trigChannel=false;
   
   for(int i=0; i<MAX_SET; i++){
     ss<<i;
@@ -61,15 +63,13 @@ Digitizer::Digitizer(XmlParser settings){
     if(settings.fieldExists("ch"+num)){
       if(settings.getValue("ch"+num)==1){
 	tempEnableMask += (1<<i);
-	ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_ACQ_ONLY;
       }else{
-	ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_DISABLED;
-	PulsePolarity[i]=CAEN_DGTZ_PulsePolarityPositive;
-	DCoffset[i]=0;
 	Threshold[i]=0;
-	Version_used[i]=0;
 	continue;
       }
+    } else{
+      Threshold[i]=0;
+      continue;
     }
     
     if(settings.fieldExists("polarity"+num)){
@@ -91,12 +91,14 @@ Digitizer::Digitizer(XmlParser settings){
       DCoffset[i] = (uint32_t)settings.getValue("DCoffset"+num);
 
     if(settings.fieldExists("threshold"+num)){
-      //ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_ACQ_ONLY;
+      trigChannel=true;
+      ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_ACQ_ONLY;
       Threshold[i] = (uint32_t)settings.getValue("threshold"+num);
       thr_file[i] = (uint32_t)settings.getValue("threshold"+num);
       Version_used[i]=1;
     } else {
-      //ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_DISABLED;
+      Threshold[i]=0;
+      ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_DISABLED;
       Version_used[i]=0;
     }
   }
@@ -104,6 +106,24 @@ Digitizer::Digitizer(XmlParser settings){
   if(tempEnableMask!=0)
     EnableMask=tempEnableMask;
 
+  if(!trigChannel){
+    cout<<"Digitizer: Warning: No trigger set! use --threshold<CH> to set the threshold for one of the enabled channels."<<endl;
+    cout<<"           Threshold on first enabled channel will be set to 100"<<endl;
+
+    
+    bitset<8> mask(EnableMask);
+    
+    for(int i=0; i<MAX_SET; i++){
+      if(mask[i]==1){
+	ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_ACQ_ONLY;
+	Threshold[i]=100;
+	thr_file[i]=100;
+	Version_used[i]=1;	  
+	break;      
+      }
+    }
+    
+  }
   
 
 }
@@ -152,7 +172,7 @@ void Digitizer::DefaultSettings(){
     ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_DISABLED;
     PulsePolarity[i]=CAEN_DGTZ_PulsePolarityPositive;
     TrigPolarity[i]=CAEN_DGTZ_TriggerOnRisingEdge;
-    DCoffset[i]=0;
+    DCoffset[i]=32767;
     Threshold[i]=0;
     Version_used[i]=0;
   }
