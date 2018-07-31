@@ -5,13 +5,6 @@
     </duration>
     <outfile>
       FILE.root
-    </outfile>
-    <reclen>
-      1024
-    </reclen>
-    <posttrigger>
-      50
-    </posttrigger>
     <ch0>
       1
     </ch0>

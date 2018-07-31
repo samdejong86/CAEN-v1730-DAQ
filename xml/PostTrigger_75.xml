@@ -12,5 +12,8 @@
     <posttrigger>
       75
     </posttrigger>    
+    <threshold0>
+      100
+    </threshold0>  
   </Active>
 </xml>

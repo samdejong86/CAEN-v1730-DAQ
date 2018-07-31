@@ -12,5 +12,8 @@
     <reclen>
       2048
     </reclen>    
+    <threshold0>
+      100
+    </threshold0>  
   </Active>
 </xml>
