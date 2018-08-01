@@ -18,7 +18,15 @@ Digitizer::Digitizer(XmlParser settings){
       char token=':';
       vector<string> parts = util::split(d.c_str(), token);
 
-      DurationOfRun = 3600*atoi(parts[0].c_str())+60*atoi(parts[1].c_str())+atoi(parts[2].c_str());
+      if(parts.size()==3)
+	DurationOfRun = 3600*atoi(parts[0].c_str())+60*atoi(parts[1].c_str())+atoi(parts[2].c_str());
+      else if(parts.size()==2)
+	DurationOfRun = 60*atoi(parts[0].c_str())+atoi(parts[1].c_str());
+      else {
+	cout<<"Digitizer: Invalid time format. Use HH:MM:DD"<<endl;
+	exit(0);
+      }
+      
       startImmed=true;
 
     } else{

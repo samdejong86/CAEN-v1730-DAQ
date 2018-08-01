@@ -1,10 +1,46 @@
 <h2 id="tutorial">Tutorial for <a href="https://github.com/samdejong86/CAEN-v1730-DAQ" target="_blank">CAEN v1730 Digitizer DAQ</a></h2>
 
+<h3 id="pulseandtriggerpolarity">Duration</h3>
+
+<p>There are two ways of using the duration option.</p>
+<details><summary>Number of events</summary>
+<hr>
+<p>If an integer is used as the parameter, that many events will be recorded. Example command:</p>
+
+<pre><code>CAENdaq --duration 1000</code></pre>
+
+<p>or in XML:</p>
+<pre><code>
+&lt;duration&gt;
+   1000
+&lt;/duration&gt
+</code></pre>
+
+<p>will collect 1000 events before closing</p>
+<hr>
+</details>
+
+<details><summary>Timed acquisition</summary>
+<hr>
+<p> If a time is specified in HH:MM:SS, events will be collected for that amount of time. Example command:</p>
+
+<pre><code>CAENdaq --duration 01:30:00</code></pre>
+<p>or in XML:</p>
+<pre><code>
+    &lt;duration&gt;
+    01:30:00
+    &lt;/duration&gt
+</code></pre>
+
+<p>will collect events for 90 minutes before closing</p>
+<hr>
+</details>
+
 <h3 id="pulseandtriggerpolarity">Pulse and Trigger Polarity</h3>
 
-<p>For a positive pulse, polarity<CH> should be set to POSITIVE, and for a negative pulse, it should be set to NEGATIVE. trslope<CH> may be set to POSITIVE or NEGATIVE depending on where the desired trigger point is. A general rule of thumb is that the trigger polarity and the pulse polarity should be the same.</p>
+<p>For a positive pulse, polarity&lt;CH&gt; should be set to POSITIVE, and for a negative pulse, it should be set to NEGATIVE. trslope&lt;CH&gt; may be set to POSITIVE or NEGATIVE depending on where the desired trigger point is. A general rule of thumb is that the trigger polarity and the pulse polarity should be the same.</p>
 
-<p><details>
+<details>
   <summary>Positive pulse with positive trigger</summary></p>
 <hr>
 <p><img src="img/PosPulsePosTrig.png" alt="Positive Pulse with Positive Trigger" title="Positive Pulse with Positive Trigger" /></p>
@@ -18,9 +54,9 @@
 
 <p><a href="xml/PositivePulsePositiveTrigger.xml">Example xml file</a></p>
 <hr>
-<p></details></p>
+<p></details>
 
-<p><details> <summary>Positive pulse with negative trigger</summary></p>
+<details> <summary>Positive pulse with negative trigger</summary></p>
 <hr>
 <p><img src="img/PosPulseNegTrig.png" alt="Positive Pulse with Negative Trigger" title="Positive Pulse with Negative Trigger" /></p>
 
@@ -33,9 +69,9 @@
 
 <p><a href="xml/PositivePulseNegativeTrigger.xml">Example xml file</a></p>
 <hr>
-<p></details></p>
+<p></details>
 
-<p><details> <summary>Negative pulse with positive trigger</summary></p>
+<details> <summary>Negative pulse with positive trigger</summary></p>
 <hr>
 <p><img src="img/NegPulsePosTrig.png" alt="Negative Pulse with Positive Trigger" title="Negative Pulse with Positive Trigger" /></p>
 
@@ -48,9 +84,9 @@
 
 <p><a href="xml/NegativePulsePositiveTrigger.xml">Example xml file</a></p>
 <hr>
-<p></details></p>
+<p></details>
 
-<p><details> <summary>Negative pulse with negative trigger</summary></p>
+<details> <summary>Negative pulse with negative trigger</summary></p>
 <hr>
 <p><img src="img/NegPulseNegTrig.png" alt="Negative Pulse with Negative Trigger" title="Negative Pulse with Negative Trigger" /></p>
 
@@ -63,13 +99,13 @@
 
 <p><a href="xml/NegativePulseNegativeTrigger.xml">Example xml file</a></p>
 <hr>
-<p></details></p>
+<p></details>
 
 <h3 id="recordlength">Record length</h3>
 
 <p>The record length setting sets the number of samples in a waveform. A higher number will create a longer waveform.</p>
 
-<p><details> <summary> Low record length </summary></p>
+<details> <summary> Low record length </summary></p>
 
 <p>In this example the record length is set to 512 samples.</p>
 
@@ -80,11 +116,11 @@
 <pre><code>CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 512 --threshold0 100
 </code></pre>
 
-<p><a href="xml/RecordLength_512.xml">Example xml file</a></p>
+<a href="xml/RecordLength_512.xml">Example xml file</a></p>
 <hr>
-<p></details></p>
+<p></details>
 
-<p><details> <summary> Medium record length </summary></p>
+<details> <summary> Medium record length </summary></p>
 <hr>
 <p>In this example the record length is set to 1024 samples (the default).</p>
 
@@ -97,9 +133,9 @@
 
 <p><a href="xml/RecordLength_1024.xml">Example xml file</a></p>
 <hr>
-<p></details></p>
+<p></details>
 
-<p><details> <summary> High record length </summary></p>
+<details> <summary> High record length </summary></p>
 <hr>
 <p>In this example the record length is set to 2048 samples.</p>
 
@@ -112,13 +148,13 @@
 
 <p><a href="xml/RecordLength_2048.xml">Example xml file</a></p>
 <hr>
-<p></details></p>
+<p></details>
 
 <h3 id="posttrigger">Post Trigger</h3>
 
 <p>The post trigger setting sets how much of the waveform will be after the trigger occurs. valid settings are 0 to 100. Setting this to 50 is a good rule of thumb.</p>
 
-<p><details> <summary> Post trigger of 0 </summary></p>
+<details> <summary> Post trigger of 0 </summary></p>
 <hr>
 <p><img src="img/postTrig_0.png" alt="post trigger 0" title="Post Trigger set to 0" /></p>
 
@@ -129,9 +165,9 @@
 
 <p><a href="xml/PostTrigger_0.xml">Example xml file</a></p>
 <hr>
-<p></details></p>
+<p></details>
 
-<p><details> <summary> Post trigger of 25 </summary></p>
+<details> <summary> Post trigger of 25 </summary></p>
 <hr>
 <p><img src="img/postTrig_25.png" alt="post trigger 25" title="Post Trigger set to 25" /></p>
 
@@ -142,9 +178,9 @@
 
 <p><a href="xml/PostTrigger_25.xml">Example xml file</a></p>
 <hr>
-<p></details></p>
+<p></details>
 
-<p><details> <summary> Post trigger of 50 (the default setting)</summary></p>
+<details> <summary> Post trigger of 50 (the default setting)</summary></p>
 <hr>
 <p><img src="img/postTrig_50.png" alt="post trigger 50" title="Post Trigger set to 50" /></p>
 
@@ -155,9 +191,9 @@
 
 <p><a href="xml/PostTrigger_50.xml">Example xml file</a></p>
 <hr>
-<p></details></p>
+<p></details>
 
-<p><details> <summary> Post trigger of 75 </summary></p>
+<details> <summary> Post trigger of 75 </summary></p>
 <hr>
 <p><img src="img/postTrig_75.png" alt="post trigger 75" title="Post Trigger set to 75" /></p>
 
@@ -168,9 +204,9 @@
 
 <p><a href="xml/PostTrigger_75.xml">Example xml file</a></p>
 <hr>
-<p></details></p>
+<p></details>
 
-<p><details> <summary> Post trigger of 100 </summary></p>
+<details> <summary> Post trigger of 100 </summary></p>
 <hr>
 <p><img src="img/postTrig_100.png" alt="post trigger 100" title="Post Trigger set to 100" /></p>
 
@@ -181,4 +217,4 @@
 
 <p><a href="xml/PostTrigger_100.xml">Example xml file</a></p>
 <hr>
-<p></details></p>
+<p></details>
