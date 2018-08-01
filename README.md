@@ -88,7 +88,7 @@ If the program crashes, the temporary files will not be removed, so most of the 
 
 ## Tutorial
 
-###Duration
+### Duration
 
 There are two ways of using the duration option.
 <details>
