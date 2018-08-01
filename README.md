@@ -113,7 +113,7 @@ will collect 1000 events before closing
 
 If a time is specified in HH:MM:SS, events will be collected for that amount of time. Example command:
 
-CAENdaq --duration 01:30:00
+    CAENdaq --duration 01:30:00
 
 or in XML:
 
