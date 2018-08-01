@@ -88,6 +88,43 @@ If the program crashes, the temporary files will not be removed, so most of the 
 
 ## Tutorial
 
+###Duration
+
+There are two ways of using the duration option.
+<details>
+  <summary>Number of events</summary>
+
+If an integer is used as the parameter, that many events will be recorded. Example command:
+
+    CAENdaq --duration 1000
+
+or in XML:
+
+    <duration>
+       1000
+    </duration>
+
+will collect 1000 events before closing
+
+</details>
+
+<details>
+  <summary>Timed acquisition</summary>
+
+If a time is specified in HH:MM:SS, events will be collected for that amount of time. Example command:
+
+CAENdaq --duration 01:30:00
+
+or in XML:
+
+    <duration>
+        01:30:00
+    </duration>
+
+will collect events for 90 minutes before closing
+</details>
+
+
 ### Pulse and Trigger Polarity
 
 For a positive pulse, polarity<CH> should be set to POSITIVE, and for a negative pulse, it should be set to NEGATIVE. trslope<CH> may be set to POSITIVE or NEGATIVE depending on where the desired trigger point is. A general rule of thumb is that the trigger polarity and the pulse polarity should be the same.
