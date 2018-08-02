@@ -416,3 +416,18 @@
 <p>When the program exits safely these files will be merged together, with the resulting file moved to the working directory. The temporary directory will then be removed. </p>
 
 <p>If the program crashes, the temporary files will not be removed, so most of the data from the run can be recovered by looking in this directory.</p>
+
+<h3 id="waveformdrawingscript">Waveform Drawing Script</h3>
+
+<p>There is a ROOT script included with the repository called <code>draw.C</code>. This script can be used to display a waveform from a ROOT file created by the DAQ.</p>
+
+<p>Usage:</p>
+
+<pre style="background-color: #F7F7F7"><code>
+    root[0] .x draw.C("FILE.root", channel, event)
+    
+</code></pre>
+
+<p>where channel and event are integers for the channel number and event number.</p>
+
+<p>This script can also be used as an example showing how to load waveforms, for use in an analysis.</p>
