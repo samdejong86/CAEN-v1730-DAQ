@@ -60,8 +60,6 @@ Once these are installed, use make to build the software.
       -n NUM, --saveInterval     After NUM events, save a temporary file.
                                  At the end of the run, these will be merged
       -r RECLEN, --reclen RECLEN Set number of samples recorded to RECLEN
-      -a BASEADDRESS, --baseaddress BASEADDRESS
-                                 Set digitizer base address to BASEADDRESS
       -d DURATION, --duration DURATION
                                  Duration of the run. If an integer is
                                  specified, that many events are recorded.
@@ -71,7 +69,6 @@ Once these are installed, use make to build the software.
                                  If not used, daq must be started manually
       --polarity<CH> POLARITY    Set pulse polarity of channel CH
                                  Valid options are POSITIVE or NEGATIVE
-      --DCoffset<CH> OFFSET      Set DC offset of channel CH in ADC counts
       --threshold<CH> THRESHOLD  Set the trigger threshold of channel CH
                                  in ADC counts
       --trslope<CH> POLARITY     Trigger slope. Can be POSITIVE or NEGATIVE
@@ -79,6 +76,98 @@ Once these are installed, use make to build the software.
 
 
 ## Tutorial
+
+### Running the program
+
+To display the DAQ command line parameters, run
+
+    CAENdaq -h
+
+There are two ways to set the digitizer parameters: through the command line, or via an XML file. A simple run example is:
+
+    CAENdaq --outfile FILE.root --duration 1000 --ch 0 --polarity0 POSITIVE --threshold0 100 --trslope0 POSITIVE
+
+These same parameters can be set via an xml file:
+
+    <xml>
+      <Active>
+        <duration>
+          1000
+        </duration>
+        <outfile>
+          FILE.root
+        </outfile>
+        <ch0>
+          1
+        </ch0>
+        <polarity0>
+          POSITIVE
+        </polarity0>
+        <threshold0>
+          100
+        </threshold0>  
+        <trslope0>
+          POSITIVE
+        </trslope0>
+      </Active>
+    </xml>
+
+which can be run with this command:
+
+    CAENdaq -x XMLFILE.xml
+
+assuming the xml file is named XMLFILE.xml. Any other command line arguments which set digitizer settings will be ignored if an xml file is specified.
+
+Note that the xml tags are the same as the command line options, eg:
+
+    --outfile FILE.root
+
+on the command line is equivalent to
+
+    <outfile>
+      FILE.root
+    </outfile>
+
+in the xml file.
+
+<details>
+  <summary>**XML File Generation**</summary>
+
+  The xml files used by the DAQ software can be created using a text editior, or by using the `--xmlout` command line argument. This argument will take the digitizer settings set at the command line and save them as an xml file:
+
+    CAENdaq --outfile myfile.root --duration 3000 --ch 4 --polarity4 NEGATIVE --threshold4 100 --trslope4 NEGATIVE --xmlout mySettings.xml
+
+will produce mySettings.xml, which will look like this:
+
+    <xml>
+      <Active>
+        <outfile>
+          myfile.root
+        </outfile>
+        <duration>
+          3000
+        </duration>
+        <ch4>
+          1
+        </ch4>
+        <polarity4>
+          NEGATIVE
+        </polarity4>
+        <threshold4>
+          100
+        </threshold4>
+        <trslope4>
+          NEGATIVE
+        </trslope4>
+      </Active>
+    </xml>
+
+
+Adding `-q` on the command line will quit the DAQ after generating the xml file.
+
+</details>
+
+
 
 ### Duration
 
@@ -330,11 +419,12 @@ It is not possible to 'and' the triggers together.
 
 
 ### Data Recovery in Case of Program Crash
-   When the program starts, it will create a temporary directory called FILE_`<timestamp>`, where `<timestamp>` is the unix time when the program started. Temporary root files containing `<saveInterval>` events will be saved here.
+   When the program starts, it will create a temporary directory called FILE_`<timestamp>`, where `<timestamp>` is the unix time when the program started. Temporary root files containing `<saveInterval>` (set by the `saveInterval` parameter at the command line or in an xml file) events will be saved here.
 
 When the program exits safely these files will be merged together, with the resulting file moved to the working directory. The temporary directory will then be removed. 
 
 If the program crashes, the temporary files will not be removed, so most of the data from the run can be recovered by looking in this directory.
+
 
 
 

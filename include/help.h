@@ -29,8 +29,8 @@ void printHelp(string progName){
   cout<<"  -n NUM, --saveInterval     After NUM events, save a temporary file.\n";
   cout<<"                             At the end of the run, these will be merged\n";
   cout<<"  -r RECLEN, --reclen RECLEN Set number of samples recorded to RECLEN\n";
-  cout<<"  -a BASEADDRESS, --baseaddress BASEADDRESS\n";
-  cout<<"                             Set digitizer base address to BASEADDRESS\n";
+  //  cout<<"  -a BASEADDRESS, --baseaddress BASEADDRESS\n";
+  //  cout<<"                             Set digitizer base address to BASEADDRESS\n";
   cout<<"  -d DURATION, --duration DURATION\n";
   cout<<"                             Duration of the run. If an integer is\n";
   cout<<"                             specified, that many events are recorded.\n";
@@ -40,7 +40,7 @@ void printHelp(string progName){
   cout<<"                             If not used, daq must be started manually\n";
   cout<<"  --polarity<CH> POLARITY    Set pulse polarity of channel CH\n";
   cout<<"                             Valid options are POSITIVE or NEGATIVE\n";
-  cout<<"  --DCoffset<CH> OFFSET      Set DC offset of channel CH in ADC counts\n";
+  //  cout<<"  --DCoffset<CH> OFFSET      Set DC offset of channel CH in ADC counts\n";
   cout<<"  --threshold<CH> THRESHOLD  Set the trigger threshold of channel CH\n";
   cout<<"                             in ADC counts\n";
   cout<<"  --trslope<CH> POLARITY     Trigger slope. Can be POSITIVE or NEGATIVE\n";

@@ -1,6 +1,119 @@
 <h2 id="tutorial">Tutorial for <a href="https://github.com/samdejong86/CAEN-v1730-DAQ" target="_blank">CAEN v1730 Digitizer DAQ</a></h2>
 
-<h3 id="pulseandtriggerpolarity">Duration</h3>
+<h3 id="runningtheprogram">Running the program</h3>
+
+<p>To display the DAQ command line parameters, run</p>
+
+<pre style="background-color: #F7F7F7"><code>
+    CAENdaq -h
+    
+</code></pre>
+
+<p>There are two ways to set the digitizer parameters: through the command line, or via an XML file. A simple run example is:</p>
+
+<pre style="background-color: #F7F7F7"><code>
+    CAENdaq --outfile FILE.root --duration 1000 --ch 0 --polarity0 POSITIVE --threshold0 100 --trslope0 POSITIVE
+    
+</code></pre>
+
+<p>These same parameters can be set via an xml file:</p>
+
+<pre style="background-color: #F7F7F7"><code>
+    &lt;xml&gt;
+      &lt;Active&gt;
+        &lt;duration&gt;
+          1000
+        &lt;/duration&gt;
+        &lt;outfile&gt;
+          FILE.root
+        &lt;/outfile&gt;
+        &lt;ch0&gt;
+          1
+        &lt;/ch0&gt;
+        &lt;polarity0&gt;
+          POSITIVE
+        &lt;/polarity0&gt;
+        &lt;threshold0&gt;
+          100
+        &lt;/threshold0&gt;  
+        &lt;trslope0&gt;
+          POSITIVE
+        &lt;/trslope0&gt;
+      &lt;/Active&gt;
+    &lt;/xml&gt;
+    
+</code></pre>
+
+<p>which can be run with this command:</p>
+
+<pre style="background-color: #F7F7F7"><code>
+    CAENdaq -x XMLFILE.xml
+    
+</code></pre>
+
+<p>assuming the xml file is named XMLFILE.xml. Any other command line arguments which set digitizer settings will be ignored if an xml file is specified.</p>
+
+<p>Note that the xml tags are the same as the command line options, eg:</p>
+
+<pre style="background-color: #F7F7F7"><code>
+    --outfile FILE.root
+    
+</code></pre>
+
+<p>on the command line is equivalent to</p>
+
+<pre style="background-color: #F7F7F7"><code>
+    &lt;outfile&gt;
+      FILE.root
+    &lt;/outfile&gt;
+    
+</code></pre>
+
+<p>in the xml file.</p>
+
+<p><details>
+  <summary><strong>XML File Generation</strong></summary></p>
+
+<p>The xml files used by the DAQ software can be created using a text editior, or by using the <code>--xmlout</code> command line argument. This argument will take the digitizer settings set at the command line and save them as an xml file:</p>
+
+<pre style="background-color: #F7F7F7"><code>
+    CAENdaq --outfile myfile.root --duration 3000 --ch 4 --polarity4 NEGATIVE --threshold4 100 --trslope4 NEGATIVE --xmlout mySettings.xml
+    
+</code></pre>
+
+<p>will produce mySettings.xml, which will look like this:</p>
+
+<pre style="background-color: #F7F7F7"><code>
+    &lt;xml&gt;
+      &lt;Active&gt;
+        &lt;outfile&gt;
+          myfile.root
+        &lt;/outfile&gt;
+        &lt;duration&gt;
+          3000
+        &lt;/duration&gt;
+        &lt;ch4&gt;
+          1
+        &lt;/ch4&gt;
+        &lt;polarity4&gt;
+          NEGATIVE
+        &lt;/polarity4&gt;
+        &lt;threshold4&gt;
+          100
+        &lt;/threshold4&gt;
+        &lt;trslope4&gt;
+          NEGATIVE
+        &lt;/trslope4&gt;
+      &lt;/Active&gt;
+    &lt;/xml&gt;
+    
+</code></pre>
+
+<p>Adding <code>-q</code> on the command line will quit the DAQ after generating the xml file.</p>
+
+<p></details></p>
+
+<h3 id="Duration">Duration</h3>
 
 <p>There are two ways of using the duration option.</p>
 <details><summary>Number of events</summary>
@@ -8,13 +121,18 @@
 <p>If an integer is used as the parameter, that many events will be recorded. Example command:</p>
 
 
-<pre style="background-color: #e6e8ed"><code>CAENdaq --duration 1000</code></pre>
+<pre style="background-color: #F7F7F7"><code>
+    CAENdaq --duration 1000
+    
+</code></pre>
 
 
 <p>or in XML:</p>
-<pre style="background-color: #e6e8ed"><code>&lt;duration&gt; 
-   1000    
-&lt;/duration&gt
+<pre style="background-color: #F7F7F7"><code>
+    &lt;duration&gt; 
+       1000    
+    &lt;/duration&gt
+    
 </code></pre>
 
 <p>will collect 1000 events before closing</p>
@@ -25,11 +143,16 @@
 <hr>
 <p> If a time is specified in HH:MM:SS, events will be collected for that amount of time. Example command:</p>
 
-<pre  style="background-color: #e6e8ed"><code>CAENdaq --duration 01:30:00</code></pre>
+<pre  style="background-color: #F7F7F7"><code>
+    CAENdaq --duration 01:30:00
+    
+</code></pre>
 <p>or in XML:</p>
-<pre  style="background-color: #e6e8ed"><code>&lt;duration&gt; 
-   01:30:00   
-&lt;/duration&gt
+<pre  style="background-color: #F7F7F7"><code>
+    &lt;duration&gt; 
+       01:30:00   
+    &lt;/duration&gt
+    
 </code></pre>
 
 <p>will collect events for 90 minutes before closing</p>
@@ -49,7 +172,9 @@
 
 <p>Example command line arguments:</p>
 
-<pre  style="background-color: #e6e8ed"><code>CAENdaq -o FILE.root -d 1000 --ch 0 --polarity0 POSITIVE --threshold0 100 --trslope0 POSITIVE
+<pre  style="background-color: #F7F7F7"><code>
+    CAENdaq -o FILE.root -d 1000 --ch 0 --polarity0 POSITIVE --threshold0 100 --trslope0 POSITIVE
+    
 </code></pre>
 
 <p><a href="xml/PositivePulsePositiveTrigger.xml">Example xml file</a></p>
@@ -64,7 +189,9 @@
 
 <p>Example command line arguments:</p>
 
-<pre  style="background-color: #e6e8ed"><code>CAENdaq -o FILE.root -d 1000 --ch 0 --polarity0 POSITIVE --threshold0 100 --trslope0 NEGATIVE
+<pre  style="background-color: #F7F7F7"><code>
+    CAENdaq -o FILE.root -d 1000 --ch 0 --polarity0 POSITIVE --threshold0 100 --trslope0 NEGATIVE
+    
 </code></pre>
 
 <p><a href="xml/PositivePulseNegativeTrigger.xml">Example xml file</a></p>
@@ -79,7 +206,9 @@
 
 <p>Example command line arguments:</p>
 
-<pre  style="background-color: #e6e8ed"><code>CAENdaq -o FILE.root -d 1000 --ch 0 --polarity0 NEGATIVE --threshold0 100 --trslope0 POSITIVE
+<pre  style="background-color: #F7F7F7"><code>
+    CAENdaq -o FILE.root -d 1000 --ch 0 --polarity0 NEGATIVE --threshold0 100 --trslope0 POSITIVE
+    
 </code></pre>
 
 <p><a href="xml/NegativePulsePositiveTrigger.xml">Example xml file</a></p>
@@ -94,7 +223,9 @@
 
 <p>Example command line arguments:</p>
 
-<pre  style="background-color: #e6e8ed"><code>CAENdaq -o FILE.root -d 1000 --ch 0 --polarity0 NEGATIVE --threshold0 100 --trslope0 NEGATIVE
+<pre  style="background-color: #F7F7F7"><code>
+    CAENdaq -o FILE.root -d 1000 --ch 0 --polarity0 NEGATIVE --threshold0 100 --trslope0 NEGATIVE
+    
 </code></pre>
 
 <p><a href="xml/NegativePulseNegativeTrigger.xml">Example xml file</a></p>
@@ -113,7 +244,9 @@
 
 <p>Example command line arguments:</p>
 
-<pre  style="background-color: #e6e8ed"><code>CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 512 --threshold0 100
+<pre  style="background-color: #F7F7F7"><code>
+    CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 512 --threshold0 100
+    
 </code></pre>
 
 <a href="xml/RecordLength_512.xml">Example xml file</a></p>
@@ -128,7 +261,9 @@
 
 <p>Example command line arguments:</p>
 
-<pre  style="background-color: #e6e8ed"><code>CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 1024 --threshold0 100
+<pre  style="background-color: #F7F7F7"><code>
+    CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 1024 --threshold0 100
+    
 </code></pre>
 
 <p><a href="xml/RecordLength_1024.xml">Example xml file</a></p>
@@ -143,7 +278,9 @@
 
 <p>Example command line arguments:</p>
 
-<pre  style="background-color: #e6e8ed"><code>CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 2048 --threshold0 100
+<pre  style="background-color: #F7F7F7"><code>
+    CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 2048 --threshold0 100
+    
 </code></pre>
 
 <p><a href="xml/RecordLength_2048.xml">Example xml file</a></p>
@@ -160,7 +297,9 @@
 
 <p>Example command line arguments:</p>
 
-<pre  style="background-color: #e6e8ed"><code>CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 0 --threshold0 100
+<pre  style="background-color: #F7F7F7"><code>
+    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 0 --threshold0 100
+    
 </code></pre>
 
 <p><a href="xml/PostTrigger_0.xml">Example xml file</a></p>
@@ -173,7 +312,9 @@
 
 <p>Example command line arguments:</p>
 
-<pre  style="background-color: #e6e8ed"><code>CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 25 --threshold0 100
+<pre  style="background-color: #F7F7F7"><code>
+    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 25 --threshold0 100
+    
 </code></pre>
 
 <p><a href="xml/PostTrigger_25.xml">Example xml file</a></p>
@@ -186,7 +327,9 @@
 
 <p>Example command line arguments:</p>
 
-<pre  style="background-color: #e6e8ed"><code>CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 50 --threshold0 100
+<pre  style="background-color: #F7F7F7"><code>
+    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 50 --threshold0 100
+    
 </code></pre>
 
 <p><a href="xml/PostTrigger_50.xml">Example xml file</a></p>
@@ -199,7 +342,9 @@
 
 <p>Example command line arguments:</p>
 
-<pre  style="background-color: #e6e8ed"><code>CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 75 --threshold0 100
+<pre  style="background-color: #F7F7F7"><code>
+    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 75 --threshold0 100
+    
 </code></pre>
 
 <p><a href="xml/PostTrigger_75.xml">Example xml file</a></p>
@@ -212,7 +357,9 @@
 
 <p>Example command line arguments:</p>
 
-<pre  style="background-color: #e6e8ed"><code>CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 100 --threshold0 100
+<pre  style="background-color: #F7F7F7"><code>
+    CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 100 --threshold0 100
+    
 </code></pre>
 
 <p><a href="xml/PostTrigger_100.xml">Example xml file</a></p>
@@ -230,12 +377,16 @@
 
 <p>For example:</p>
 
-<pre style="background-color: #e6e8ed"><code>CAENdaq -o FILE.root -d1000 --ch 0 --ch 1 --threshold0 100 --threshold1 100
+<pre style="background-color: #F7F7F7"><code>
+    CAENdaq -o FILE.root -d1000 --ch 0 --ch 1 --threshold0 100 --threshold1 100
+    
 </code></pre>
 
 <p>will only apply the trigger to channel 1, but</p>
 
-<pre style="background-color: #e6e8ed"><code>CAENdaq -o FILE.root -d1000 --ch 0 --ch 2 --threshold0 100 --threshold2 100
+<pre style="background-color: #F7F7F7"><code>
+    CAENdaq -o FILE.root -d1000 --ch 0 --ch 2 --threshold0 100 --threshold2 100
+    
 </code></pre>
 
 <p>will apply the trigger correctly to both channel 0 and channel 2</p>
@@ -246,8 +397,10 @@
 
 <p>This example command will trigger on a positive pulse in channel 0 <strong>or</strong> a negative pulse in channel 3:</p>
 
-<pre style="background-color: #e6e8ed"><code>CAENdaq -o FILE.root -d1000 --ch 0 --ch 3 --polarity0 POSITIVE --polarity3 NEGATIVE --threshold0 100 --threshold3 100 \\
+<pre style="background-color: #F7F7F7"><code>
+    CAENdaq -o FILE.root -d1000 --ch 0 --ch 3 --polarity0 POSITIVE --polarity3 NEGATIVE --threshold0 100 --threshold3 100 \\
     --trslope0 POSITIVE --trslope3 NEGATIVE
+    
 </code></pre>
 
 <p><a href="xml/DualChannelTrigger.xml">Example xml file</a></p>
@@ -256,7 +409,7 @@
 
 <h3 id="datarecoveryincaseofprogramcrash">Data Recovery in Case of Program Crash</h3>
 
-<p>When the program starts, it will create a temporary directory called <code>FILE_&lt;timestamp&gt;</code>, where <code>&lt;timestamp&gt;</code> is the unix time when the program started. Temporary root files containing <code>&lt;saveInterval&gt;</code> events will be saved here.</p>
+<p>When the program starts, it will create a temporary directory called <code>FILE_&lt;timestamp&gt;</code>, where <code>&lt;timestamp&gt;</code> is the unix time when the program started. Temporary root files containing <code>&lt;saveInterval&gt;</code> (set by the <code>saveInterval</code> parameter at the command line or in an xml file) events will be saved here.</p>
 
 <p>When the program exits safely these files will be merged together, with the resulting file moved to the working directory. The temporary directory will then be removed. </p>
 
