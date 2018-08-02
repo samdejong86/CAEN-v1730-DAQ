@@ -78,14 +78,6 @@ Once these are installed, use make to build the software.
       --posttrigger VAL          Set the post trigger
 
 
-### Note
-   When the program starts, it will create a temporary directory called temp_`<timestamp>`, where `<timestamp>` is the unix time when the program started. Temporary root files containing `<saveInterval>` events will be saved here.
-
-When the program exits safely these files will be merged together, with the resulting file moved to the working directory. The temporary directory will then be removed. 
-
-If the program crashes, the temporary files will not be removed, so most of the data from the run can be salvaged by looking in this directory.
-
-
 ## Tutorial
 
 ### Duration
@@ -123,7 +115,6 @@ or in XML:
 
 will collect events for 90 minutes before closing
 </details>
-
 
 ### Pulse and Trigger Polarity
 
@@ -247,7 +238,6 @@ Example command line arguments:
 The post trigger setting sets how much of the waveform will be after the trigger occurs. valid settings are 0 to 100. Setting this to 50 is a good rule of thumb.
 
 
-
 <details> <summary> Post trigger of 0 </summary>
 
 ![post trigger 0](img/postTrig_0.png "Post Trigger set to 0")
@@ -307,6 +297,46 @@ Example command line arguments:
 [Example xml file](xml/PostTrigger_100.xml)
 
 </details>
+
+### Multi-Channel Triggering
+
+It is possible to simultaneously trigger on multiple channels, with some limitations.
+
+#### Channel Pairs
+
+The digitizer channels are paired together: 0&1, 2&3, 4&5, 6&7. If triggering is enabled on both channels of a pair, the even channel is ignored and only the odd channel has a trigger applied. If triggering on multiple channels is required, the trigger must be applied on channels from seperate pairs. This is due to a limitation on the digitizer firmware.
+
+For example:
+
+    CAENdaq -o FILE.root -d1000 --ch 0 --ch 1 --threshold0 100 --threshold1 100
+
+will only apply the trigger to channel 1, but
+
+    CAENdaq -o FILE.root -d1000 --ch 0 --ch 2 --threshold0 100 --threshold2 100
+
+will apply the trigger correctly to both channel 0 and channel 2
+
+#### Multi-Channel Trigger Behavior
+
+ The triggers from the multiple channels are **or'ed** together: If any of the channels satisfy trigger conditions, a waveform on all enabled channels will be recorded.
+
+This example command will trigger on a positive pulse in channel 0 **or** a negative pulse in channel 3:
+
+    CAENdaq -o FILE.root -d1000 --ch 0 --ch 3 --polarity0 POSITIVE --polarity3 NEGATIVE --threshold0 100 --threshold3 100 --trslope0 POSITIVE --trslope3 NEGATIVE
+
+[Example xml file](xml/DualChannelTrigger.xml)
+
+It is not possible to 'and' the triggers together.
+
+
+### Data Recovery in Case of Program Crash
+   When the program starts, it will create a temporary directory called FILE_`<timestamp>`, where `<timestamp>` is the unix time when the program started. Temporary root files containing `<saveInterval>` events will be saved here.
+
+When the program exits safely these files will be merged together, with the resulting file moved to the working directory. The temporary directory will then be removed. 
+
+If the program crashes, the temporary files will not be removed, so most of the data from the run can be recovered by looking in this directory.
+
+
 
 ## Files:
 
