@@ -8,3 +8,4 @@ ignored/*
 flymd.*
 *.xml
 *.tgz
+drivers/*

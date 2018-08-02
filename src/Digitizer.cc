@@ -100,7 +100,7 @@ Digitizer::Digitizer(XmlParser settings){
 
     if(settings.fieldExists("threshold"+num)){
       trigChannel=true;
-      ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_ACQ_ONLY;
+      ChannelTriggerMode[i]=CAEN_DGTZ_TRGMODE_ACQ_AND_EXTOUT;//CAEN_DGTZ_TRGMODE_ACQ_ONLY;
       Threshold[i] = (uint32_t)settings.getValue("threshold"+num);
       thr_file[i] = (uint32_t)settings.getValue("threshold"+num);
       Version_used[i]=1;
@@ -226,9 +226,7 @@ void Digitizer::DefaultSettings(){
 
 bool Digitizer::OpenDigitizer(){
 
-  if(!fman.isInit())
-    fman.init(fname, EnableMask,saveInterval);
-  
+ 
   
   CAEN_DGTZ_ErrorCode ret = CAEN_DGTZ_Success;
   isVMEDevice= 0;
@@ -245,7 +243,8 @@ bool Digitizer::OpenDigitizer(){
   ret = CAEN_DGTZ_OpenDigitizer(LinkType, LinkNum, ConetNode, BaseAddress, &handle);
   if (ret) {
     cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
-    fman.DeleteDir();
+    if(fman.isInit())
+      fman.DeleteDir();
     return false;
   }
 
@@ -621,13 +620,12 @@ CAEN_DGTZ_ErrorCode Digitizer::ProgramDigitizer(){
       // the even channel is used.
       if (ChannelTriggerMode[i] != CAEN_DGTZ_TRGMODE_DISABLED) {
 	if (ChannelTriggerMode[i + 1] == CAEN_DGTZ_TRGMODE_DISABLED)
-	  pair_chmask = (0x1 << i);
+	  pair_chmask = (0x1 << i);   //channel i+1 is disabled   pair mask is set to 01  -- apply mode to channel 0
 	else
-	  pair_chmask = (0x3 << i);
-      }
-      else {
-	mode = ChannelTriggerMode[i + 1];
-	pair_chmask = (0x2 << i);
+	  pair_chmask = (0x3 << i);   //channel i is not disabled, pair mask is set to 11 -- apply mode to channel  0 and 1
+      } else {
+	mode = ChannelTriggerMode[i + 1]; //channel i is disabled, set to channel i+1 (which may be disabled)
+	pair_chmask = (0x2 << i);   //pair mask set to 10 -- apply mode to channel 1
       }
 	
           
