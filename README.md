@@ -34,9 +34,8 @@ Once these are installed, use make to build the software.
 ## Usage:
 
     usage: CAENdaq  [-h] [-v] [-x XMLFILE] [--xmlout XMLFILE] [-q] [w0] [w1]
-                    [w2] [w3] ... [-o FILE] [-r RECLEN] [-a BASEADDRESS] 
-                    [-n NUM] [-d DURATION] [--posttrigger VAL]
-                    [--polarity0 POLARITY] ... [--DCoffset0 OFFSET] ...
+                    [w2] [w3] ... [-o FILE] [-r RECLEN] [-n NUM] [-d DURATION]
+                    [--posttrigger VAL] [--polarity0 POLARITY] ... 
                     [--threshold0 THRESHOLD] ... [--trslope0 POLARITY] ... 
 
     Reads waveforms from a CAEN V1730 digitizer.

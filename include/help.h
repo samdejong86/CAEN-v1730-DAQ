@@ -3,9 +3,8 @@
 void printHelp(string progName){
   
   cout<<"usage: CAENdaq  [-h] [-v] [-x XMLFILE] [--xmlout XMLFILE] [-q] [w0] [w1]\n";//<<endl;
-  cout<<"                [w2] [w3] ... [-o FILE] [-r RECLEN] [-a BASEADDRESS] \n";
-  cout<<"                [-n NUM] [-d DURATION] [--posttrigger VAL]\n";
-  cout<<"                [--polarity0 POLARITY] ... [--DCoffset0 OFFSET] ...\n";
+  cout<<"                [w2] [w3] ... [-o FILE] [-r RECLEN] [-n NUM] [-d DURATION]\n";
+  cout<<"                [--posttrigger VAL] [--polarity0 POLARITY] ... \n";
   cout<<"                [--threshold0 THRESHOLD] ... [--trslope0 POLARITY] ... \n";
 
   cout<<endl;
