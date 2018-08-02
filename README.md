@@ -131,7 +131,7 @@ on the command line is equivalent to
 in the xml file.
 
 <details>
-  <summary>**XML File Generation**</summary>
+  <summary>XML File Generation</summary>
 
   The xml files used by the DAQ software can be created using a text editior, or by using the `--xmlout` command line argument. This argument will take the digitizer settings set at the command line and save them as an xml file:
 
