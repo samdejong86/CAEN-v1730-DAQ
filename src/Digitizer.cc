@@ -255,7 +255,6 @@ bool Digitizer::OpenDigitizer(){
   nCycles= 0;
   Event16=NULL; /* generic event struct with 16 bit data (10, 12, 14 and 16 bit digitizers */
 
-  cout<<"hello\n";
   fman = fileManager(fname, EnableMask, saveInterval);
   fman.setVerbose(verbose);
   fman.OpenFile();

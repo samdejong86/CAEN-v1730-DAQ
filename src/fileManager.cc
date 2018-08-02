@@ -35,8 +35,6 @@ void fileManager::init(string filename="CAEN.root", uint16_t EnableMask=0, int s
     cout<<"fileManager: Error creating temporary file directory"<<endl;
     exit(0);
   }
-
-  cout<<"\nMade a directory: "<<dirname<<endl<<endl;
   
   fname=dirname+"/"+temp;  
   
