@@ -38,6 +38,8 @@ class Digitizer{
   CAEN_DGTZ_ErrorCode WriteRegisterBitmask(uint32_t address, uint32_t data, uint32_t mask);
   CAEN_DGTZ_ErrorCode SetCorrectThreshold();
 
+  void CoincidenceProgrammer();
+
   void printOn(ostream & out) const;
   friend ostream& operator<<(ostream& os, const Digitizer& r);
 
@@ -75,11 +77,13 @@ class Digitizer{
   uint32_t DCoffset[MAX_SET];
   uint32_t Threshold[MAX_SET];
   int Version_used[MAX_SET];
-  
+
+  /*
   int GWn;
   uint32_t GWaddr[MAX_GW];
   uint32_t GWdata[MAX_GW];
   uint32_t GWmask[MAX_GW];
+  */
   
   //from WDrun:
   int Quit;

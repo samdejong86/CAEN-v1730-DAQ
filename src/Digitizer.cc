@@ -184,13 +184,13 @@ void Digitizer::DefaultSettings(){
     Threshold[i]=0;
     Version_used[i]=0;
   }
-
+  /*
   GWn   = 0;  
   for(int i=0; i<MAX_GW; i++){
     GWaddr[i]=0;
     GWdata[i]=0;
     GWmask[i]=0;
-  }
+    }*/
     
   Quit=0;
   AcqRun=0;
@@ -645,11 +645,18 @@ CAEN_DGTZ_ErrorCode Digitizer::ProgramDigitizer(){
     }
   }
 
+
+  
+
+  
   /* execute generic write commands */
+  /*
   for(i=0; i<GWn; i++){
     ret |= WriteRegisterBitmask(GWaddr[i], GWdata[i], GWmask[i]);
 	
-  }
+    }*/
+  CoincidenceProgrammer();
+
   if (ret){
     printf("Warning: errors found during the programming of the digitizer.\nSome settings may not be executed\n");
     cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
@@ -657,6 +664,48 @@ CAEN_DGTZ_ErrorCode Digitizer::ProgramDigitizer(){
 
   return CAEN_DGTZ_Success;
 }
+
+
+void Digitizer::CoincidenceProgrammer(){
+
+
+  //Test: set coincidence between channel 1 and 3.
+  int coincidenceEnableMask=0;
+
+  coincidenceEnableMask+=(1<<1); //add channel 1
+  coincidenceEnableMask+=(1<<3); //add channel 3
+
+  std::bitset<8> coincidenceBitset(coincidenceEnableMask);
+  int MajorityLevel = coincidenceBitset.count()-1;
+  int window=10;
+
+  uint32_t message = coincidenceEnableMask+(MajorityLevel<<24)+(window<<20);
+
+
+  uint32_t coincAddress=0x810C;
+  uint32_t mask = 0x0;
+  
+  int ret = WriteRegisterBitmask(coincAddress, message, mask);
+
+  /*
+  message &=mask;
+  uint32_t d32 = 0xFFFFFFFF;
+  d32 &= ~mask;
+  d32 |= message;
+  
+  int32_t ret = CAEN_DGTZ_WriteRegister(handle, coincAddress, d32);
+  */
+
+  if(ret){
+    printf("Unable to program coincidences\n");
+    cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
+  }  
+
+
+
+}
+
+
 
 
 CAEN_DGTZ_ErrorCode Digitizer::WriteRegisterBitmask(uint32_t address, uint32_t data, uint32_t mask) {

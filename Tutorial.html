@@ -438,15 +438,15 @@
 <p>A quick calibration was performed, yeilding this equation for converting ADC counts to mV:</p>
 
 <pre style="background-color: #F7F7F7"><code>
-    [Signal (mV)] = 0.13416x[Signal (ADC counts)] - 1098.74939
+    [Signal (mV)] = (0.1342 &plusmn 0.0005996)x[Signal (ADC counts)] - (1100 &plusmn 5.399)
     
 </code></pre>
 
 <p>and for converting mV to ADC counts:
 
 <pre style="background-color: #F7F7F7"><code>
-    [Signal (ADC counts)]=7.45372*[Signal (mV)] + 8189.77152
+    [Signal (ADC counts)]=(7.451 &plusmn 0.0333)*[Signal (mV)] + (8203 &plusmn 16.1)
 
 </code></pre>
 
-<p>This calibration should not be trusted to high precision. If you require the voltage to be very precice, you are advised to perform the calibration yourself.</p>
+<p> <strong>This calibration should not be trusted to high accuracy. </strong> If you require the voltage to be very accurate, you are advised to perform the calibration yourself.</p>
