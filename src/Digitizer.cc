@@ -655,7 +655,7 @@ CAEN_DGTZ_ErrorCode Digitizer::ProgramDigitizer(){
     ret |= WriteRegisterBitmask(GWaddr[i], GWdata[i], GWmask[i]);
 	
     }*/
-  CoincidenceProgrammer();
+  //CoincidenceProgrammer();
 
   if (ret){
     printf("Warning: errors found during the programming of the digitizer.\nSome settings may not be executed\n");
@@ -667,7 +667,7 @@ CAEN_DGTZ_ErrorCode Digitizer::ProgramDigitizer(){
 
 
 void Digitizer::CoincidenceProgrammer(){
-
+  //Does not work!
 
   //Test: set coincidence between channel 1 and 3.
   int coincidenceEnableMask=0;
@@ -687,14 +687,6 @@ void Digitizer::CoincidenceProgrammer(){
   
   int ret = WriteRegisterBitmask(coincAddress, message, mask);
 
-  /*
-  message &=mask;
-  uint32_t d32 = 0xFFFFFFFF;
-  d32 &= ~mask;
-  d32 |= message;
-  
-  int32_t ret = CAEN_DGTZ_WriteRegister(handle, coincAddress, d32);
-  */
 
   if(ret){
     printf("Unable to program coincidences\n");
