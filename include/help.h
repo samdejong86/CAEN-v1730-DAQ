@@ -44,6 +44,8 @@ void printHelp(string progName){
   cout<<"                             in ADC counts\n";
   cout<<"  --trslope<CH> POLARITY     Trigger slope. Can be POSITIVE or NEGATIVE\n";
   cout<<"  --posttrigger VAL          Set the post trigger\n";
+  cout<<"  --triggermode MODE         Set the trigger mode. Valid options are AND\n";
+  cout<<"                             and OR.\n";
   cout<<endl;
     
   

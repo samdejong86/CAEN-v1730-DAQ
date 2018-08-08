@@ -72,6 +72,8 @@ Once these are installed, use make to build the software.
                                  in ADC counts
       --trslope<CH> POLARITY     Trigger slope. Can be POSITIVE or NEGATIVE
       --posttrigger VAL          Set the post trigger
+      --triggermode MODE         Set the trigger mode. Valid options are AND
+                                 and OR.
 
 
 ## Tutorial
@@ -388,33 +390,47 @@ Example command line arguments:
 
 ### Multi-Channel Triggering
 
-It is possible to simultaneously trigger on multiple channels, with some limitations.
+If mutiple channels have `--threshold<CH>` set, the triggers will be combined. There are two possibe modes for combining multiple trigger channels: AND and OR. The trigger mode is set with the `--triggermode` setting
 
-#### Channel Pairs
+<details> <summary> Combining triggers with AND</summary>
 
-The digitizer channels are paired together: 0&1, 2&3, 4&5, 6&7. If triggering is enabled on both channels of a pair, the even channel is ignored and only the odd channel has a trigger applied. If triggering on multiple channels is required, the trigger must be applied on channels from seperate pairs. This is due to a limitation on the digitizer firmware.
+Triggering will only occur when the trigger conditions are satisfied on all channels with `--threshold<CH>` set. For example:
+
+    CAENdaq -o FILE.root -d1000 --ch 0 --ch 1 --polarity0 POSITIVE --polarity1 POSITIVE --threshold0 100 --threshold1 100 --trslope0 POSITIVE --trslope1 POSITIVE --triggermode AND
+
+[Example xml file](xml/ANDtrigger.xml)
+
+This will trigger when both channel 0 and channel 1 go above 100 ADC counts.
+
+Note: AND is the default setting for `--triggermode`
+</details>
+
+<details> <summary>  Combining triggers with OR</summary>
+
+Triggering will occur when the trigger conditions are satisfied on any channel. For example:
+
+    CAENdaq -o FILE.root -d1000 --ch 0 --ch 2 --polarity0 POSITIVE --polarity2 POSITIVE --threshold0 100 --threshold2 100 --trslope0 POSITIVE --trslope2 POSITIVE --triggermode OR
+
+[Example xml file](xml/ORtrigger.xml)
+
+will trigger when either of channel 0 or channel 2 go abouve 100 ADC counts
+
+
+##### Channel Pairs
+
+The digitizer channels are paired together: 0&1, 2&3, 4&5, 6&7. If the triggermode is set to OR and triggering is enabled on both channels of a pair, the even channel is ignored and only the odd channel has a trigger applied. If OR triggering on multiple channels is required, the trigger must be applied on channels from seperate pairs. This is due to a limitation on the digitizer firmware.
 
 For example:
 
-    CAENdaq -o FILE.root -d1000 --ch 0 --ch 1 --threshold0 100 --threshold1 100
+    CAENdaq -o FILE.root -d1000 --ch 0 --ch 1 --threshold0 100 --threshold1 100 --triggermode OR
 
 will only apply the trigger to channel 1, but
 
-    CAENdaq -o FILE.root -d1000 --ch 0 --ch 2 --threshold0 100 --threshold2 100
+    CAENdaq -o FILE.root -d1000 --ch 0 --ch 2 --threshold0 100 --threshold2 100 --triggermode OR
 
 will apply the trigger correctly to both channel 0 and channel 2
 
-#### Multi-Channel Trigger Behavior
-
- The triggers from the multiple channels are **or'ed** together: If any of the channels satisfy trigger conditions, a waveform on all enabled channels will be recorded.
-
-This example command will trigger on a positive pulse in channel 0 **or** a negative pulse in channel 3:
-
-    CAENdaq -o FILE.root -d1000 --ch 0 --ch 3 --polarity0 POSITIVE --polarity3 NEGATIVE --threshold0 100 --threshold3 100 --trslope0 POSITIVE --trslope3 NEGATIVE
-
-[Example xml file](xml/DualChannelTrigger.xml)
-
-It is not possible to 'and' the triggers together.
+</details>
 
 
 ### Data Recovery in Case of Program Crash

@@ -64,6 +64,7 @@ XmlParser getOpt(int argc, char *argv[]){
       {"trslope6",      required_argument, 0, 'X'},
       {"trslope7",      required_argument, 0, 'Y'},
       {"tutorial",      no_argument,       0, 'Z'},
+      {"triggermode",   required_argument, 0, 'z'},
       
       {0, 0, 0, 0}
     };
@@ -424,7 +425,17 @@ XmlParser getOpt(int argc, char *argv[]){
 	cout<<"Incorrect trigger polarity for channel 7. Valid options are POSITIVE or NEGATIVE\n";
 	exit(0);
       }      
-      break;   
+      break;  
+    case 'z':
+      if(strcmp (optarg,"AND")== 0){
+	settings.addValue("triggermode", "AND");
+      }else if(strcmp (optarg,"OR")== 0){
+	settings.addValue("triggermode", "OR");
+      } else{
+	cout<<"Incorrect trigger mode. Valid options are AND or OR\n";
+	exit(0);
+      }   
+      break; 
     case 'Z':
       string command = "xdg-open https://particle.phys.uvic.ca/~srdejong/CAEN-v1730-DAQ/Tutorial.html";
       int ret = system(command.c_str());
@@ -434,6 +445,7 @@ XmlParser getOpt(int argc, char *argv[]){
       exit(0);
       break;
     }
+    
      
   }
 

@@ -58,6 +58,17 @@ Digitizer::Digitizer(XmlParser settings){
     fname=settings.getStringValue("outfile");
   }
 
+  if(settings.fieldExists("triggermode")){
+    if(settings.getStringValue("triggermode").compare("OR")==0){
+      triggerAND=false;
+    } else if(settings.getStringValue("triggermode").compare("AND")==0){
+      triggerAND=true;
+    }
+    
+  }
+  
+  
+
   uint16_t tempEnableMask=0;
   stringstream ss;
 
@@ -140,6 +151,7 @@ Digitizer::Digitizer(XmlParser settings){
 
 
 void Digitizer::DefaultSettings(){
+  CalibComplete=false;
 
   handle = -1;
   Nb=0;
@@ -150,6 +162,8 @@ void Digitizer::DefaultSettings(){
   
   manualStop=false;
   verbose=false;
+
+  triggerAND=true;
   
   //default settings
   LinkType = CAEN_DGTZ_USB;
@@ -329,7 +343,7 @@ void Digitizer::Readout(){
   
   if (Restart && AcqRun) 
     {
-      Calibrate_DC_Offset();
+      if(!CalibComplete) Calibrate_DC_Offset();
       CAEN_DGTZ_SWStartAcquisition(handle);
       RunStartTime = util::markTime();
       fman.setRunStartTime(RunStartTime);
@@ -605,37 +619,12 @@ CAEN_DGTZ_ErrorCode Digitizer::ProgramDigitizer(){
       ret |= CAEN_DGTZ_SetTriggerPolarity(handle, i, TrigPolarity[i]); //.TriggerEdge
     }
   }
-    
-  // channel pair settings for x730 boards
-  for (i = 0; i < 8; i += 2) {
-    if (EnableMask & (0x3 << i)) {
-      CAEN_DGTZ_TriggerMode_t mode = ChannelTriggerMode[i];
-      uint32_t pair_chmask = 0;
-	
-      // Build mode and relevant channelmask. The behaviour is that,
-      // if the triggermode of one channel of the pair is DISABLED,
-      // this channel doesn't take part to the trigger generation.
-      // Otherwise, if both are different from DISABLED, the one of
-      // the even channel is used.
-      if (ChannelTriggerMode[i] != CAEN_DGTZ_TRGMODE_DISABLED) {
-	if (ChannelTriggerMode[i + 1] == CAEN_DGTZ_TRGMODE_DISABLED)
-	  pair_chmask = (0x1 << i);   //channel i+1 is disabled   pair mask is set to 01  -- apply mode to channel 0
-	else
-	  pair_chmask = (0x3 << i);   //channel i is not disabled, pair mask is set to 11 -- apply mode to channel  0 and 1
-      } else {
-	mode = ChannelTriggerMode[i + 1]; //channel i is disabled, set to channel i+1 (which may be disabled)
-	pair_chmask = (0x2 << i);   //pair mask set to 10 -- apply mode to channel 1
-      }
-	
-          
-      
-      pair_chmask &= EnableMask;
-      ret |= CAEN_DGTZ_SetChannelSelfTrigger(handle, mode, pair_chmask);
 
-           
-    }
-  }
-
+  if(!triggerAND)
+    ret |= OrProgrammer();
+  else  
+    ret |= CoincidenceProgrammer();
+  
   if(verbose){
     cout<<"Digitizer: Trigger enabled:\n";
     for(int i=0; i<8; i++){
@@ -646,16 +635,6 @@ CAEN_DGTZ_ErrorCode Digitizer::ProgramDigitizer(){
   }
 
 
-  
-
-  
-  /* execute generic write commands */
-  /*
-  for(i=0; i<GWn; i++){
-    ret |= WriteRegisterBitmask(GWaddr[i], GWdata[i], GWmask[i]);
-	
-    }*/
-  //CoincidenceProgrammer();
 
   if (ret){
     printf("Warning: errors found during the programming of the digitizer.\nSome settings may not be executed\n");
@@ -665,35 +644,124 @@ CAEN_DGTZ_ErrorCode Digitizer::ProgramDigitizer(){
   return CAEN_DGTZ_Success;
 }
 
+//Setup for an 'AND' trigger
+CAEN_DGTZ_ErrorCode Digitizer::CoincidenceProgrammer(){
+  if(!CalibComplete) Calibrate_DC_Offset();
+  cout<<"And trigger\n";
 
-void Digitizer::CoincidenceProgrammer(){
-  //Does not work!
-
-  //Test: set coincidence between channel 1 and 3.
+  
+  int ret=0;
   int coincidenceEnableMask=0;
 
-  coincidenceEnableMask+=(1<<1); //add channel 1
-  coincidenceEnableMask+=(1<<3); //add channel 3
+  int triggerLogicBaseAddress=0x1084;
 
+  for(int i=0; i<8; i=i+2){
+    if (EnableMask & (0x3 << i)) {
+
+
+      if(ChannelTriggerMode[i] != CAEN_DGTZ_TRGMODE_DISABLED&&ChannelTriggerMode[i+1] != CAEN_DGTZ_TRGMODE_DISABLED){
+	//channel i and i+1 are both enabled
+	cout<<"Channel "<<i<<" and "<<i+1<<" enabled\n";
+	coincidenceEnableMask+=(1<<(i/2));
+	ret |= WriteRegisterBitmask(triggerLogicBaseAddress+256*i, 0x0, 0xFFFFFFFF);
+	cout<<hex<<triggerLogicBaseAddress+256*i<<dec<<endl;
+	
+      } else if(ChannelTriggerMode[i] != CAEN_DGTZ_TRGMODE_DISABLED&&ChannelTriggerMode[i+1] == CAEN_DGTZ_TRGMODE_DISABLED){
+	//channel i enabled, channel i+1 disabled
+	cout<<"Channel "<<i<<" enabled and "<<i+1<<" disabled\n";
+	coincidenceEnableMask+=(1<<(i/2));
+	ret |= WriteRegisterBitmask(triggerLogicBaseAddress+256*i, 0x1, 0xFFFFFFFF);
+	cout<<hex<<triggerLogicBaseAddress+256*i<<dec<<endl;
+	
+      } else if(ChannelTriggerMode[i] == CAEN_DGTZ_TRGMODE_DISABLED&&ChannelTriggerMode[i+1] != CAEN_DGTZ_TRGMODE_DISABLED){
+	//channel i disabled, channel i+1 enabled
+	cout<<"Channel "<<i<<" disabled and "<<i+1<<" enabled\n";
+	coincidenceEnableMask+=(1<<(i/2));
+	ret |= WriteRegisterBitmask(triggerLogicBaseAddress+256*i, 0x2, 0xFFFFFFFF);
+	cout<<hex<<triggerLogicBaseAddress+256*i<<dec<<endl;	
+      } else{
+	cout<<"Channel "<<i<<" and "<<i+1<<" disabled\n";
+      }
+
+    }
+  }
+
+  
   std::bitset<8> coincidenceBitset(coincidenceEnableMask);
   int MajorityLevel = coincidenceBitset.count()-1;
   int window=10;
 
   uint32_t message = coincidenceEnableMask+(MajorityLevel<<24)+(window<<20);
+  cout<<hex<<message<<dec<<endl;
 
 
   uint32_t coincAddress=0x810C;
-  uint32_t mask = 0x0;
+  uint32_t mask = 0xFFFFFFFF;
   
-  int ret = WriteRegisterBitmask(coincAddress, message, mask);
+  ret |= WriteRegisterBitmask(coincAddress, message, mask);
 
 
-  if(ret){
-    printf("Unable to program coincidences\n");
-    cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
-  }  
 
+  return (CAEN_DGTZ_ErrorCode)ret;
 
+}
+
+//setup for an 'OR' trigger
+CAEN_DGTZ_ErrorCode Digitizer::OrProgrammer(){
+  int ret=0;
+  cout<<"Or trigger\n";
+  
+  int triggerLogicBaseAddress=0x1084;
+  
+  // channel pair settings for x730 boards
+  for (int i = 0; i < 8; i += 2) {
+    if (EnableMask & (0x3 << i)) {
+      CAEN_DGTZ_TriggerMode_t mode = ChannelTriggerMode[i];
+      uint32_t pair_chmask = 0;
+	
+      // Build mode and relevant channelmask. The behaviour is that,
+      // if the triggermode of one channel of the pair is DISABLED,
+      // this channel doesn't take part to the trigger generation.
+      // Otherwise, if both are different from DISABLED, the one of
+      // the even channel is used.
+
+      
+      if (ChannelTriggerMode[i] != CAEN_DGTZ_TRGMODE_DISABLED && ChannelTriggerMode[i + 1] != CAEN_DGTZ_TRGMODE_DISABLED) {
+	//channel i and i+1 are both enabled
+	cout<<"Channel "<<i<<" and "<<i+1<<" enableddd\n";
+	ret |= WriteRegisterBitmask(triggerLogicBaseAddress+256*i, 0x3, 0xFFFFFFFF);
+	cout<<hex<<triggerLogicBaseAddress+256*i<<dec<<endl;
+	pair_chmask = (0x3 << i);
+	
+      } else if(ChannelTriggerMode[i] != CAEN_DGTZ_TRGMODE_DISABLED && ChannelTriggerMode[i + 1] == CAEN_DGTZ_TRGMODE_DISABLED) {
+	//channel i enabled, channel i+1 disabled
+	cout<<"Channel "<<i<<" enabled and "<<i+1<<" disabled\n";
+	pair_chmask = (0x1 << i); 
+	ret |= WriteRegisterBitmask(triggerLogicBaseAddress+256*i, 0x1, 0xFFFFFFFF);
+	cout<<hex<<triggerLogicBaseAddress+256*i<<dec<<endl;
+	
+      }	else if(ChannelTriggerMode[i] == CAEN_DGTZ_TRGMODE_DISABLED&&ChannelTriggerMode[i+1] != CAEN_DGTZ_TRGMODE_DISABLED){
+	//channel i disabled, channel i+1 enabled
+	cout<<"Channel "<<i<<" disabled and "<<i+1<<" enabled\n";
+	ret |= WriteRegisterBitmask(triggerLogicBaseAddress+256*i, 0x2, 0xFFFFFFFF);
+	cout<<hex<<triggerLogicBaseAddress+256*i<<dec<<endl;
+	mode = ChannelTriggerMode[i + 1];
+	pair_chmask = (0x2 << i);
+      }else{
+	cout<<"Channel "<<i<<" and "<<i+1<<" disabled\n";
+      }
+      cout<<pair_chmask<<endl;
+      
+      
+          
+      
+      pair_chmask &= EnableMask;
+      ret |= CAEN_DGTZ_SetChannelSelfTrigger(handle, mode, pair_chmask);
+         
+    }
+  }
+  
+  return (CAEN_DGTZ_ErrorCode)ret;
 
 }
 
@@ -705,14 +773,25 @@ CAEN_DGTZ_ErrorCode Digitizer::WriteRegisterBitmask(uint32_t address, uint32_t d
   uint32_t d32 = 0xFFFFFFFF;
 
   ret = CAEN_DGTZ_ReadRegister(handle, address, &d32);
-  if(ret != CAEN_DGTZ_Success)
+  if(ret != CAEN_DGTZ_Success){
     cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
     return (CAEN_DGTZ_ErrorCode)ret;
+  }
 
   data &= mask;
   d32 &= ~mask;
   d32 |= data;
+  cout<<hex<<d32<<dec<<endl;
   ret = CAEN_DGTZ_WriteRegister(handle, address, d32);
+
+  ret = CAEN_DGTZ_ReadRegister(handle, address, &d32);
+  if(ret != CAEN_DGTZ_Success){
+    cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
+    return (CAEN_DGTZ_ErrorCode)ret;
+  }
+  cout<<hex<<d32<<endl;
+
+  
   return (CAEN_DGTZ_ErrorCode)ret;
 }
   
@@ -894,6 +973,8 @@ CAEN_DGTZ_ErrorCode Digitizer::Calibrate_DC_Offset(){
   if (ret)
     printf("Warning: error setting recorded parameters\n");
 
+  CalibComplete=true;
+  
   return CAEN_DGTZ_Success;
   
 }
@@ -1073,7 +1154,7 @@ void Digitizer::CheckKeyboardCommands(){
 
 void Digitizer::startAcq(){
       
-  Calibrate_DC_Offset();
+  if(!CalibComplete) Calibrate_DC_Offset();
 
   if(verbose)
     printf("Digitizer: Acquisition started\n");
@@ -1121,6 +1202,10 @@ void Digitizer::printOn(ostream & out) const{
     out<<"Acq only\n";
   else if(ExtTriggerMode==CAEN_DGTZ_TRGMODE_ACQ_AND_EXTOUT)
     out<<"Acq and Extout\n";
+
+  out<<"Trigger Mode \t\t";
+  if(!triggerAND) out<<"OR\n";
+  else out<<"AND\n";
   
   bitset<8> mask(EnableMask);
   

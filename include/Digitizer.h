@@ -38,7 +38,8 @@ class Digitizer{
   CAEN_DGTZ_ErrorCode WriteRegisterBitmask(uint32_t address, uint32_t data, uint32_t mask);
   CAEN_DGTZ_ErrorCode SetCorrectThreshold();
 
-  void CoincidenceProgrammer();
+  CAEN_DGTZ_ErrorCode CoincidenceProgrammer();
+  CAEN_DGTZ_ErrorCode OrProgrammer();
 
   void printOn(ostream & out) const;
   friend ostream& operator<<(ostream& os, const Digitizer& r);
@@ -70,6 +71,10 @@ class Digitizer{
   CAEN_DGTZ_IOLevel_t FPIOtype;
   CAEN_DGTZ_TriggerMode_t ExtTriggerMode;
   uint16_t EnableMask;
+
+  bool triggerAND;
+
+  bool CalibComplete;
   
   CAEN_DGTZ_TriggerMode_t ChannelTriggerMode[MAX_SET];
   CAEN_DGTZ_PulsePolarity_t PulsePolarity[MAX_SET];
