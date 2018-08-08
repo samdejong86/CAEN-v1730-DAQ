@@ -1,5 +1,7 @@
 # CAEN V1370 DAQ
 
+![CAEN VME brisge and v1730 Digitizer](img/Digitizer.jpg "Positive Pulse with Negative Trigger")
+
 ## Description:
 
 DAQ software for a CAEN V1730 digitizer with waveform recording firmware. Software assumes connection through a V1718 VME-USB Bridge
