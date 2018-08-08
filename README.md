@@ -395,7 +395,7 @@ Example command line arguments:
 
 If mutiple channels have `threshold<CH>` set, the triggers will be combined. There are two possibe modes for combining multiple trigger channels: **AND** and **OR**. The trigger mode is set with the `triggermode` setting
 
-<details> <summary> Combining triggers with <strong>AND<\strong></summary>
+<details> <summary> Combining triggers with <strong>AND</strong></summary>
 
 Triggering will only occur when the trigger conditions are satisfied on all channels with `threshold<CH>` set. For example:
 
@@ -427,7 +427,7 @@ will require a trigger on each trigger enabled channel within 96ns. The default 
 
 </details>
 
-<details> <summary>  Combining triggers with <strong>OR<\strong></summary>
+<details> <summary>  Combining triggers with <strong>OR</strong></summary>
 
 Triggering will occur when the trigger conditions are satisfied on any channel. For example:
 
