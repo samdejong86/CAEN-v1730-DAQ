@@ -647,7 +647,7 @@ CAEN_DGTZ_ErrorCode Digitizer::ProgramDigitizer(){
 //Setup for an 'AND' trigger
 CAEN_DGTZ_ErrorCode Digitizer::CoincidenceProgrammer(){
   if(!CalibComplete) Calibrate_DC_Offset();
-  cout<<"And trigger\n";
+ 
 
   
   int ret=0;
@@ -661,26 +661,23 @@ CAEN_DGTZ_ErrorCode Digitizer::CoincidenceProgrammer(){
 
       if(ChannelTriggerMode[i] != CAEN_DGTZ_TRGMODE_DISABLED&&ChannelTriggerMode[i+1] != CAEN_DGTZ_TRGMODE_DISABLED){
 	//channel i and i+1 are both enabled
-	cout<<"Channel "<<i<<" and "<<i+1<<" enabled\n";
+	if(verbose) cout<<"Channel "<<i<<" and "<<i+1<<" enabled\n";
 	coincidenceEnableMask+=(1<<(i/2));
 	ret |= WriteRegisterBitmask(triggerLogicBaseAddress+256*i, 0x0, 0xFFFFFFFF);
-	cout<<hex<<triggerLogicBaseAddress+256*i<<dec<<endl;
 	
       } else if(ChannelTriggerMode[i] != CAEN_DGTZ_TRGMODE_DISABLED&&ChannelTriggerMode[i+1] == CAEN_DGTZ_TRGMODE_DISABLED){
 	//channel i enabled, channel i+1 disabled
-	cout<<"Channel "<<i<<" enabled and "<<i+1<<" disabled\n";
+	if(verbose) cout<<"Channel "<<i<<" enabled and "<<i+1<<" disabled\n";
 	coincidenceEnableMask+=(1<<(i/2));
 	ret |= WriteRegisterBitmask(triggerLogicBaseAddress+256*i, 0x1, 0xFFFFFFFF);
-	cout<<hex<<triggerLogicBaseAddress+256*i<<dec<<endl;
 	
       } else if(ChannelTriggerMode[i] == CAEN_DGTZ_TRGMODE_DISABLED&&ChannelTriggerMode[i+1] != CAEN_DGTZ_TRGMODE_DISABLED){
 	//channel i disabled, channel i+1 enabled
-	cout<<"Channel "<<i<<" disabled and "<<i+1<<" enabled\n";
+	if(verbose) cout<<"Channel "<<i<<" disabled and "<<i+1<<" enabled\n";
 	coincidenceEnableMask+=(1<<(i/2));
 	ret |= WriteRegisterBitmask(triggerLogicBaseAddress+256*i, 0x2, 0xFFFFFFFF);
-	cout<<hex<<triggerLogicBaseAddress+256*i<<dec<<endl;	
       } else{
-	cout<<"Channel "<<i<<" and "<<i+1<<" disabled\n";
+	if(verbose) cout<<"Channel "<<i<<" and "<<i+1<<" disabled\n";
       }
 
     }
@@ -692,7 +689,6 @@ CAEN_DGTZ_ErrorCode Digitizer::CoincidenceProgrammer(){
   int window=10;
 
   uint32_t message = coincidenceEnableMask+(MajorityLevel<<24)+(window<<20);
-  cout<<hex<<message<<dec<<endl;
 
 
   uint32_t coincAddress=0x810C;
@@ -709,7 +705,6 @@ CAEN_DGTZ_ErrorCode Digitizer::CoincidenceProgrammer(){
 //setup for an 'OR' trigger
 CAEN_DGTZ_ErrorCode Digitizer::OrProgrammer(){
   int ret=0;
-  cout<<"Or trigger\n";
   
   int triggerLogicBaseAddress=0x1084;
   
@@ -728,29 +723,25 @@ CAEN_DGTZ_ErrorCode Digitizer::OrProgrammer(){
       
       if (ChannelTriggerMode[i] != CAEN_DGTZ_TRGMODE_DISABLED && ChannelTriggerMode[i + 1] != CAEN_DGTZ_TRGMODE_DISABLED) {
 	//channel i and i+1 are both enabled
-	cout<<"Channel "<<i<<" and "<<i+1<<" enableddd\n";
+	if(verbose) cout<<"Channel "<<i<<" and "<<i+1<<" enableddd\n";
 	ret |= WriteRegisterBitmask(triggerLogicBaseAddress+256*i, 0x3, 0xFFFFFFFF);
-	cout<<hex<<triggerLogicBaseAddress+256*i<<dec<<endl;
 	pair_chmask = (0x3 << i);
 	
       } else if(ChannelTriggerMode[i] != CAEN_DGTZ_TRGMODE_DISABLED && ChannelTriggerMode[i + 1] == CAEN_DGTZ_TRGMODE_DISABLED) {
 	//channel i enabled, channel i+1 disabled
-	cout<<"Channel "<<i<<" enabled and "<<i+1<<" disabled\n";
+	if(verbose) cout<<"Channel "<<i<<" enabled and "<<i+1<<" disabled\n";
 	pair_chmask = (0x1 << i); 
 	ret |= WriteRegisterBitmask(triggerLogicBaseAddress+256*i, 0x1, 0xFFFFFFFF);
-	cout<<hex<<triggerLogicBaseAddress+256*i<<dec<<endl;
 	
       }	else if(ChannelTriggerMode[i] == CAEN_DGTZ_TRGMODE_DISABLED&&ChannelTriggerMode[i+1] != CAEN_DGTZ_TRGMODE_DISABLED){
 	//channel i disabled, channel i+1 enabled
-	cout<<"Channel "<<i<<" disabled and "<<i+1<<" enabled\n";
+	if(verbose) cout<<"Channel "<<i<<" disabled and "<<i+1<<" enabled\n";
 	ret |= WriteRegisterBitmask(triggerLogicBaseAddress+256*i, 0x2, 0xFFFFFFFF);
-	cout<<hex<<triggerLogicBaseAddress+256*i<<dec<<endl;
 	mode = ChannelTriggerMode[i + 1];
 	pair_chmask = (0x2 << i);
       }else{
-	cout<<"Channel "<<i<<" and "<<i+1<<" disabled\n";
+	if(verbose) cout<<"Channel "<<i<<" and "<<i+1<<" disabled\n";
       }
-      cout<<pair_chmask<<endl;
       
       
           
@@ -781,16 +772,7 @@ CAEN_DGTZ_ErrorCode Digitizer::WriteRegisterBitmask(uint32_t address, uint32_t d
   data &= mask;
   d32 &= ~mask;
   d32 |= data;
-  cout<<hex<<d32<<dec<<endl;
   ret = CAEN_DGTZ_WriteRegister(handle, address, d32);
-
-  ret = CAEN_DGTZ_ReadRegister(handle, address, &d32);
-  if(ret != CAEN_DGTZ_Success){
-    cout<<errors[abs((int)ret)]<<" (code "<<ret<<")"<<endl;
-    return (CAEN_DGTZ_ErrorCode)ret;
-  }
-  cout<<hex<<d32<<endl;
-
   
   return (CAEN_DGTZ_ErrorCode)ret;
 }

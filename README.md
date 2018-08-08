@@ -390,9 +390,9 @@ Example command line arguments:
 
 ### Multi-Channel Triggering
 
-If mutiple channels have `--threshold<CH>` set, the triggers will be combined. There are two possibe modes for combining multiple trigger channels: AND and OR. The trigger mode is set with the `--triggermode` setting
+If mutiple channels have `--threshold<CH>` set, the triggers will be combined. There are two possibe modes for combining multiple trigger channels: **AND** and **OR**. The trigger mode is set with the `--triggermode` setting
 
-<details> <summary> Combining triggers with AND</summary>
+<details> <summary> Combining triggers with **AND**</summary>
 
 Triggering will only occur when the trigger conditions are satisfied on all channels with `--threshold<CH>` set. For example:
 
@@ -405,7 +405,7 @@ This will trigger when both channel 0 and channel 1 go above 100 ADC counts.
 Note: AND is the default setting for `--triggermode`
 </details>
 
-<details> <summary>  Combining triggers with OR</summary>
+<details> <summary>  Combining triggers with **OR**</summary>
 
 Triggering will occur when the trigger conditions are satisfied on any channel. For example:
 
