@@ -65,6 +65,7 @@ XmlParser getOpt(int argc, char *argv[]){
       {"trslope7",      required_argument, 0, 'Y'},
       {"tutorial",      no_argument,       0, 'Z'},
       {"triggermode",   required_argument, 0, 'z'},
+      {"coincidencewindow",required_argument,0,'u'},
       
       {0, 0, 0, 0}
     };
@@ -435,6 +436,19 @@ XmlParser getOpt(int argc, char *argv[]){
 	cout<<"Incorrect trigger mode. Valid options are AND or OR\n";
 	exit(0);
       }   
+      break; 
+    case 'u': //coincidencewindow
+      if(string(optarg).find_first_not_of("0123456789") == std::string::npos){
+	if (atof(optarg)<=15){	
+	  settings.addValue("coincidencewindow", optarg);
+	} else {
+	  cout<<"Invalid coincidence window. Must be less than or equal to 15\n";
+	  exit(0); 
+	}
+      } else{
+	cout<<"Invalid coincidence window. Must be numerical and positive\n";
+	exit(0);
+      }            
       break; 
     case 'Z':
       string command = "xdg-open https://particle.phys.uvic.ca/~srdejong/CAEN-v1730-DAQ/Tutorial.html";

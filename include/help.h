@@ -46,6 +46,8 @@ void printHelp(string progName){
   cout<<"  --posttrigger VAL          Set the post trigger\n";
   cout<<"  --triggermode MODE         Set the trigger mode. Valid options are AND\n";
   cout<<"                             and OR.\n";
+  cout<<"  --coincidencewindow WINDOW Set the length of the coincidence window, in\n";
+  cout<<"                             multiples of 8ns. Maximum value is 15.\n";
   cout<<endl;
     
   

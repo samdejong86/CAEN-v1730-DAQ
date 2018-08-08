@@ -387,6 +387,31 @@
 <p>This will trigger when both channel 0 and channel 1 go above 100 ADC counts.</p>
 
 <p>Note: AND is the default setting for <code>--triggermode</code>
+
+<h4 id="coincidencewindow">Coincidence Window</h4>
+
+<p>The <code>coincidencewindow</code> can be used to set the length of the window where the coincident triggers must occur, in units of 8ns. It takes an integer less than or equal to 15. For example:</p>
+
+<pre style="background-color: #F7F7F7"><code>
+    CAENdaq --triggermode AND --coincidencewindow 12
+    
+</code></pre>
+
+<p>or in XML:</p>
+
+<pre style="background-color: #F7F7F7"><code>
+    &lt;triggermode&gt;
+        AND
+    &lt;/triggermode&gt;
+    &lt;coincidencewindow&gt;
+        12
+    &lt;/coincidencewindow&gt;
+    
+</code></pre>
+
+<p>will require a trigger on each trigger enabled channel within 96ns. The default value for this parameter is 10, or 80ns.</p>
+
+
 </details>
 
 <details> <summary>  Combining triggers with <strong>OR</strong></summary></p>

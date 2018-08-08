@@ -1,0 +1,37 @@
+<xml>
+  <Active>
+    <duration>
+      00:01:00
+    </duration>
+    <outfile>
+      FILE.root
+    </outfile>
+    <ch0>
+      1
+    </ch0>
+    <polarity0>
+      POSITIVE
+    </polarity0>
+    <threshold0>
+      100
+    </threshold0>  
+    <trslope0>
+      POSITIVE
+    </trslope0>
+    <ch1>
+      1
+    </ch1>
+    <polarity1>
+      POSITIVE
+    </polarity1>
+    <threshold1>
+      100
+    </threshold1>  
+    <trslope1>
+      POSITIVE
+    </trslope1>
+    <triggermode>
+      AND
+    </triggermode>
+  </Active>
+</xml>

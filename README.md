@@ -74,6 +74,9 @@ Once these are installed, use make to build the software.
       --posttrigger VAL          Set the post trigger
       --triggermode MODE         Set the trigger mode. Valid options are AND
                                  and OR.
+      --coincidencewindow WINDOW Set the length of the coincidence window, in
+                                 multiples of 8ns. Maximum value is 15.
+
 
 
 ## Tutorial
@@ -390,11 +393,11 @@ Example command line arguments:
 
 ### Multi-Channel Triggering
 
-If mutiple channels have `--threshold<CH>` set, the triggers will be combined. There are two possibe modes for combining multiple trigger channels: **AND** and **OR**. The trigger mode is set with the `--triggermode` setting
+If mutiple channels have `threshold<CH>` set, the triggers will be combined. There are two possibe modes for combining multiple trigger channels: **AND** and **OR**. The trigger mode is set with the `triggermode` setting
 
 <details> <summary> Combining triggers with **AND**</summary>
 
-Triggering will only occur when the trigger conditions are satisfied on all channels with `--threshold<CH>` set. For example:
+Triggering will only occur when the trigger conditions are satisfied on all channels with `threshold<CH>` set. For example:
 
     CAENdaq -o FILE.root -d1000 --ch 0 --ch 1 --polarity0 POSITIVE --polarity1 POSITIVE --threshold0 100 --threshold1 100 --trslope0 POSITIVE --trslope1 POSITIVE --triggermode AND
 
@@ -402,7 +405,26 @@ Triggering will only occur when the trigger conditions are satisfied on all chan
 
 This will trigger when both channel 0 and channel 1 go above 100 ADC counts.
 
-Note: AND is the default setting for `--triggermode`
+Note: AND is the default setting for the `triggermode` setting
+
+#### Coincidence Window
+
+The `coincidencewindow` can be used to set the length of the window where the coincident triggers must occur, in units of 8ns. It takes an integer less than or equal to 15. For example:
+
+    CAENdaq --triggermode AND --coincidencewindow 12
+
+or in XML:
+
+    <triggermode>
+        AND
+    </triggermode>
+    <coincidencewindow>
+        12
+    </coincidencewindow>
+	
+will require a trigger on each trigger enabled channel within 96ns. The default value for this parameter is 10, or 80ns.
+
+
 </details>
 
 <details> <summary>  Combining triggers with **OR**</summary>
@@ -416,7 +438,7 @@ Triggering will occur when the trigger conditions are satisfied on any channel. 
 will trigger when either of channel 0 or channel 2 go abouve 100 ADC counts
 
 
-##### Channel Pairs
+#### Channel Pairs
 
 The digitizer channels are paired together: 0&1, 2&3, 4&5, 6&7. If the triggermode is set to OR and triggering is enabled on both channels of a pair, the even channel is ignored and only the odd channel has a trigger applied. If OR triggering on multiple channels is required, the trigger must be applied on channels from seperate pairs. This is due to a limitation on the digitizer firmware.
 

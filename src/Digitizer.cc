@@ -63,8 +63,11 @@ Digitizer::Digitizer(XmlParser settings){
       triggerAND=false;
     } else if(settings.getStringValue("triggermode").compare("AND")==0){
       triggerAND=true;
-    }
-    
+    }    
+  }
+
+  if(settings.fieldExists("coincidencewindow")){
+    c_window=(int)settings.getValue("coincidencewindow");
   }
   
   
@@ -164,6 +167,7 @@ void Digitizer::DefaultSettings(){
   verbose=false;
 
   triggerAND=true;
+  c_window=10;
   
   //default settings
   LinkType = CAEN_DGTZ_USB;
@@ -686,9 +690,8 @@ CAEN_DGTZ_ErrorCode Digitizer::CoincidenceProgrammer(){
   
   std::bitset<8> coincidenceBitset(coincidenceEnableMask);
   int MajorityLevel = coincidenceBitset.count()-1;
-  int window=10;
 
-  uint32_t message = coincidenceEnableMask+(MajorityLevel<<24)+(window<<20);
+  uint32_t message = coincidenceEnableMask+(MajorityLevel<<24)+(c_window<<20);
 
 
   uint32_t coincAddress=0x810C;
@@ -1187,7 +1190,9 @@ void Digitizer::printOn(ostream & out) const{
 
   out<<"Trigger Mode \t\t";
   if(!triggerAND) out<<"OR\n";
-  else out<<"AND\n";
+  else{ out<<"AND\n";
+    out<<"\tWindow\t\t"<<c_window<<endl;
+  }
   
   bitset<8> mask(EnableMask);
   

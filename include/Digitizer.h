@@ -73,6 +73,7 @@ class Digitizer{
   uint16_t EnableMask;
 
   bool triggerAND;
+  int c_window;
 
   bool CalibComplete;
   
