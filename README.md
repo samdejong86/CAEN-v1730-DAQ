@@ -227,7 +227,33 @@ Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --polarity0 POSITIVE --threshold0 100 --trslope0 POSITIVE
 
-[Example xml file](xml/PositivePulsePositiveTrigger.xml)
+<details><summary>Example xml file (xml/PositivePulsePositiveTrigger.xml)</summary>
+
+    <xml>
+      <Active>
+        <duration>
+          1000
+        </duration>
+        <outfile>
+          FILE.root
+        </outfile>
+        <ch0>
+          1
+        </ch0>
+        <polarity0>
+          POSITIVE
+        </polarity0>
+        <threshold0>
+          100
+        </threshold0>  
+        <trslope0>
+          POSITIVE
+        </trslope0>
+      </Active>
+    </xml>
+
+</details>
+<hr>
 
 </details>
 
@@ -243,7 +269,32 @@ Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --polarity0 POSITIVE --threshold0 100 --trslope0 NEGATIVE
 
-[Example xml file](xml/PositivePulseNegativeTrigger.xml)
+<details><summary>Example xml file (xml/PositivePulseNegativeTrigger.xml)</summary>
+
+    <xml>
+      <Active>
+        <duration>
+          1000
+        </duration>
+        <outfile>
+          FILE.root
+        <ch0>
+          1
+        </ch0>
+        <polarity0>
+          POSITIVE
+        </polarity0>
+        <threshold0>
+          100
+        </threshold0>  
+        <trslope0>
+          NEGATIVE
+        </trslope0>
+      </Active>
+    </xml>
+
+</details>
+<hr>
 
 </details>
 
@@ -258,7 +309,33 @@ Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --polarity0 NEGATIVE --threshold0 100 --trslope0 POSITIVE
 
-[Example xml file](xml/NegativePulsePositiveTrigger.xml)
+<details><summary>Example xml file xml/NegativePulsePositiveTrigger.xml)</summary>
+
+    <xml>
+      <Active>
+        <duration>
+          1000
+        </duration>
+        <outfile>
+          FILE.root
+        </outfile>
+        <ch0>
+          1
+        </ch0>
+        <polarity0>
+          NEGATIVE
+        </polarity0>
+        <threshold0>
+          100
+        </threshold0>  
+        <trslope0>
+          POSITIVE
+        </trslope0>
+      </Active>
+    </xml>
+
+</details>
+<hr>
 
 </details>
 
@@ -274,7 +351,33 @@ Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --polarity0 NEGATIVE --threshold0 100 --trslope0 NEGATIVE
 
-[Example xml file](xml/NegativePulseNegativeTrigger.xml)
+<details> <summary>Example xml file (xml/NegativePulseNegativeTrigger.xml)</summary>
+
+    <xml>
+      <Active>
+        <duration>
+          1000
+        </duration>
+        <outfile>
+          FILE.root
+        </outfile>
+        <ch0>
+          1
+        </ch0>
+        <polarity0>
+          NEGATIVE
+        </polarity0>
+        <threshold0>
+          100
+        </threshold0>  
+        <trslope0>
+          NEGATIVE
+        </trslope0>
+      </Active>
+    </xml>
+
+</details>
+<hr>
 
 </details>
 
@@ -293,7 +396,30 @@ Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 512 --threshold0 100
 
-[Example xml file](xml/RecordLength_512.xml)
+<details> <summary>Example xml file (xml/RecordLength_512.xml)</summary>
+
+    <xml>
+      <Active>
+        <duration>
+          1000
+        </duration>
+        <outfile>
+          FILE.root
+        </outfile>
+        <ch0>
+          1
+        </ch0>
+        <reclen>
+          512
+        </reclen>   
+        <threshold0>
+          100
+        </threshold0>   
+      </Active>
+    </xml>
+
+</details>
+<hr>
 
 </details>
 
@@ -308,7 +434,30 @@ Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 1024 --threshold0 100
     
-[Example xml file](xml/RecordLength_1024.xml)
+<details> <summary>Example xml file (xml/RecordLength_1024.xml)</summary>
+
+    <xml>
+      <Active>
+        <duration>
+          1000
+        </duration>
+        <outfile>
+          FILE.root
+        </outfile>
+        <ch0>
+          1
+        </ch0>
+        <reclen>
+          1024
+        </reclen> 
+        <threshold0>
+          100
+        </threshold0> 
+      </Active>
+    </xml>
+
+</details>
+<hr>
 
 </details>
 
@@ -323,7 +472,30 @@ Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 2048 --threshold0 100
     
-[Example xml file](xml/RecordLength_2048.xml)
+<details> <summary>Example xml file (xml/RecordLength_2048.xml)</summary>
+
+    <xml>
+      <Active>
+        <duration>
+          1000
+        </duration>
+        <outfile>
+          FILE.root
+        </outfile>
+        <ch0>
+          1
+        </ch0>
+        <reclen>
+          2048
+        </reclen> 
+        <threshold0>
+          100
+        </threshold0> 
+      </Active>
+    </xml>
+
+</details>
+<hr>
 
 </details>
 
@@ -341,7 +513,30 @@ Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 0 --threshold0 100
     
-[Example xml file](xml/PostTrigger_0.xml)
+<details> <summary>Example xml file (xml/PostTrigger_0.xml)</summary>
+
+    <xml>
+      <Active>
+        <duration>
+          1000
+        </duration>
+        <outfile>
+          FILE.root
+        </outfile>
+        <ch0>
+          1
+        </ch0>
+        <posttrigger>
+          0
+        </posttrigger>
+        <threshold0>
+          100
+        </threshold0>     
+      </Active>
+    </xml>
+
+</details>
+<hr>
 
 </details>
 
@@ -353,7 +548,30 @@ Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 25 --threshold0 100
     
-[Example xml file](xml/PostTrigger_25.xml)
+<details> <summary>Example xml file (xml/PostTrigger_25.xml)</summary>
+
+    <xml>
+      <Active>
+        <duration>
+          1000
+        </duration>
+        <outfile>
+          FILE.root
+        </outfile>
+        <ch0>
+          1
+        </ch0>
+        <posttrigger>
+          25
+        </posttrigger>
+        <threshold0>
+          100
+        </threshold0>     
+      </Active>
+    </xml>
+
+</details>
+<hr>
 
 </details>
 
@@ -365,7 +583,30 @@ Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 50 --threshold0 100
     
-[Example xml file](xml/PostTrigger_50.xml)
+<details> <summary>Example xml file (xml/PostTrigger_50.xml)</summary>
+
+    <xml>
+      <Active>
+        <duration>
+          1000
+        </duration>
+        <outfile>
+          FILE.root
+        </outfile>
+        <ch0>
+          1
+        </ch0>
+        <posttrigger>
+          50
+        </posttrigger>
+        <threshold0>
+          100
+        </threshold0>     
+      </Active>
+    </xml>
+
+</details>
+<hr>
 
 </details>
 
@@ -377,7 +618,30 @@ Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 75 --threshold0 100
     
-[Example xml file](xml/PostTrigger_75.xml)
+<details> <summary>Example xml file (xml/PostTrigger_75.xml)</summary>
+
+    <xml>
+      <Active>
+        <duration>
+          1000
+        </duration>
+        <outfile>
+          FILE.root
+        </outfile>
+        <ch0>
+          1
+        </ch0>
+        <posttrigger>
+          75
+        </posttrigger>
+        <threshold0>
+          100
+        </threshold0>     
+      </Active>
+    </xml>
+
+</details>
+<hr>
 
 </details>
 
@@ -389,7 +653,30 @@ Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 100 --threshold0 100
     
-[Example xml file](xml/PostTrigger_100.xml)
+<details> <summary>Example xml file (xml/PostTrigger_100.xml)</summary>
+
+    <xml>
+      <Active>
+        <duration>
+          1000
+        </duration>
+        <outfile>
+          FILE.root
+        </outfile>
+        <ch0>
+          1
+        </ch0>
+        <posttrigger>
+          100
+        </posttrigger>
+        <threshold0>
+          100
+        </threshold0>     
+      </Active>
+    </xml>
+
+</details>
+<hr>
 
 </details>
 
@@ -403,7 +690,48 @@ Triggering will only occur when the trigger conditions are satisfied on all chan
 
     CAENdaq -o FILE.root -d1000 --ch 0 --ch 1 --polarity0 POSITIVE --polarity1 POSITIVE --threshold0 100 --threshold1 100 --trslope0 POSITIVE --trslope1 POSITIVE --triggermode AND
 
-[Example xml file](xml/ANDtrigger.xml)
+<details> <summary>Example xml file (xml/ANDtrigger.xml)</summary>
+
+    <xml>
+      <Active>
+        <duration>
+          00:01:00
+        </duration>
+        <outfile>
+          FILE.root
+        </outfile>
+        <ch0>
+          1
+        </ch0>
+        <polarity0>
+          POSITIVE
+        </polarity0>
+        <threshold0>
+          100
+        </threshold0>  
+        <trslope0>
+          POSITIVE
+        </trslope0>
+        <ch1>
+          1
+        </ch1>
+        <polarity1>
+          POSITIVE
+        </polarity1>
+        <threshold1>
+          100
+        </threshold1>  
+        <trslope1>
+          POSITIVE
+        </trslope1>
+        <triggermode>
+          AND
+        </triggermode>
+      </Active>
+    </xml>
+
+</details>
+<hr>
 
 This will trigger when both channel 0 and channel 1 go above 100 ADC counts.
 
@@ -435,7 +763,48 @@ Triggering will occur when the trigger conditions are satisfied on any channel. 
 
     CAENdaq -o FILE.root -d1000 --ch 0 --ch 2 --polarity0 POSITIVE --polarity2 POSITIVE --threshold0 100 --threshold2 100 --trslope0 POSITIVE --trslope2 POSITIVE --triggermode OR
 
-[Example xml file](xml/ORtrigger.xml)
+<details> <summary>Example xml file (xml/ORtrigger.xml)</summary>
+
+    <xml>
+      <Active>
+        <duration>
+          00:01:00
+        </duration>
+        <outfile>
+          FILE.root
+        </outfile>
+        <ch0>
+          1
+        </ch0>
+        <polarity0>
+          POSITIVE
+        </polarity0>
+        <threshold0>
+          100
+        </threshold0>  
+        <trslope0>
+          POSITIVE
+        </trslope0>
+        <ch2>
+          1
+        </ch2>
+        <polarity2>
+          POSITIVE
+        </polarity2>
+        <threshold2>
+          100
+        </threshold2>  
+        <trslope2>
+          POSITIVE
+        </trslope2>
+        <triggermode>
+          OR
+        </triggermode>
+      </Active>
+    </xml>
+
+</details>
+<hr>
 
 will trigger when either of channel 0 or channel 2 go abouve 100 ADC counts
 
