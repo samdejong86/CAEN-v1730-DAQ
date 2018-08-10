@@ -731,7 +731,6 @@ Triggering will only occur when the trigger conditions are satisfied on all chan
     </xml>
 
 </details>
-<hr>
 
 This will trigger when both channel 0 and channel 1 go above 100 ADC counts.
 
@@ -804,7 +803,6 @@ Triggering will occur when the trigger conditions are satisfied on any channel. 
     </xml>
 
 </details>
-<hr>
 
 will trigger when either of channel 0 or channel 2 go abouve 100 ADC counts
 

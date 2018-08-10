@@ -73,19 +73,19 @@
 
 <p>in the xml file.</p>
 
-<p><details>
+<p><details style="background-color: #F7F7F7">
   <summary><strong>XML File Generation</strong></summary>
 
 <p>The xml files used by the DAQ software can be created using a text editior, or by using the <code>--xmlout</code> command line argument. This argument will take the digitizer settings set at the command line and save them as an xml file:</p>
 
-<pre style="background-color: #F7F7F7"><code>
+<pre style="background-color: #F2F2F2"><code>
     CAENdaq --outfile myfile.root --duration 3000 --ch 4 --polarity4 NEGATIVE --threshold4 100 --trslope4 NEGATIVE --xmlout mySettings.xml
     
 </code></pre>
 
 <p>will produce mySettings.xml, which will look like this:</p>
 
-<pre style="background-color: #F7F7F7"><code>
+<pre style="background-color: #F2F2F2"><code>
     &lt;xml&gt;
       &lt;Active&gt;
         &lt;outfile&gt;
@@ -118,7 +118,7 @@
 <h3 id="Duration">Duration</h3>
 
 <p>There are two ways of using the duration option.</p>
-<details><summary>Number of events</summary>
+<details><summary><strong>Number of events</strong></summary>
 <hr>
 <p>If an integer is used as the parameter, that many events will be recorded. Example command:</p>
 
@@ -141,16 +141,16 @@
 <hr>
 </details>
 
-<details><summary>Timed acquisition</summary>
+<details style="background-color: #F7F7F7"><summary><strong>Timed acquisition</strong></summary>
 <hr>
 <p> If a time is specified in HH:MM:SS, events will be collected for that amount of time. Example command:</p>
 
-<pre  style="background-color: #F7F7F7"><code>
+<pre  style="background-color: #F2F2F2"><code>
     CAENdaq --duration 01:30:00
     
 </code></pre>
 <p>or in XML:</p>
-<pre  style="background-color: #F7F7F7"><code>
+<pre  style="background-color: #F2F2F2"><code>
     &lt;duration&gt; 
        01:30:00   
     &lt;/duration&gt
@@ -166,7 +166,7 @@
 <p>For a positive pulse, polarity<CH> should be set to POSITIVE, and for a negative pulse, it should be set to NEGATIVE. trslope<CH> may be set to POSITIVE or NEGATIVE depending on where the desired trigger point is. A general rule of thumb is that the trigger polarity and the pulse polarity should be the same.</p>
 
 <details>
-  <summary>Positive pulse with positive trigger</summary>
+  <summary><strong>Positive pulse with positive trigger</strong></summary>
 
 <p><img src="img/PosPulsePosTrig.png" alt="Positive Pulse with Positive Trigger" title="Positive Pulse with Positive Trigger" /></p>
 
@@ -213,7 +213,7 @@
 
 <p></details>
 
-<details> <summary>Positive pulse with negative trigger</summary>
+<details style="background-color: #F7F7F7"> <summary><strong>Positive pulse with negative trigger</strong></summary>
 
 <p><img src="img/PosPulseNegTrig.png" alt="Positive Pulse with Negative Trigger" title="Positive Pulse with Negative Trigger" /></p>
 
@@ -221,14 +221,14 @@
 
 <p>Example command line arguments:</p>
 
-<pre style="background-color: #F7F7F7"><code>
+<pre style="background-color: #F2F2F2"><code>
     CAENdaq -o FILE.root -d 1000 --ch 0 --polarity0 POSITIVE --threshold0 100 --trslope0 NEGATIVE
     
 </code></pre>
 
 <p><details><summary>Example xml file (xml/PositivePulseNegativeTrigger.xml)</summary>
 
-<pre style="background-color: #F7F7F7"><code>
+<pre style="background-color: #F2F2F2"><code>
     &lt;xml&gt;
       &lt;Active&gt;
         &lt;duration&gt;
@@ -259,7 +259,7 @@
 
 </details>
 
-<details> <summary>Negative pulse with positive trigger</summary>
+<details> <summary><strong>Negative pulse with positive trigger</strong></summary>
 
 <p><img src="img/NegPulsePosTrig.png" alt="Negative Pulse with Positive Trigger" title="Negative Pulse with Positive Trigger" /></p>
 
@@ -306,7 +306,7 @@
 
 </details>
 
-<details> <summary>Negative pulse with negative trigger</summary>
+<details style="background-color: #F7F7F7"> <summary><strong>Negative pulse with negative trigger</strong></summary>
 
 <p><img src="img/NegPulseNegTrig.png" alt="Negative Pulse with Negative Trigger" title="Negative Pulse with Negative Trigger" /></p>
 
@@ -314,7 +314,7 @@
 
 <p>Example command line arguments:</p>
 
-<pre style="background-color: #F7F7F7"><code>
+<pre style="background-color: #F2F2F2"><code>
     CAENdaq -o FILE.root -d 1000 --ch 0 --polarity0 NEGATIVE --threshold0 100 --trslope0 NEGATIVE
     
 </code></pre>
@@ -357,7 +357,7 @@
 
 <p>The record length setting sets the number of samples in a waveform. A higher number will create a longer waveform.</p>
 
-<details> <summary> Low record length </summary>
+<details> <summary><strong> Low record length </strong></summary>
 
 <p>In this example the record length is set to 512 samples.</p>
 
@@ -401,7 +401,7 @@
 
 </details>
 
-<details> <summary> Medium record length </summary>
+<details style="background-color: #F7F7F7"> <summary><strong> Medium record length </strong></summary>
 
 <p>In this example the record length is set to 1024 samples (the default).</p>
 
@@ -409,14 +409,14 @@
 
 <p>Example command line arguments:</p>
 
-<pre style="background-color: #F7F7F7"><code>
+<pre style="background-color: #F2F2F2"><code>
     CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 1024 --threshold0 100
     
 </code></pre>
 
 <details> <summary>Example xml file (xml/RecordLength_1024.xml)</summary>
 
-<pre style="background-color: #F7F7F7"><code>
+<pre style="background-color: #F2F2F2"><code>
     &lt;xml&gt;
       &lt;Active&gt;
         &lt;duration&gt;
@@ -445,7 +445,7 @@
 
 </details>
 
-<details> <summary> High record length </summary>
+<details> <summary><strong> High record length </strong></summary>
 
 <p>In this example the record length is set to 2048 samples.</p>
 
@@ -493,20 +493,20 @@
 
 <p>The post trigger setting sets how much of the waveform will be after the trigger occurs. valid settings are 0 to 100. Setting this to 50 is a good rule of thumb.</p>
 
-<details> <summary> Post trigger of 0 </summary>
+<details style="background-color: #F7F7F7"> <summary><strong> Post trigger of 0 </strong></summary>
 
 <p><img src="img/postTrig_0.png" alt="post trigger 0" title="Post Trigger set to 0" /></p>
 
 <p>Example command line arguments:</p>
 
-<pre style="background-color: #F7F7F7"><code>
+<pre style="background-color: #F2F2F2"><code>
     CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 0 --threshold0 100
     
 </code></pre>
 
 <details> <summary>Example xml file (xml/PostTrigger_0.xml)</summary>
 
-<pre style="background-color: #F7F7F7"><code>
+<pre style="background-color: #F2F2F2"><code>
     &lt;xml&gt;
       &lt;Active&gt;
         &lt;duration&gt;
@@ -535,7 +535,7 @@
 
 </details>
 
-<details> <summary> Post trigger of 25 </summary>
+<details> <summary><strong> Post trigger of 25 </strong></summary>
 
 <p><img src="img/postTrig_25.png" alt="post trigger 25" title="Post Trigger set to 25" /></p>
 
@@ -577,20 +577,20 @@
 
 </details>
 
-<details> <summary> Post trigger of 50 (the default setting)</summary>
+<details style="background-color: #F7F7F7"> <summary><strong> Post trigger of 50 (the default setting)</strong></summary>
 
 <p><img src="img/postTrig_50.png" alt="post trigger 50" title="Post Trigger set to 50" /></p>
 
 <p>Example command line arguments:</p>
 
-<pre style="background-color: #F7F7F7"><code>
+<pre style="background-color: #F2F2F2"><code>
     CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 50 --threshold0 100
     
 </code></pre>
 
 <details> <summary>Example xml file (xml/PostTrigger_50.xml)</summary>
 
-  <pre style="background-color: #F7F7F7"><code>
+  <pre style="background-color: #F2F2F2"><code>
     &lt;xml&gt;
       &lt;Active&gt;
         &lt;duration&gt;
@@ -619,7 +619,7 @@
 
 </details>
 
-<details> <summary> Post trigger of 75 </summary>
+<details> <summary><strong> Post trigger of 75 </strong></summary>
 
 <p><img src="img/postTrig_75.png" alt="post trigger 75" title="Post Trigger set to 75" /></p>
 
@@ -661,20 +661,20 @@
 
 </details>
 
-<details> <summary> Post trigger of 100 </summary>
+<details style="background-color: #F7F7F7"> <summary><strong> Post trigger of 100 </strong></summary>
 
 <p><img src="img/postTrig_100.png" alt="post trigger 100" title="Post Trigger set to 010" /></p>
 
 <p>Example command line arguments:</p>
 
-<pre style="background-color: #F7F7F7"><code>
+<pre style="background-color: #F2F2F2"><code>
     CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 100 --threshold0 100
     
 </code></pre>
 
 <details> <summary>Example xml file (xml/PostTrigger_100.xml)</summary>
 
-  <pre style="background-color: #F7F7F7"><code>
+  <pre style="background-color: #F2F2F2"><code>
     &lt;xml&gt;
       &lt;Active&gt;
         &lt;duration&gt;
@@ -707,7 +707,7 @@
 
 <p>If mutiple channels have <code>threshold&lt;CH&gt;</code> set, the triggers will be combined. There are two possibe modes for combining multiple trigger channels: <strong>AND</strong> and <strong>OR</strong>. The trigger mode is set with the <code>triggermode</code> setting</p>
 
-<details> <summary> Combining triggers with <strong>AND</strong></summary>
+<details> <summary><strong> Combining triggers with <strong>AND</strong></strong></summary>
 
 <p>Triggering will only occur when the trigger conditions are satisfied on all channels with <code>threshold&lt;CH&gt;</code> set. For example:</p>
 
@@ -762,7 +762,6 @@
 
 </details>
 
-<hr>
 
 <p>This will trigger when both channel 0 and channel 1 go above 100 ADC counts.</p>
 
@@ -793,11 +792,11 @@
 
 </details>
 
-<details> <summary>  Combining triggers with <strong>OR</strong></summary>
+<details style="background-color: #F7F7F7"> <summary><strong>  Combining triggers with <strong>OR</strong></strong></summary>
 
 <p>Triggering will occur when the trigger conditions are satisfied on any channel. For example:</p>
 
-<pre style="background-color: #F7F7F7"><code>
+<pre style="background-color: #F2F2F2"><code>
     CAENdaq -o FILE.root -d1000 --ch 0 --ch 2 --polarity0 POSITIVE --polarity2 POSITIVE --threshold0 100 --threshold2 100 \\
     --trslope0 POSITIVE --trslope2 POSITIVE --triggermode OR
     
@@ -805,7 +804,7 @@
 
 <details> <summary>Example xml file (xml/ORtrigger.xml)</summary>
 
-  <pre style="background-color: #F7F7F7"><code>
+  <pre style="background-color: #F2F2F2"><code>
     &lt;xml&gt;
       &lt;Active&gt;
         &lt;duration&gt;
@@ -847,8 +846,6 @@
 </code></pre>
 
 </details>
-
-<hr>
 
 <p>will trigger when either of channel 0 or channel 2 go abouve 100 ADC counts</p>
 
