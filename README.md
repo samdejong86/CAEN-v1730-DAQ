@@ -10,6 +10,11 @@ DAQ software for a CAEN V1730 digitizer with waveform recording firmware. Softwa
 This software is based on the CAEN wavedump example program
 
 ## Installation:
+
+Download the repository using this command:
+
+    git clone https://github.com/samdejong86/CAEN-v1730-DAQ.git
+
 Requires the CAEN Digitizer libraries. Install in this order:
 1. [CAEN VME library](http://www.caen.it/csite/CaenProd.jsp?idmod=689&parent=38) 
 2. [CAEN USB library](http://www.caen.it/csite/CaenProd.jsp?idmod=417&parent=11)

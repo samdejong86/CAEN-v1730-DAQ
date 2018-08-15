@@ -916,11 +916,11 @@
 
 </code></pre>
 
-<p> If you are using this to determine a threshold, be aware that the value specified as the <code>threshold&lt;CH&gt;</code> is the ADC counts <strong>above (or below) the baseline</strong>. If you are converting a threshold in ADC counts to mV, you need to add 8192 to the threshold (or subtract from 8192 if <code>trslope&lt;CH&gt;</code> is negative) before applying the equation. If you are converting a threshold in mV to ADC counts, subtract 8192 from the result to get the value for <code>threshold&lt;CH&gt;</code> (or subtract the result from 8192 if <code>trslope&lt;CH&gt;</code> is negative).</p>
+<p> If you are using this to determine a threshold, be aware that the value specified as the <code>threshold&lt;CH&gt;</code> is the ADC counts <strong>above (or below) the baseline</strong>. If you are converting a threshold in ADC counts to mV, you need to add 8192 to the threshold (or subtract from 8192 if <code>polarity&lt;CH&gt;</code> is negative) before applying the equation. If you are converting a threshold in mV to ADC counts, subtract 8192 from the result to get the value for <code>threshold&lt;CH&gt;</code> (or subtract the result from 8192 if <code>polarity&lt;CH&gt;</code> is negative).</p>
 
 <details> <summary>Example</summary>
 
-  <p>A threshold of -20mV is required, with a negative trigger.</p>
+  <p>A threshold of -20mV is required, with a negative polarity.</p>
 
   <pre style="background-color: #F7F7F7"><code>
       7.451 x -20mV + 8203 = 8053.98
@@ -928,7 +928,7 @@
       8192 - 8053.98 = 138.02      
       </code></pre>
 
-  <p>So <code>threshold&lt;CH&gt;</code> is set to 138, with <code>trslope&lt;CH&gt;</code> set to NEGATIVE.</p>
+  <p>So <code>threshold&lt;CH&gt;</code> is set to 138, with <code>polarity&lt;CH&gt;</code> set to NEGATIVE.</p>
 
 
 </details>
