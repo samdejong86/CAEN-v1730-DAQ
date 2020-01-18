@@ -59,3 +59,7 @@ To interact better with the host system, guest additions should be installed.
 
 7. Enter root password
 8. Once the installation is complete, restart the virtual machine
+
+## Passing CAEN digitizer to Virtial Machine
+
+todo
