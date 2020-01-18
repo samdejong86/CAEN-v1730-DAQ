@@ -11,6 +11,8 @@ This software is based on the CAEN wavedump example program
 
 ## Installation:
 
+For instructions on setting up a virtual machine, [see here](VBox.md).
+
 Download the repository using this command:
 
     git clone https://github.com/samdejong86/CAEN-v1730-DAQ.git
