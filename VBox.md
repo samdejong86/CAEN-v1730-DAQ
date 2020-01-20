@@ -4,9 +4,12 @@ First, obtain a Scientific Linux virtual machine from [this link](https://www.os
 Be sure to note the user and root passwords.
 You may have to unpack the file.
 
-Also download and install [VirtualBox](https://www.virtualbox.org/)
+Also download and install [VirtualBox](https://www.virtualbox.org/wiki/Downloads).
+Make sure you are installing version 6.0+.
 
 ## Initialize the virtual machine
+
+Note: The screenshots may look different depending on your host machine OS.
 
 1. Run VirtualBox and create a new virtual machine:
 
@@ -62,4 +65,5 @@ To interact better with the host system, guest additions should be installed.
 
 ## Passing CAEN digitizer to Virtial Machine
 
-todo
+In order to pass a USB device through to the virtual machine, you need to install the [Oracle VM VirtualBox Extension Pack](https://download.virtualbox.org/virtualbox/6.1.2/Oracle_VM_VirtualBox_Extension_Pack-6.1.2.vbox-extpack), found [here](https://www.virtualbox.org/wiki/Downloads).
+Make sure you have the correct version of the extensions for your version of VirtualBox
