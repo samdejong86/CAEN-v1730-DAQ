@@ -18,7 +18,7 @@ Download the repository using this command:
     git clone https://github.com/samdejong86/CAEN-v1730-DAQ.git
 
 Requires the CAEN Digitizer libraries. Install in this order:
-1. [CAEN VME library](http://www.caen.it/csite/CaenProd.jsp?idmod=689&parent=38) 
+1. [CAEN VME library](http://www.caen.it/csite/CaenProd.jsp?idmod=689&parent=38)
 2. [CAEN USB library](http://www.caen.it/csite/CaenProd.jsp?idmod=417&parent=11)
 3. [CAEN Comm library](http://www.caen.it/csite/CaenProd.jsp?parent=38&idmod=684)
 4. [CAEN digitizer](http://www.caen.it/csite/CaenProd.jsp?parent=43&idmod=717)
@@ -40,12 +40,14 @@ Requires ROOT (available [here](https://root.cern.ch/downloading-root)). You may
 
 Once these are installed, use make to build the software.
 
+Run `sudo make install` to install the software system wide.
+
 ## Usage:
 
     usage: CAENdaq  [-h] [-v] [-x XMLFILE] [--xmlout XMLFILE] [-q] [w0] [w1]
                     [w2] [w3] ... [-o FILE] [-r RECLEN] [-n NUM] [-d DURATION]
-                    [--posttrigger VAL] [--polarity0 POLARITY] ... 
-                    [--threshold0 THRESHOLD] ... [--trslope0 POLARITY] ... 
+                    [--posttrigger VAL] [--polarity0 POLARITY] ...
+                    [--threshold0 THRESHOLD] ... [--trslope0 POLARITY] ...
 
     Reads waveforms from a CAEN V1730 digitizer.
 
@@ -118,7 +120,7 @@ These same parameters can be set via an xml file:
         </polarity0>
         <threshold0>
           100
-        </threshold0>  
+        </threshold0>
         <trslope0>
           POSITIVE
         </trslope0>
@@ -252,7 +254,7 @@ Example command line arguments:
         </polarity0>
         <threshold0>
           100
-        </threshold0>  
+        </threshold0>
         <trslope0>
           POSITIVE
         </trslope0>
@@ -293,7 +295,7 @@ Example command line arguments:
         </polarity0>
         <threshold0>
           100
-        </threshold0>  
+        </threshold0>
         <trslope0>
           NEGATIVE
         </trslope0>
@@ -334,7 +336,7 @@ Example command line arguments:
         </polarity0>
         <threshold0>
           100
-        </threshold0>  
+        </threshold0>
         <trslope0>
           POSITIVE
         </trslope0>
@@ -376,7 +378,7 @@ Example command line arguments:
         </polarity0>
         <threshold0>
           100
-        </threshold0>  
+        </threshold0>
         <trslope0>
           NEGATIVE
         </trslope0>
@@ -418,10 +420,10 @@ Example command line arguments:
         </ch0>
         <reclen>
           512
-        </reclen>   
+        </reclen>
         <threshold0>
           100
-        </threshold0>   
+        </threshold0>
       </Active>
     </xml>
 
@@ -440,7 +442,7 @@ In this example the record length is set to 1024 samples (the default).
 Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 1024 --threshold0 100
-    
+
 <details> <summary>Example xml file (xml/RecordLength_1024.xml)</summary>
 
     <xml>
@@ -456,10 +458,10 @@ Example command line arguments:
         </ch0>
         <reclen>
           1024
-        </reclen> 
+        </reclen>
         <threshold0>
           100
-        </threshold0> 
+        </threshold0>
       </Active>
     </xml>
 
@@ -478,7 +480,7 @@ In this example the record length is set to 2048 samples.
 Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --reclen 2048 --threshold0 100
-    
+
 <details> <summary>Example xml file (xml/RecordLength_2048.xml)</summary>
 
     <xml>
@@ -494,10 +496,10 @@ Example command line arguments:
         </ch0>
         <reclen>
           2048
-        </reclen> 
+        </reclen>
         <threshold0>
           100
-        </threshold0> 
+        </threshold0>
       </Active>
     </xml>
 
@@ -519,7 +521,7 @@ The post trigger setting sets how much of the waveform will be after the trigger
 Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 0 --threshold0 100
-    
+
 <details> <summary>Example xml file (xml/PostTrigger_0.xml)</summary>
 
     <xml>
@@ -538,7 +540,7 @@ Example command line arguments:
         </posttrigger>
         <threshold0>
           100
-        </threshold0>     
+        </threshold0>
       </Active>
     </xml>
 
@@ -554,7 +556,7 @@ Example command line arguments:
 Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 25 --threshold0 100
-    
+
 <details> <summary>Example xml file (xml/PostTrigger_25.xml)</summary>
 
     <xml>
@@ -573,7 +575,7 @@ Example command line arguments:
         </posttrigger>
         <threshold0>
           100
-        </threshold0>     
+        </threshold0>
       </Active>
     </xml>
 
@@ -589,7 +591,7 @@ Example command line arguments:
 Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 50 --threshold0 100
-    
+
 <details> <summary>Example xml file (xml/PostTrigger_50.xml)</summary>
 
     <xml>
@@ -608,7 +610,7 @@ Example command line arguments:
         </posttrigger>
         <threshold0>
           100
-        </threshold0>     
+        </threshold0>
       </Active>
     </xml>
 
@@ -624,7 +626,7 @@ Example command line arguments:
 Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 75 --threshold0 100
-    
+
 <details> <summary>Example xml file (xml/PostTrigger_75.xml)</summary>
 
     <xml>
@@ -643,7 +645,7 @@ Example command line arguments:
         </posttrigger>
         <threshold0>
           100
-        </threshold0>     
+        </threshold0>
       </Active>
     </xml>
 
@@ -659,7 +661,7 @@ Example command line arguments:
 Example command line arguments:
 
     CAENdaq -o FILE.root -d 1000 --ch 0 --posttrigger 100 --threshold0 100
-    
+
 <details> <summary>Example xml file (xml/PostTrigger_100.xml)</summary>
 
     <xml>
@@ -678,7 +680,7 @@ Example command line arguments:
         </posttrigger>
         <threshold0>
           100
-        </threshold0>     
+        </threshold0>
       </Active>
     </xml>
 
@@ -715,7 +717,7 @@ Triggering will only occur when the trigger conditions are satisfied on all chan
         </polarity0>
         <threshold0>
           100
-        </threshold0>  
+        </threshold0>
         <trslope0>
           POSITIVE
         </trslope0>
@@ -727,7 +729,7 @@ Triggering will only occur when the trigger conditions are satisfied on all chan
         </polarity1>
         <threshold1>
           100
-        </threshold1>  
+        </threshold1>
         <trslope1>
           POSITIVE
         </trslope1>
@@ -738,7 +740,7 @@ Triggering will only occur when the trigger conditions are satisfied on all chan
     </xml>
 
 </details>
-<br /> 
+<br />
 
 This will trigger when both channel 0 and channel 1 go above 100 ADC counts.
 
@@ -758,7 +760,7 @@ or in XML:
     <coincidencewindow>
         12
     </coincidencewindow>
-	
+
 will require a trigger on each trigger enabled channel within 96ns. The default value for this parameter is 10, or 80ns.
 
 
@@ -788,7 +790,7 @@ Triggering will occur when the trigger conditions are satisfied on any channel. 
         </polarity0>
         <threshold0>
           100
-        </threshold0>  
+        </threshold0>
         <trslope0>
           POSITIVE
         </trslope0>
@@ -800,7 +802,7 @@ Triggering will occur when the trigger conditions are satisfied on any channel. 
         </polarity2>
         <threshold2>
           100
-        </threshold2>  
+        </threshold2>
         <trslope2>
           POSITIVE
         </trslope2>
@@ -811,7 +813,7 @@ Triggering will occur when the trigger conditions are satisfied on any channel. 
     </xml>
 
 </details>
-<br /> 
+<br />
 
 will trigger when either of channel 0 or channel 2 go abouve 100 ADC counts
 
@@ -836,7 +838,7 @@ will apply the trigger correctly to both channel 0 and channel 2
 ### Data Recovery in Case of Program Crash
    When the program starts, it will create a temporary directory called FILE_`<timestamp>`, where `<timestamp>` is the unix time when the program started. Temporary root files containing `<saveInterval>` (set by the `saveInterval` parameter at the command line or in an xml file) events will be saved here.
 
-When the program exits safely these files will be merged together, with the resulting file moved to the working directory. The temporary directory will then be removed. 
+When the program exits safely these files will be merged together, with the resulting file moved to the working directory. The temporary directory will then be removed.
 
 If the program crashes, the temporary files will not be removed, so most of the data from the run can be recovered by looking in this directory.
 
@@ -873,9 +875,7 @@ This script can also be used as an example showing how to load waveforms, for us
 		A script for installing the CAEN libraries. The tar files containing the libraries must be located in the same directory as this script
 	img/*
 		Images used in the tutorial section of this document
-	
-## Acknowledgements 
+
+## Acknowledgements
 
 This software used code in CAEN's [wavedump](http://www.caen.it/csite/CaenProd.jsp?parent=38&idmod=692) example, modified to be in an object oriented framework.
-
-
