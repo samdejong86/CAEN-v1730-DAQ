@@ -24,6 +24,7 @@ Requires the CAEN Digitizer libraries. Install in this order:
 4. [CAEN digitizer](http://www.caen.it/csite/CaenProd.jsp?parent=43&idmod=717)
 
 If the tar files containing the libraries are placed in the **drivers** directory, run **source CAEN\_driver\_install.sh** as root in that directory to automatically install the libraries.
+**NOTE JUNE 2023**: Due to changes in the CAEN libraries, this automatic script no longer works. Manual installation is required instead.
 
 **Note:** Updates to your system may break the CAEN libraries. If the DAQ software stops working, try reinstalling the VME and USB libraries.
 
@@ -32,6 +33,12 @@ Requires ROOT (available [here](https://root.cern.ch/downloading-root)). You may
 2. libXpm-devel.x86_64
 3. libXft-devel.x86_64
 4. libXext-devel.x86_64
+
+ROOT can also be installed with
+
+```
+sudo yum install -y epel-release && sudo yum install root
+```
 
 * If you are getting an error about 'shape.h', try:
 
